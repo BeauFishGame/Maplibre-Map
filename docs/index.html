@@ -360,7 +360,8 @@
 
   <div id="combined-filters" style="display:none;">
     <div class="map-overlay-inner">
-      <button class="close-button" onclick="openPanel(null)">&times;</button>
+      <button class="close-button" onclick="closeCard()">&times;</button>
+
       <div class="panel-scroll">
 
         <style>
@@ -709,7 +710,8 @@ function safeSetFilter(layerId, expr) {
 
 <div id="combined-basemaps" style="display:none;">
   <div class="map-overlay-inner">
-    <button class="close-button" onclick="openPanel(null)">&times;</button>
+    <button class="close-button" onclick="closeCard()">&times;</button>
+
     <div class="panel-scroll">
 
       <div class="basemap-body">
@@ -856,6 +858,7 @@ function toggleBasemaps(event) {
 <div class="map-overlay-inner">
   <div class="map-overlay-drag-handle"></div>
 <button class="close-button" onclick="closeCard()">&times;</button>
+
   <div class="panel-scroll">
 `;
 
@@ -979,37 +982,6 @@ function toggleBasemaps(event) {
   ];
 }
 
-function unselectFeatures() {
-  // Clear river selection
-  if (selectedRiver) {
-    try {
-      map.setFeatureState(
-        { source: 'AW Rivers', sourceLayer: 'waterways', id: selectedRiver.id },
-        { selected: false, highlight: false }
-      );
-    } catch (e) {}
-    selectedRiver = null;
-  }
-
-  // Clear point selection
-  if (selectedPoint) {
-    try {
-      map.setFeatureState(
-        { source: 'data-points', id: selectedPoint.id },
-        { selected: false }
-      );
-    } catch (e) {}
-    selectedPoint = null;
-  }
-
-  // Reset the ID variables that drive icon size
-  selectedFeatureId = null;
-  hoverFeatureId = null;
-
-  updateIconSize(); // refresh icon sizes back to default
-}
-
-
     function updateIconSize() {
       if(!map.getLayer('data-points-all')) return;
       map.setLayoutProperty('data-points-all', 'icon-size', getIconSizeExpr(selectedFeatureId, hoverFeatureId));
@@ -1084,7 +1056,7 @@ window.addEventListener("load", () => {
       if (map.getLayer('data-points-all')) map.setFilter('data-points-all', filter);
     }
 
-const clearSelection = () => {
+   const clearSelection = () => {
   unselectFeatures();
 
   // Reset search + card UI
@@ -1102,19 +1074,57 @@ function closeCard() {
   unselectFeatures();   // reset both points + rivers
   openPanel(null);      // hide the panel
 }
+const selectFeature = (feature) => {
+  clearSelection();
 
+  if (feature.layer.id === 'data-points-all') {
+    selectedPoint = feature;
 
-    const selectFeature = (feature) => {
-      clearSelection();
-      if (feature.layer.id === 'data-points-all') {
-        selectedPoint = feature;
-        map.setFeatureState({ source: 'data-points', id: feature.id }, { selected: true });
-      } else if (feature.layer.id === 'AW Rivers-line' || feature.layer.id === 'AW Rivers-fill') {
-        selectedRiver = feature;
-        map.setFeatureState({ source: 'AW Rivers', sourceLayer: 'waterways', id: feature.id }, { selected: true });
-      }
-      showCard(feature);
-    };
+    // feature-state (if you need it for other styling)
+    map.setFeatureState({ source: 'data-points', id: feature.id }, { selected: true });
+
+    // 🔑 drive the icon-size expression from here
+    selectedFeatureId = feature.id;
+    hoverFeatureId = null;
+    updateIconSize();
+  } else if (feature.layer.id === 'AW Rivers-line' || feature.layer.id === 'AW Rivers-fill') {
+    selectedRiver = feature;
+    map.setFeatureState({ source: 'AW Rivers', sourceLayer: 'waterways', id: feature.id }, { selected: true });
+  }
+
+  showCard(feature);
+};
+
+    function unselectFeatures() {
+  // Clear river selection
+  if (selectedRiver) {
+    try {
+      map.setFeatureState(
+        { source: 'AW Rivers', sourceLayer: 'waterways', id: selectedRiver.id },
+        { selected: false, highlight: false }
+      );
+    } catch (e) {}
+    selectedRiver = null;
+  }
+
+  // Clear point selection
+  if (selectedPoint) {
+    try {
+      map.setFeatureState(
+        { source: 'data-points', id: selectedPoint.id },
+        { selected: false }
+      );
+    } catch (e) {}
+    selectedPoint = null;
+  }
+
+  // Reset the ID variables that drive icon size
+  selectedFeatureId = null;
+  hoverFeatureId = null;
+
+  updateIconSize(); // refresh icon sizes back to default
+}
+
 
     let allFeatures = [];
     let allPointsFeatures = [];
@@ -1175,7 +1185,7 @@ function closeCard() {
             'fill-opacity':[
               'match',['get','DataType'],
               'Non-Primary Parcel', .1,
-              .7
+              .8
             ],
             'fill-outline-color': "white"
           }
