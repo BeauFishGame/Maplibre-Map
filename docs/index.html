@@ -855,7 +855,7 @@ function toggleBasemaps(event) {
       let content = `
 <div class="map-overlay-inner">
   <div class="map-overlay-drag-handle"></div>
-  <button class="close-button" onclick="openPanel(null)">&times;</button>
+<button class="close-button" onclick="closeCard()">&times;</button>
   <div class="panel-scroll">
 `;
 
@@ -979,6 +979,37 @@ function toggleBasemaps(event) {
   ];
 }
 
+function unselectFeatures() {
+  // Clear river selection
+  if (selectedRiver) {
+    try {
+      map.setFeatureState(
+        { source: 'AW Rivers', sourceLayer: 'waterways', id: selectedRiver.id },
+        { selected: false, highlight: false }
+      );
+    } catch (e) {}
+    selectedRiver = null;
+  }
+
+  // Clear point selection
+  if (selectedPoint) {
+    try {
+      map.setFeatureState(
+        { source: 'data-points', id: selectedPoint.id },
+        { selected: false }
+      );
+    } catch (e) {}
+    selectedPoint = null;
+  }
+
+  // Reset the ID variables that drive icon size
+  selectedFeatureId = null;
+  hoverFeatureId = null;
+
+  updateIconSize(); // refresh icon sizes back to default
+}
+
+
     function updateIconSize() {
       if(!map.getLayer('data-points-all')) return;
       map.setLayoutProperty('data-points-all', 'icon-size', getIconSizeExpr(selectedFeatureId, hoverFeatureId));
@@ -1053,19 +1084,25 @@ window.addEventListener("load", () => {
       if (map.getLayer('data-points-all')) map.setFilter('data-points-all', filter);
     }
 
-    const clearSelection = () => {
-      if (selectedRiver) {
-        map.setFeatureState({ source: 'AW Rivers', sourceLayer: 'waterways', id: selectedRiver.id }, { selected: false });
-        selectedRiver = null;
-      }
-      const input = document.getElementById('search');
-      const suggestions = document.getElementById('suggestions');
-      input.value = '';
-      suggestions.innerHTML = '';
-      suggestions.style.display = 'none';
-      card.innerHTML = '';
-      card.style.display = 'none';
-    };
+const clearSelection = () => {
+  unselectFeatures();
+
+  // Reset search + card UI
+  const input = document.getElementById('search');
+  const suggestions = document.getElementById('suggestions');
+  input.value = '';
+  suggestions.innerHTML = '';
+  suggestions.style.display = 'none';
+
+  card.innerHTML = '';
+  card.style.display = 'none';
+};
+
+function closeCard() {
+  unselectFeatures();   // reset both points + rivers
+  openPanel(null);      // hide the panel
+}
+
 
     const selectFeature = (feature) => {
       clearSelection();
