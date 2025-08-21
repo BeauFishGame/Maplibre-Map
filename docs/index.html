@@ -1167,7 +1167,7 @@ const selectFeature = (feature) => {
           type: 'fill',
           source: 'PublicAccessAreas',
           'source-layer': 'mylayer',
-          minzoom: 10,
+          minzoom: 12,
           paint: {
             'fill-color':[
               'match',['get','DataType'],
@@ -1187,7 +1187,6 @@ const selectFeature = (feature) => {
               'Non-Primary Parcel', .1,
               .8
             ],
-            'fill-outline-color': "white"
           }
         }, insertBeforeLayer);
       }
