@@ -844,7 +844,9 @@ function toggleBasemaps(event) {
       const displayFields = {
         methods: 'Method',
         open_season: 'Open',
-        limit_trout: 'Trout Limit',
+        daily_bag_limit: 'Dailt bag limit',
+        size_limit: 'Size limit',
+        hours_of_fishing: 'Hours of fishing',
         Description: "Description",
         additional_requirements: "Additional Requirements",
       };
@@ -936,6 +938,19 @@ function toggleBasemaps(event) {
 
     let selectedPoint = null;
     let selectedRiver = null;
+
+    let selectedRiverId = null;
+
+function updateSelectedRiverLayers() {
+  const visibleExpr = selectedRiverId == null
+    ? ['==', ['id'], -1]     // hide when nothing selected
+    : ['==', ['id'], selectedRiverId];
+
+  if (map.getLayer('AW Rivers-selected-halo')) {
+    map.setFilter('AW Rivers-selected-halo', visibleExpr);
+  }
+}
+
 
     const customImages = [
       { name: 'AccessPoint-icon', url: 'images/FGAccess.png' },
@@ -1074,28 +1089,38 @@ function closeCard() {
   unselectFeatures();   // reset both points + rivers
   openPanel(null);      // hide the panel
 }
+
+// make sure these exist once globally:
+// let selectedRiverId = null;
+// function updateSelectedRiverLayers(){ /* as given earlier */ }
+
 const selectFeature = (feature) => {
-  clearSelection();
+  clearSelection(); // this already unselects and hides the halo
 
   if (feature.layer.id === 'data-points-all') {
     selectedPoint = feature;
-
-    // feature-state (if you need it for other styling)
     map.setFeatureState({ source: 'data-points', id: feature.id }, { selected: true });
 
-    // 🔑 drive the icon-size expression from here
     selectedFeatureId = feature.id;
     hoverFeatureId = null;
     updateIconSize();
+
   } else if (feature.layer.id === 'AW Rivers-line' || feature.layer.id === 'AW Rivers-fill') {
     selectedRiver = feature;
-    map.setFeatureState({ source: 'AW Rivers', sourceLayer: 'waterways', id: feature.id }, { selected: true });
+    map.setFeatureState(
+      { source: 'AW Rivers', sourceLayer: 'waterways', id: feature.id },
+      { selected: true }
+    );
+
+    // NEW: drive the selected halo
+    selectedRiverId = feature.id;
+    updateSelectedRiverLayers();
   }
 
   showCard(feature);
 };
 
-    function unselectFeatures() {
+function unselectFeatures() {
   // Clear river selection
   if (selectedRiver) {
     try {
@@ -1106,6 +1131,10 @@ const selectFeature = (feature) => {
     } catch (e) {}
     selectedRiver = null;
   }
+
+  // NEW: hide the halo layer
+  selectedRiverId = null;
+  updateSelectedRiverLayers();
 
   // Clear point selection
   if (selectedPoint) {
@@ -1121,8 +1150,7 @@ const selectFeature = (feature) => {
   // Reset the ID variables that drive icon size
   selectedFeatureId = null;
   hoverFeatureId = null;
-
-  updateIconSize(); // refresh icon sizes back to default
+  updateIconSize();
 }
 
 
@@ -1194,7 +1222,7 @@ const selectFeature = (feature) => {
       if (!sources['AW Rivers']) {
         map.addSource('AW Rivers', {
           type: 'vector',
-          tiles: ['https://data.fishandgameaccessmap.org/aw_nl_ea_waters/{z}/{x}/{y}'],
+          tiles: ['https://data.fishandgameaccessmap.org/all_waters/{z}/{x}/{y}'],
           minzoom: 0, maxzoom: 13
         });
       }
@@ -1227,8 +1255,8 @@ const selectFeature = (feature) => {
             ],
             'line-width': [
               'case',
-              ['boolean', ['feature-state', 'selected'], false], 7,
-              ['boolean', ['feature-state', 'highlight'], false], 5,
+              ['boolean', ['feature-state', 'selected'], false], 5,
+              ['boolean', ['feature-state', 'highlight'], false], 4,
               3
             ],
             'line-opacity':1
@@ -1264,11 +1292,55 @@ const selectFeature = (feature) => {
             'fill-opacity': [
               'interpolate', ['linear'], ['zoom'],
               14, 1,
-              14.01, .2
+              14.01, .4
             ]
           }
         }, insertBeforeLayer);
       }
+
+      // --- Selected-only AW Rivers stroke (wide halo only) ---
+
+// --- Selected-only AW Rivers stroke (wide halo only) ---
+if (!map.getLayer('AW Rivers-selected-halo')) {
+  map.addLayer({
+    id: 'AW Rivers-selected-halo',
+    type: 'line',
+    source: 'AW Rivers',
+    'source-layer': 'waterways',
+    minzoom: 7,
+    layout: { 'line-join': 'round', 'line-cap': 'round' },
+    paint: {
+            'line-color': [
+              'case',
+              ['any',
+                ['<', TODAY_UNIX, ['get', 'open_date_unix']],
+                ['>', TODAY_UNIX, ['get', 'close_date_unix']]
+              ],
+              ['case',
+                ['boolean', ['feature-state', 'selected'], false], '#ac261f',
+                ['boolean', ['feature-state', 'highlight'], false], '#f42f58',
+                '#f42f58'
+              ],
+              ['case',
+                ['boolean', ['feature-state', 'selected'], false], '#3949ab',
+                ['boolean', ['feature-state', 'highlight'], false], '#4ca6e6',
+                '#4ca6e6'
+              ]
+            ],
+            'line-width': [
+              'case',
+              ['boolean', ['feature-state', 'selected'], false], 5,
+              ['boolean', ['feature-state', 'highlight'], false], 5,
+              3
+            ],
+            'line-opacity':1
+          },
+    // Hidden until a river is selected; filter is updated by updateSelectedRiverLayers()
+    filter: ['==', ['id'], -1]
+  }); // note: appended on top (no insertBeforeLayer)
+}
+
+
 
       // Region labels (lighter + limited range)
       // const nzRegionsGeoJSON = {
