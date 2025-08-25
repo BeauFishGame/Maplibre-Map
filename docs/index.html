@@ -847,7 +847,7 @@ function toggleBasemaps(event) {
         daily_bag_limit: 'Dailt bag limit',
         size_limit: 'Size limit',
         hours_of_fishing: 'Hours of fishing',
-        Description: "Description",
+        description: "Description",
         additional_requirements: "Additional Requirements",
       };
 
@@ -881,7 +881,7 @@ function toggleBasemaps(event) {
       }
 
       content += `
-  <code class="card-title">${props.Water || props.name || props.Title || 'No Title'}</code>
+  <code class="card-title">${props.Water || props.name || props.title || 'No Title'}</code>
 `;
       if (props.subtitle || (typeof props.Section === 'string' && props.Section.trim() !== '')) {
         const subtitleText = props.subtitle || props.Section;
@@ -899,8 +899,8 @@ function toggleBasemaps(event) {
         content += `</div>`;
       }
 
-      if (props.Region) {
-        content += `<div class="card-subtitle subtitle-region">${props.Region} Fish & Game Region</div>`;
+      if (props.region || props.Region) {
+        content += `<div class="card-subtitle subtitle-region">${props.Region || props.region} Fish & Game Region</div>`;
       }
 
       content += `<hr><ul class="card-list">`;
@@ -1574,7 +1574,7 @@ map.addSource('FG Regions', {
       if (!query) { suggestions.style.display = 'none'; return; }
 
       const riverMatches = allFeatures.filter(f => f.properties.Water.toLowerCase().includes(query));
-      const pointMatches = allPointsFeatures.filter(f => f.properties.Title && f.properties.Title.toLowerCase().includes(query));
+      const pointMatches = allPointsFeatures.filter(f => f.properties.title && f.properties.title.toLowerCase().includes(query));
 
       if (riverMatches.length) {
         const header = document.createElement('div');
@@ -1603,7 +1603,7 @@ map.addSource('FG Regions', {
           const div = document.createElement('div');
           div.className = 'suggestion point';
           div.innerHTML = `
-            <strong>${f.properties.Title}</strong><br>
+            <strong>${f.properties.title}</strong><br>
             <div class="region">${f.properties.Region || ''}</div>`;
           div.style.cursor = 'pointer';
           div.onclick = () => selectFeatureFromSearch(f);
@@ -1620,7 +1620,7 @@ map.addSource('FG Regions', {
       map.flyTo({ center: coords, zoom: 12 });
 
       const isRiver = f.properties.Water !== undefined;
-      inputEl.value = isRiver ? f.properties.Water : f.properties.Title;
+      inputEl.value = isRiver ? f.properties.Water : f.properties.title;
       suggestions.style.display = 'none';
       showCard(f);
 
