@@ -1021,6 +1021,12 @@ function updateSelectedRiverLayers() {
 
       { name: 'Hut-icon', url: 'images/DOC Hut.png' },
       { name: 'Campsite-icon', url: 'images/DOC Camp.png' },
+
+      
+      { name: 'BeatYR-icon', url: 'images/BeatYR.png' },
+      { name: 'BeatBY-icon', url: 'images/BeatBY.png' },
+      { name: 'BeatBR-icon', url: 'images/BeatBR.png' },
+      { name: 'BeatR-icon', url: 'images/BeatR.png' },
     ];
 
     function loadCustomImages(map, callback) {
@@ -1576,7 +1582,7 @@ map.addSource('FG Regions', {
           layout: {
             'icon-image': ['concat', ['get', 'point_type'], '-icon'],
             'icon-size': getIconSizeExpr(selectedFeatureId, hoverFeatureId), /* final expr at creation */
-            'icon-anchor': 'bottom',
+            'icon-anchor': ['get', 'anchor'],
             'icon-allow-overlap': true
           }
         });
