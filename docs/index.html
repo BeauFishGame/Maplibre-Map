@@ -559,7 +559,7 @@
               waterways: ['AW Rivers-line','AW Rivers-fill'],
               points: ['data-points-all'],
               publicAccess: ['PublicAccessAreas-fill'],
-              regions: ['FG Regions-line','nz-region-labels']
+              regions: ['FG Regions-line','FG Region Labels']
             };
 
             const PROPS = {
@@ -954,15 +954,24 @@ function updateSelectedRiverLayers() {
 
     const customImages = [
       { name: 'AccessPoint-icon', url: 'images/FGAccess.png' },
-      { name: 'hut-icon', url: 'images/DOC Hut.png' },
+      { name: 'TrampingAccess-icon', url: 'images/WalkingAccess.png' },
+      { name: '4x4Access-icon', url: 'images/4x4Access.png' },
+      
+      { name: 'BoatRamp-icon', url: 'images/BoatRamp.png' },
+      
+      { name: 'Toilet-icon', url: 'images/Toilet.png' },
+      
+      { name: 'Warning-icon', url: 'images/Warning.png' },
+      
+      { name: 'Store-icon', url: 'images/Store.png' },
+      { name: 'Lodge-icon', url: 'images/Lodge.png' },
+
       { name: 'FlyFishing-icon', url: 'images/Flyfishing.png' },
       { name: 'Trolling-icon', url: 'images/Trolling.png' },
-      { name: 'BoatRamp-icon', url: 'images/BoatRamp.png' },
       { name: 'Jigging-icon', url: 'images/Jigging.png' },
+
       { name: 'Hut-icon', url: 'images/DOC Hut.png' },
       { name: 'Campsite-icon', url: 'images/DOC Camp.png' },
-      { name: '4x4Access-icon', url: 'images/4x4Access.png' },
-      { name: 'WalkingFGAccess-icon', url: 'images/WalkingAccess.png' },
     ];
 
     function loadCustomImages(map, callback) {
@@ -1018,26 +1027,136 @@ if (!isTouch) {
       loadCustomImages(map, () => { addCustomDataAndLayers(); });
     });
 
+
 function setBasemap(type) {
   if (type === "Satellite") {
-    map.setStyle('https://basemaps.linz.govt.nz/v1/styles/aerial.json?api=d01hep5551e30kxb7w85hck49tp');
+     const aerial_style = {
+    "id": "st_aerial",
+    "name": "aerial",
+    "version": 8,
+    // 🔑 Provide glyphs so text can render
+    "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+    "sources": {
+      "basemaps-aerial": {
+        "type": "raster",
+        "tiles": [
+          "https://basemaps.linz.govt.nz/v1/tiles/aerial/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
+        ],
+        "tileSize": 256,
+        "attribution": "© CC BY 4.0 LINZ"
+      },
+      "LINZ-Terrain": {
+        "type": "raster-dem",
+        "tileSize": 256,
+        "maxzoom": 18,
+        "tiles": [
+          "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
+        ]
+      }
+    },
+    "layers": [
+      { "id": "basemaps-aerial", "type": "raster", "source": "basemaps-aerial" }
+    ],
+    // optional, if you plan to use terrain/extrusions:
+    "terrain": { "source": "LINZ-Terrain", "exaggeration": 1.0 }
+  };
+
+
+    map.setStyle(aerial_style);
+    // map.setStyle('https://basemaps.linz.govt.nz/v1/styles/aerial.json?api=d01hep5551e30kxb7w85hck49tp');
   } else if (type === "TopoLite") {
     map.setStyle('https://basemaps.linz.govt.nz/v1/styles/topolite.json?api=d01hep5551e30kxb7w85hck49tp');
   } else if (type === "Topo") {
     const TopoStyle = {
-      version: 8,
-      sources: {
-        'Topo-tiles': {
-          type: 'raster',
-          tiles: [
-            'https://basemaps.linz.govt.nz/v1/tiles/topo-raster/WebMercatorQuad/{z}/{x}/{y}.webp?api=c01jz4p0kp7pzdm5cgxrakw47mt'
-          ],
-          tileSize: 256,
-          attribution: '© <a href="//www.linz.govt.nz/linz-copyright">LINZ CC BY 4.0</a>'
-        }
-      },
-      layers: [{ id: 'Topo-tiles-layer', type: 'raster', source: 'Topo-tiles' }]
-    };
+  "id": "st_topo-raster",
+  "version": 8,
+  "name": "st_topo-raster",
+  "metadata": { "maputnik:renderer": "mbgljs" },
+
+  "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+
+  "sources": {
+    "LINZ-Elevation-Hillshade": {
+      "maxzoom": 18,
+      "minzoom": 0,
+      "tileSize": 256,
+      "tiles": [
+        "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?pipeline=terrain-rgb&api=d01hep5551e30kxb7w85hck49tp"
+      ],
+      "type": "raster-dem"
+    },
+    "LINZ-Topo-Raster": {
+      "attribution": "© 2024 Toitū Te Whenua - CC BY 4.0",
+      "maxzoom": 28,
+      "minzoom": 0,
+      "tileSize": 192,
+      "tiles": [
+        "https://basemaps.linz.govt.nz/v1/tiles/topo-raster/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
+      ],
+      "type": "raster"
+    },
+    "LINZ-Terrain": {
+      "type": "raster-dem",
+      "tileSize": 256,
+      "maxzoom": 18,
+      "tiles": [
+        "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
+      ]
+    }
+  },
+
+  "layers": [
+    {
+      "id": "Topo-Raster",
+      "type": "raster",
+      "source": "LINZ-Topo-Raster",
+      "layout": { "visibility": "visible" }
+    },
+    {
+      "id": "Hillshade",
+      "type": "hillshade",
+      "source": "LINZ-Elevation-Hillshade",
+      "layout": { "visibility": "visible" },
+      "paint": {
+        "hillshade-accent-color": [
+          "interpolate", ["linear"], ["zoom"],
+          0, "rgb(100, 100, 100)",
+          3, "rgba(100, 100, 100, 0.400)",
+          10, "rgba(100, 100, 100, 0.333)",
+          11, "rgba(100, 100, 100, 0.267)"
+        ],
+        "hillshade-exaggeration": 0.4,
+        "hillshade-highlight-color": [
+          "interpolate", ["linear"], ["zoom"],
+          0, "rgb(225, 229, 224)",
+          3, "rgba(225, 229, 224, 0.400)",
+          10, "rgba(225, 229, 224, 0.333)",
+          11, "rgba(225, 229, 224, 0.0667)"
+        ],
+        "hillshade-illumination-anchor": "map",
+        "hillshade-illumination-direction": 315,
+        "hillshade-shadow-color": [
+          "interpolate", ["linear"], ["zoom"],
+          0, "rgb(12, 12, 12)",
+          3, "rgba(12, 12, 12, 0.400)",
+          10, "rgba(12, 12, 12, 0.400)",
+          16, "rgba(12, 12, 12, 1.00)"
+        ]
+      }
+    }
+  ],
+
+  "sky": {
+    "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 10, 1, 12, 0],
+    "fog-color": "#e8e8e8",
+    "fog-ground-blend": 0.8,
+    "horizon-color": "#ecffff",
+    "horizon-fog-blend": 0.65,
+    "sky-color": "#77b5fe",
+    "sky-horizon-blend": 0.5
+  }
+}
+
     map.setStyle(TopoStyle);
   }
 
@@ -1342,38 +1461,6 @@ if (!map.getLayer('AW Rivers-selected-halo')) {
 
 
 
-      // Region labels (lighter + limited range)
-      // const nzRegionsGeoJSON = {
-      //   type: "FeatureCollection",
-      //   features: [
-      //     { type: "Feature", properties: { name: "Northland" },  geometry: { type: "Point", coordinates: [174.3237, -35.7251] } },
-      //     { type: "Feature", properties: { name: "Wellington" }, geometry: { type: "Point", coordinates: [174.7772, -41.2889] } },
-      //     { type: "Feature", properties: { name: "Canterbury" }, geometry: { type: "Point", coordinates: [172.6362, -43.5321] } }
-      //   ]
-      // };
-
-      // if (!sources['nz-regions']) { map.addSource('nz-regions', { type: 'geojson', data: nzRegionsGeoJSON }); }
-      // if (!map.getLayer('nz-region-labels')) {
-      //   map.addLayer({
-      //     id: 'nz-region-labels',
-      //     type: 'symbol',
-      //     source: 'nz-regions',
-      //     minzoom: 5, maxzoom: 7,
-      //     layout: {
-      //       'text-field': ['get', 'name'],
-      //       'text-size': 64,  /* reduced from 106 */
-      //       'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-      //       'text-offset': [0, 0.7],
-      //       'text-anchor': 'top'
-      //     },
-      //     paint: { 'text-color': '#004d00', 'text-halo-color': '#ffffff', 'text-halo-width': 1.2 }
-      //   });
-      // }
-
-      // if (!sources['FG Regions']) {
-      //   map.addSource('FG Regions', { type: 'geojson', data: 'FG_dissolved.geojson' });
-      // }
-
 
  if (!sources['FG Regions']) {
 map.addSource('FG Regions', {
@@ -1383,7 +1470,8 @@ map.addSource('FG Regions', {
         });
       }
     
-      
+   
+ 
       if (!map.getLayer('FG Regions-line')) {
         map.addLayer({
           id: 'FG Regions-line',
@@ -1391,9 +1479,12 @@ map.addSource('FG Regions', {
           source: 'FG Regions',
           'source-layer': 'fg_regions',
           layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: { 'line-color': '#4A6741', 'line-width': 2, 'line-opacity': 1 }
+          paint: { 'line-color': '#008678', 'line-width': 2, 'line-opacity': 1 }
         }, insertBeforeLayer);
       }
+
+
+      
 
       if (!sources['Routes']) map.addSource('Routes', { type: 'geojson', data: 'https://data.fishandgameaccessmap.org/secure-geojson/Routes.geojson?token=fish-access-2025' });
 
@@ -1451,6 +1542,43 @@ map.addSource('FG Regions', {
           paint: { 'circle-radius': 5, 'circle-color': '#FF5733', 'circle-opacity': 0.0 }
         });
       }
+
+//          if (!map.getLayer('FG Regions-fill')) {
+//   map.addLayer({
+//     id: 'FG Regions-fill',
+//     type: 'fill',
+//     source: 'FG Regions',
+//     'source-layer': 'fg_regions',
+//     paint: {
+//       'fill-color': '#008678',
+//       'fill-opacity': 0.5
+//     },
+//     filter: ['in', 'RegionCode', 1,4,5,6,7,8,9,10,11,12,13] // ✅ only fills regions with these codes
+//   }, insertBeforeLayer);
+// }
+
+
+      if (!sources['FG Region Centroids']) { map.addSource('FG Region Centroids', { type: 'geojson', data: 'https://data.fishandgameaccessmap.org/secure-geojson/fg_regions_centroid.geojson?token=fish-access-2025'}); }
+  map.addLayer({
+                id: 'FG Region Labels',
+                type: 'symbol',
+                source: 'FG Region Centroids',
+                maxzoom: 7,
+                layout: {
+                    'text-field': ['get', 'region'],       
+                    'text-font': ['Noto Sans Medium'],
+                    // 'text-font': ['Noto Sans Medium', 'Noto Sans Regular', 'Arial Unicode MS Regular'],
+                    'text-size': 12,
+                  
+                    'text-anchor': 'center',
+                    'text-allow-overlap': true,
+                },
+                paint: {
+                    'text-color': '#008678',
+                    'text-halo-color': '#ffffff',
+                    'text-halo-width': 2
+                }
+            });
 
       // Wire filters
       if (window.setupAWFilters) window.setupAWFilters(map);
