@@ -825,6 +825,10 @@ function toggleBasemaps(event) {
 
     const card = document.getElementById('properties');
 
+
+    const riverDefaultImage = 'images/Slide12.PNG';
+
+
     const pointTypeDefaultImages = {
       'AccessPoint': 'images/Slide1.PNG',
       'TrampingAccess': 'images/Slide2.PNG',
@@ -851,10 +855,21 @@ function toggleBasemaps(event) {
         additional_requirements: "Additional Requirements",
       };
 
-      const isValidPointType = props.point_type && props.point_type.toLowerCase() !== 'na';
-      const typeImage = isValidPointType ? pointTypeDefaultImages[props.point_type] : null;
-      const extraImages = [props.Image1, props.Image2, props.Image3].filter(url => url && url.trim() !== '');
-      const photoList = (typeImage ? [typeImage] : []).concat(extraImages);
+  let typeImage = null;
+
+// Point features
+if (feature.layer && feature.layer.id === 'data-points-all') {
+  if (props.point_type && props.point_type.toLowerCase() !== 'na') {
+    typeImage = pointTypeDefaultImages[props.point_type] || null;
+  }
+// River features
+} else if (feature.layer && (feature.layer.id === 'AW Rivers-line' || feature.layer.id === 'AW Rivers-fill')) {
+  typeImage = riverDefaultImage;
+}
+
+// Add any extra images from properties
+const extraImages = [props.Image1, props.Image2, props.Image3].filter(url => url && url.trim() !== '');
+const photoList = (typeImage ? [typeImage] : []).concat(extraImages);
 
       let content = `
 <div class="map-overlay-inner">
