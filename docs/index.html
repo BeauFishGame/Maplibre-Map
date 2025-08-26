@@ -822,12 +822,32 @@ function toggleBasemaps(event) {
 }
 
 
+function normalizeUrl(raw) {
+  if (!raw) return null;
+  let u = String(raw).trim();
+  if (!u) return null;
+
+  // block dangerous protocols
+  const lower = u.toLowerCase();
+  if (lower.startsWith('javascript:') || lower.startsWith('data:')) return null;
+
+  // add https:// if missing
+  if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+
+  try {
+    const url = new URL(u);
+    if (!/^https?:$/.test(url.protocol)) return null;
+    return url.href;
+  } catch {
+    return null;
+  }
+}
+
 
     const card = document.getElementById('properties');
 
 
     const riverDefaultImage = 'images/Slide12.PNG';
-
 
     const pointTypeDefaultImages = {
       'AccessPoint': 'images/Slide1.PNG',
@@ -848,11 +868,12 @@ function toggleBasemaps(event) {
       const displayFields = {
         methods: 'Method',
         open_season: 'Open',
-        daily_bag_limit: 'Dailt bag limit',
+        daily_bag_limit: 'Daily bag limit',
         size_limit: 'Size limit',
         hours_of_fishing: 'Hours of fishing',
         description: "Description",
         additional_requirements: "Additional Requirements",
+        more_info_url: "More Info",
       };
 
   let typeImage = null;
@@ -920,10 +941,20 @@ const photoList = (typeImage ? [typeImage] : []).concat(extraImages);
 
       content += `<hr><ul class="card-list">`;
       for (const [key, label] of Object.entries(displayFields)) {
-        if (props[key] !== undefined && props[key] !== '') {
-          content += `<li><b>${label}</b>: ${props[key]}</li>`;
-        }
-      }
+  const val = props[key];
+  if (val === undefined || val === '') continue;
+
+  if (key === 'more_info_url') {
+    const href = normalizeUrl(val);
+    if (href) {
+      const host = new URL(href).hostname.replace(/^www\./, '');
+      content += `<li><b>${label}</b>: <a href="${href}" target="_blank" rel="noopener noreferrer">${host}</a></li>`;
+    }
+  } else {
+    content += `<li><b>${label}</b>: ${val}</li>`;
+  }
+}
+
       if (props.URL1 && props.URL1.trim() !== "") {
         content += `<li><b>More Information</b>: <a href="${props.URL1}" target="_blank" rel="noopener noreferrer">Click here</a></li>`;
       }
@@ -978,7 +1009,10 @@ function updateSelectedRiverLayers() {
       
       { name: 'Warning-icon', url: 'images/Warning.png' },
       
-      { name: 'Store-icon', url: 'images/Store.png' },
+      { name: 'Parking-icon', url: 'images/Parking.png' },
+      
+      
+      { name: 'Shop-icon', url: 'images/Store.png' },
       { name: 'Lodge-icon', url: 'images/Lodge.png' },
 
       { name: 'FlyFishing-icon', url: 'images/Flyfishing.png' },
