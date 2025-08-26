@@ -860,7 +860,7 @@ function normalizeUrl(raw) {
       'FlyFishing': 'images/Slide8.PNG',
       'Warning': 'images/Slide9.PNG',
       'DOC Hut': 'images/Slide10.PNG',
-      'DOC Campground': 'images/Slide11.PNG',
+      'DOC campground': 'images/Slide11.PNG',
     };
 
     const showCard = (feature) => {
@@ -889,7 +889,7 @@ if (feature.layer && feature.layer.id === 'data-points-all') {
 }
 
 // Add any extra images from properties
-const extraImages = [props.Image1, props.Image2, props.Image3].filter(url => url && url.trim() !== '');
+const extraImages = [props.image1, props.Image2, props.image3].filter(url => url && url.trim() !== '');
 const photoList = (typeImage ? [typeImage] : []).concat(extraImages);
 
       let content = `
