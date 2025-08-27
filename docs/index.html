@@ -1639,6 +1639,29 @@ map.addSource('FG Regions', {
       if (window.setupAWFilters) window.setupAWFilters(map);
     }
 
+
+    // Make region names clickable → zoom to their centroid
+map.on('mouseenter', 'FG Region Labels', () => { map.getCanvas().style.cursor = 'pointer'; });
+map.on('mouseleave', 'FG Region Labels', () => { map.getCanvas().style.cursor = ''; });
+
+map.on('click', 'FG Region Labels', (e) => {
+  const f = e.features && e.features[0];
+  if (!f || !f.geometry || f.geometry.type !== 'Point') return;
+
+  const [lng, lat] = f.geometry.coordinates;
+
+  // If a side panel is open, pad left so the name doesn't end up under it
+  const leftPad = (window.activePanel === 'card' || window.activePanel === 'filters' || window.activePanel === 'basemaps')
+    ? 420 : 10;
+
+  map.easeTo({
+    center: [lng, lat],
+    zoom: Math.max(map.getZoom(), 8),   // target zoom when you “drill in”
+    duration: 800,
+    padding: { top: 80, right: 10, bottom: 10, left: leftPad }
+  });
+});
+
     // Public access hover popup (single handler)
     const popup = document.createElement('div');
     popup.style.position = 'absolute';
