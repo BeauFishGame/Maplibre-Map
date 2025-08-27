@@ -10,8 +10,17 @@
   <link href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" rel="stylesheet" />
 
   <style>
-    body { margin: 0; padding: 0; }
-    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
 
     .map-overlay {
       display: none;
@@ -28,14 +37,16 @@
 
     .map-overlay-inner {
       position: fixed;
-      top: 80px;                /* distance from the top */
+      top: 80px;
+      /* distance from the top */
       left: 10px;
       width: 400px;
-      height: calc(100vh - 90px); /* always stretch to bottom */
+      height: calc(100vh - 90px);
+      /* always stretch to bottom */
       padding: 15px;
       background: white;
       border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0,0,0,.5);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, .5);
       z-index: 999;
       box-sizing: border-box;
       display: flex;
@@ -57,270 +68,482 @@
     }
 
     #zoom-level {
-      position: absolute; bottom: 10px; left: 1000px;
-      background: rgba(255,255,255,0.8); padding: 6px 10px;
-      font-family: Arial, sans-serif; font-size: 14px; border-radius: 4px;
-      z-index: 1; user-select: none; pointer-events: none;
+      position: absolute;
+      bottom: 10px;
+      left: 1000px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 6px 10px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      border-radius: 4px;
+      z-index: 1;
+      user-select: none;
+      pointer-events: none;
     }
 
-    .card-title { font-family: Arial, sans-serif; font-size: 25px; font-weight: bold; color: #2a2a2a; }
+    .card-title {
+      font-family: Arial, sans-serif;
+      font-size: 25px;
+      font-weight: bold;
+      color: #2a2a2a;
+    }
 
-    .card-list{
+    .card-list {
       list-style-type: none;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      font-size: 15px; padding-left: 0; margin: 0;
+      font-size: 15px;
+      padding-left: 0;
+      margin: 0;
     }
 
-    .subtitle-main { font-size: 1.3em; font-weight: bold; color: #333; margin-top: 4px; }
-    .directions-inline-image { width: 20px; height: 20px; cursor: pointer; opacity: 0.85; transition: transform 0.2s, opacity 0.2s; }
-    .directions-inline-image:hover { transform: scale(1.1); opacity: 1; }
-    .subtitle-region { font-size: 1.em; font-style: italic; color: #666; margin-bottom: 4px; }
+    .subtitle-main {
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #333;
+      margin-top: 4px;
+    }
 
-   
-    #filter-toggle-btn:hover { background-color: #f0f0f0; }
-    #actions button:active { transform: translateY(1px); }
+    .directions-inline-image {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      opacity: 0.85;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .directions-inline-image:hover {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+
+    .subtitle-region {
+      font-size: 1.em;
+      font-style: italic;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+
+    #filter-toggle-btn:hover {
+      background-color: #f0f0f0;
+    }
+
+    #actions button:active {
+      transform: translateY(1px);
+    }
 
 
     .close-button {
-      position: absolute; top: 10px; right: 15px;
-      background: transparent; border: none; font-size: 24px; color: #333; cursor: pointer; z-index: 10000;
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      color: #333;
+      cursor: pointer;
+      z-index: 10000;
     }
 
     #top-bar {
-      position: relative; height: 70px; background-color: rgba(7,7,7,1);
-      display: flex; align-items: center; padding: 0 20px; z-index: 10;
+      position: relative;
+      height: 70px;
+      background-color: rgba(7, 7, 7, 1);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 10;
     }
-    #top-bar .logo { height: 70px; z-index: 11; }
 
-  
+    #top-bar .logo {
+      height: 70px;
+      z-index: 11;
+    }
+
+
 
     #search-container input[type="text"] {
-      width: 100%; padding: 10px 14px; font-size: 14px; border: none; border-radius: 20px;
-      background-color: rgba(255,255,255,0.2); color: #e7e2e2; outline: none;
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 14px;
+      border: none;
+      border-radius: 20px;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #e7e2e2;
+      outline: none;
       transition: background-color 0.3s ease, box-shadow 0.3s ease;
     }
+
     #search-container input[type="text"]:focus {
-      background-color: rgba(255,255,255,0.3); box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+      background-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
     }
 
     #suggestions {
-      position: absolute; top: 100%; left: 0; width: 100%;
-      background-color: rgba(255,255,255,0.95); border-radius: 0 0 20px 20px;
-      overflow: hidden; max-height: 300px; overflow-y: auto; display: none; z-index: 11;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2); border: none; font-family: Arial, sans-serif;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 0 0 20px 20px;
+      overflow: hidden;
+      max-height: 300px;
+      overflow-y: auto;
+      display: none;
+      z-index: 11;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      border: none;
+      font-family: Arial, sans-serif;
     }
-    .suggestion { padding: 8px 10px; font-weight: 200; cursor: pointer; border-bottom: 1px solid #f0f0f0; }
-    .suggestion:hover { background: #f0f0f0; }
+
+    .suggestion {
+      padding: 8px 10px;
+      font-weight: 200;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .suggestion:hover {
+      background: #f0f0f0;
+    }
+
     .suggestion-header {
-      font-weight: bold; font-size: 0.85rem; padding: 8px 10px; background-color: #f9f9f9; color: #444;
-      text-transform: uppercase; letter-spacing: 0.5px; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd;
+      font-weight: bold;
+      font-size: 0.85rem;
+      padding: 8px 10px;
+      background-color: #f9f9f9;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
     }
-    .river-header { border-left: 4px solid #0072B2; }
-    .point-header { border-left: 4px solid #D55E00; }
-    .section { font-size: 80%; }
-    .region { font-style: italic; font-size: 75%; color: #888; }
-    .maplibregl-ctrl-top-right { top: 70px; }
+
+    .river-header {
+      border-left: 4px solid #0072B2;
+    }
+
+    .point-header {
+      border-left: 4px solid #D55E00;
+    }
+
+    .section {
+      font-size: 80%;
+    }
+
+    .region {
+      font-style: italic;
+      font-size: 75%;
+      color: #888;
+    }
+
+    .maplibregl-ctrl-top-right {
+      top: 70px;
+    }
 
 
-    .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); }
-    .modal.show { display: flex; justify-content: center; align-items: center; }
-    .modal-content { max-width: 80%; max-height: 80%; border-radius: 6px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-    .close-modal { position: absolute; top: 30px; right: 50px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.85);
+    }
 
-.basemap-btn {
-  display: block;
-  width: 100%;
-  margin-bottom: 8px;
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  text-align: left;
-  background-color: #e9edf3;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
+    .modal.show {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-.basemap-btn:hover {
-  background-color: #d1d5db;
-}
+    .modal-content {
+      max-width: 80%;
+      max-height: 80%;
+      border-radius: 6px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
 
-.basemap-btn.active {
-  background-color: #10b981; /* green highlight */
-  color: white;
-  font-weight: bold;
-}
+    .close-modal {
+      position: absolute;
+      top: 30px;
+      right: 50px;
+      color: white;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
+    .basemap-btn {
+      display: block;
+      width: 100%;
+      margin-bottom: 8px;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      text-align: left;
+      background-color: #e9edf3;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
 
-#actions button {
-  height: 70%;          /* 70% of top bar height */
-  aspect-ratio: 1 / 1;  /* keep square */
-  border-radius: 20%;   /* proportional rounding */
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  border: none;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  cursor: pointer;
-}
+    .basemap-btn:hover {
+      background-color: #d1d5db;
+    }
 
-/* Desktop (optional center) */
-#search-container{
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 20vw;
-  min-width: 200px;
-  z-index: 11;
-}
-
-/* Mobile */
-@media (max-width: 768px){
-  #search-container{
-    position: static;   /* kill absolute centering */
-    left: auto;
-    transform: none;
-    flex: 1 1 auto;     /* stretch between logo and actions */
-    min-width: 0;
-    max-width: none;
-    margin-right: 30px; /* pick ONE value you want */
-  }
-}
+    .basemap-btn.active {
+      background-color: #10b981;
+      /* green highlight */
+      color: white;
+      font-weight: bold;
+    }
 
 
-@media (max-width: 768px){
-  #top-bar{ height: 56px; padding: 0 10px; }
-  #top-bar .logo{ display: none; }        /* your request */
-  #search-container{ flex: 1 1 auto; }    /* search gets the space */
- 
-  #actions button{
-    width: 44px; height: 44px;             /* bigger tap targets on phones */
-    border-radius: 10px;
-  }
-  #actions button img{ width: 22px; height: 22px; }
+    #actions button {
+      height: 70%;
+      /* 70% of top bar height */
+      aspect-ratio: 1 / 1;
+      /* keep square */
+      border-radius: 20%;
+      /* proportional rounding */
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      border: none;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+    }
 
-  /* suggestions list stays attached to the input but won’t run under buttons */
-  #suggestions{ max-height: 45vh; }
+    /* Desktop (optional center) */
+    #search-container {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20vw;
+      min-width: 200px;
+      z-index: 11;
+    }
 
-  /* MapLibre controls away from the bar */
-  .maplibregl-ctrl-top-right{ top: 8px; }
-}
-
-@media (max-width: 768px) {
-  /* Move map controls to bottom left on mobile */
-  .maplibregl-ctrl-top-right {
-    top: auto !important;      /* cancel top positioning */
-    right: auto !important;    /* cancel right positioning */
-    bottom: 10px;              /* set distance from bottom */
-    left: 10px;                /* set distance from left */
-    flex-direction: column;    /* keep stacked vertically */
-  }
-}
-
-/* Bottom sheet behavior on small screens */
-@media (max-width: 768px) {
-  .map-overlay-inner {
-    position: fixed;
-    top: auto;
-    bottom: 0;
-    left: 0;
-    width: 100vw;
-    height: 40vh;                       /* bottom sheet height */
-    border-radius: 14px 14px 0 0;
-    padding-bottom: calc(16px + env(safe-area-inset-bottom));
-  }
-  .panel-scroll { padding-top: 36px; }  /* clear the close button */
-  .close-button { top: 8px; right: 12px; font-size: 28px; }
-}
+    /* Mobile */
+    @media (max-width: 768px) {
+      #search-container {
+        position: static;
+        /* kill absolute centering */
+        left: auto;
+        transform: none;
+        flex: 1 1 auto;
+        /* stretch between logo and actions */
+        min-width: 0;
+        max-width: none;
+        margin-right: 30px;
+        /* pick ONE value you want */
+      }
+    }
 
 
-@media (max-width: 768px) {
-  #filter-toggle-btn, #basemap-toggle-btn {
-    padding: 12px;
-    border-radius: 10px;
-  }
-  #filter-toggle-btn img, #basemap-toggle-btn img {
-    width: 24px; height: 24px;
-  }
-  
-}
+    @media (max-width: 768px) {
+      #top-bar {
+        height: 56px;
+        padding: 0 10px;
+      }
+
+      #top-bar .logo {
+        display: none;
+      }
+
+      /* your request */
+      #search-container {
+        flex: 1 1 auto;
+      }
+
+      /* search gets the space */
+
+      #actions button {
+        width: 44px;
+        height: 44px;
+        /* bigger tap targets on phones */
+        border-radius: 10px;
+      }
+
+      #actions button img {
+        width: 22px;
+        height: 22px;
+      }
+
+      /* suggestions list stays attached to the input but won’t run under buttons */
+      #suggestions {
+        max-height: 45vh;
+      }
+
+      /* MapLibre controls away from the bar */
+      .maplibregl-ctrl-top-right {
+        top: 8px;
+      }
+    }
+
+    @media (max-width: 768px) {
+
+      /* Move map controls to bottom left on mobile */
+      .maplibregl-ctrl-top-right {
+        top: auto !important;
+        /* cancel top positioning */
+        right: auto !important;
+        /* cancel right positioning */
+        bottom: 10px;
+        /* set distance from bottom */
+        left: 10px;
+        /* set distance from left */
+        flex-direction: column;
+        /* keep stacked vertically */
+      }
+    }
+
+    /* Bottom sheet behavior on small screens */
+    @media (max-width: 768px) {
+      .map-overlay-inner {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 40vh;
+        /* bottom sheet height */
+        border-radius: 14px 14px 0 0;
+        padding-bottom: calc(16px + env(safe-area-inset-bottom));
+      }
+
+      .panel-scroll {
+        padding-top: 36px;
+      }
+
+      /* clear the close button */
+      .close-button {
+        top: 8px;
+        right: 12px;
+        font-size: 28px;
+      }
+    }
 
 
-@media (max-width: 768px) {
-  .maplibregl-ctrl-bottom-right {
-    margin: 0 10px calc(10px + env(safe-area-inset-bottom)) 0;
-  }
-}
+    @media (max-width: 768px) {
 
-@media (max-width: 768px) {
-  .map-overlay-inner { box-shadow: 0 6px 16px rgba(0,0,0,.25); }
-  .source-card { border-radius: 8px; }
-  .basemap-btn { padding: 12px; }
-}
+      #filter-toggle-btn,
+      #basemap-toggle-btn {
+        padding: 12px;
+        border-radius: 10px;
+      }
 
-/* Actions area inside the top bar */
-#actions{
-  margin-left: auto;                 /* pushes actions to the right */
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+      #filter-toggle-btn img,
+      #basemap-toggle-btn img {
+        width: 24px;
+        height: 24px;
+      }
 
-#actions #filter-toggle-btn,
-#actions #basemap-toggle-btn{
-  position: static;                  /* cancel old absolute positioning */
-  right: auto; top: auto;
-  display: grid; place-items: center;
-  width: 40px; height: 40px;
-  padding: 0;
-  background: #fff;
-  border: none; border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  cursor: pointer;
-}
-
-#actions #filter-toggle-btn img,
-#actions #basemap-toggle-btn img{
-  width: 20px; height: 20px; display: block;
-}
-
-/* Mobile scaling */
-@media (max-width: 768px){
-  #actions #filter-toggle-btn,
-  #actions #basemap-toggle-btn{
-    width: 44px; height: 44px; border-radius: 10px;
-  }
-  #actions #filter-toggle-btn img,
-  #actions #basemap-toggle-btn img{
-    width: 22px; height: 22px;
-  }
-}
+    }
 
 
+    @media (max-width: 768px) {
+      .maplibregl-ctrl-bottom-right {
+        margin: 0 10px calc(10px + env(safe-area-inset-bottom)) 0;
+      }
+    }
 
-@media (max-width: 768px) {
-  #top-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;              /* nice breathing room */
-  }
+    @media (max-width: 768px) {
+      .map-overlay-inner {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, .25);
+      }
+
+      .source-card {
+        border-radius: 8px;
+      }
+
+      .basemap-btn {
+        padding: 12px;
+      }
+    }
+
+    /* Actions area inside the top bar */
+    #actions {
+      margin-left: auto;
+      /* pushes actions to the right */
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #actions #filter-toggle-btn,
+    #actions #basemap-toggle-btn {
+      position: static;
+      /* cancel old absolute positioning */
+      right: auto;
+      top: auto;
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      background: #fff;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+    }
+
+    #actions #filter-toggle-btn img,
+    #actions #basemap-toggle-btn img {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+
+    /* Mobile scaling */
+    @media (max-width: 768px) {
+
+      #actions #filter-toggle-btn,
+      #actions #basemap-toggle-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+      }
+
+      #actions #filter-toggle-btn img,
+      #actions #basemap-toggle-btn img {
+        width: 22px;
+        height: 22px;
+      }
+    }
 
 
 
-  #search-container input[type="text"] {
-    width: 100%;
-    font-size: 16px;       /* avoid iOS zoom */
-  }
+    @media (max-width: 768px) {
+      #top-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        /* nice breathing room */
+      }
 
-  /* The action buttons live inside #actions now; keep them static */
-  #actions #filter-toggle-btn,
-  #actions #basemap-toggle-btn {
-    position: static;      /* ensure NOT absolute on mobile */
-  }
-}
-</style>
+
+
+      #search-container input[type="text"] {
+        width: 100%;
+        font-size: 16px;
+        /* avoid iOS zoom */
+      }
+
+      /* The action buttons live inside #actions now; keep them static */
+      #actions #filter-toggle-btn,
+      #actions #basemap-toggle-btn {
+        position: static;
+        /* ensure NOT absolute on mobile */
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -332,26 +555,26 @@
 
   <div id="map"></div>
 
-<div id="top-bar">
-  <a href="https://www.fishandgame.org.nz/" target="_blank">
-    <img class="logo" src="images/White%20LS - Copy.png" alt="Logo">
-  </a>
+  <div id="top-bar">
+    <a href="https://www.fishandgame.org.nz/" target="_blank">
+      <img class="logo" src="images/White%20LS - Copy.png" alt="Logo">
+    </a>
 
-  <div id="search-container">
-    <input type="text" id="search" placeholder="Search water and points..." autocomplete="off" />
-    <div id="suggestions"></div>
-  </div>
+    <div id="search-container">
+      <input type="text" id="search" placeholder="Search water and points..." autocomplete="off" />
+      <div id="suggestions"></div>
+    </div>
 
-  <!-- NEW: actions live inside the bar -->
-  <div id="actions">
-    <button onclick="toggleBasemaps()" id="basemap-toggle-btn" aria-label="Basemaps">
-      <img src="images/Layers.svg" alt="">
-    </button>
-    <button onclick="toggleFilters()" id="filter-toggle-btn" aria-label="Filters">
-      <img src="images/Filters.svg" alt="">
-    </button>
+    <!-- NEW: actions live inside the bar -->
+    <div id="actions">
+      <button onclick="toggleBasemaps()" id="basemap-toggle-btn" aria-label="Basemaps">
+        <img src="images/Layers.svg" alt="">
+      </button>
+      <button onclick="toggleFilters()" id="filter-toggle-btn" aria-label="Filters">
+        <img src="images/Filters.svg" alt="">
+      </button>
+    </div>
   </div>
-</div>
 
 
   <!-- ========================================================= -->
@@ -365,22 +588,99 @@
       <div class="panel-scroll">
 
         <style>
-          #combined-filters, 
-          #combined-filters * {  font-family: "Arial", sans-serif;}
-          .filters-body{padding:6px 0 0;}
-          .source-card{background:#f6f7f9;border:1px solid #e2e5ea;border-radius:10px;margin-bottom:10px;overflow:hidden}
-          .source-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;background:#e9edf3;cursor:pointer}
-          .source-name{font-weight:700;font-size:13px;color:#1f2937}
-          .source-controls{display:flex;align-items:center;gap:8px}
-          .btn{appearance:none;border:0;border-radius:8px;background:#374151;color:#fff;padding:6px 10px;cursor:pointer;font-size:12px}
-          .btn[aria-pressed="true"]{background:#10b981}
-          .btn.small{padding:4px 8px;font-size:11px}
-          .source-body{display:none;padding:10px 12px;background:#fff;border-top:1px solid #e2e5ea}
-          .group{margin-bottom:12px}
-          .group-title{font-size:12px;font-weight:700;margin-bottom:6px;color:#374151}
-          .option{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:12px}
-          .option input{cursor:pointer}
-          .hint{font-size:11px;opacity:.8}
+          #combined-filters,
+          #combined-filters * {
+            font-family: "Arial", sans-serif;
+          }
+
+          .filters-body {
+            padding: 6px 0 0;
+          }
+
+          .source-card {
+            background: #f6f7f9;
+            border: 1px solid #e2e5ea;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden
+          }
+
+          .source-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 10px 12px;
+            background: #e9edf3;
+            cursor: pointer
+          }
+
+          .source-name {
+            font-weight: 700;
+            font-size: 13px;
+            color: #1f2937
+          }
+
+          .source-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px
+          }
+
+          .btn {
+            appearance: none;
+            border: 0;
+            border-radius: 8px;
+            background: #374151;
+            color: #fff;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 12px
+          }
+
+          .btn[aria-pressed="true"] {
+            background: #10b981
+          }
+
+          .btn.small {
+            padding: 4px 8px;
+            font-size: 11px
+          }
+
+          .source-body {
+            display: none;
+            padding: 10px 12px;
+            background: #fff;
+            border-top: 1px solid #e2e5ea
+          }
+
+          .group {
+            margin-bottom: 12px
+          }
+
+          .group-title {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #374151
+          }
+
+          .option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 4px 0;
+            font-size: 12px
+          }
+
+          .option input {
+            cursor: pointer
+          }
+
+          .hint {
+            font-size: 11px;
+            opacity: .8
+          }
         </style>
 
         <div id="filters-body" class="filters-body">
@@ -408,30 +708,33 @@
               <div class="group" data-group="w-type" data-type="radioOne">
                 <div class="group-title">Waterway type</div>
                 <label class="option"><input type="radio" name="w-type" value="__ALL__" checked> ALL</label>
-                <label class="option"><input type="radio" name="w-type" value="river"> Rivers/streams</label>
-                <label class="option"><input type="radio" name="w-type" value="lake"> Lakes</label>
-                <label class="option"><input type="radio" name="w-type" value="canal"> Canals</label>
-                <label class="option"><input type="radio" name="w-type" value="pond"> Ponds</label>
+                <label class="option"><input type="radio" name="w-type" value="Rivers/streams"> Rivers/streams</label>
+                <label class="option"><input type="radio" name="w-type" value="Lakes"> Lakes</label>
+                <label class="option"><input type="radio" name="w-type" value="Canals"> Canals</label>
+                <label class="option"><input type="radio" name="w-type" value="Ponds"> Ponds</label>
               </div>
 
               <div class="group" data-group="w-open" data-type="radioOne">
                 <div class="group-title">Open</div>
-                <label class="option"><input type="radio" name="w-open" value="style_today" checked> Color code by open/closed based on todays date</label>
-                <label class="option"><input type="radio" name="w-open" value="filter_today"> Show only waterways open today</label>
+                <label class="option"><input type="radio" name="w-open" value="style_today" checked> Color code by
+                  open/closed based on todays date</label>
+                <label class="option"><input type="radio" name="w-open" value="filter_today"> Show only waterways open
+                  today</label>
               </div>
 
-              <div class="group" data-group="w-fishery" data-type="checkboxAny">
-                <div class="group-title">Fishery type</div>
-                <label class="option"><input type="checkbox" data-role="all" checked> All</label>
-                <label class="option"><input type="checkbox" value="back_country" checked> Back country</label>
-                <label class="option"><input type="checkbox" value="sea_run_salmon" checked> Sea-run salmon fishery</label>
-                <label class="option"><input type="checkbox" value="designated" checked> Designated water</label>
-                <label class="option"><input type="checkbox" value="controlled" checked> Controlled fishery</label>
-                <label class="option"><input type="checkbox" value="junior" checked> Junior fishery</label>
-                <label class="option"><input type="checkbox" value="stocked" checked> Stocked fishery</label>
-                <label class="option"><input type="checkbox" value="coarse" checked> Coarse fishery</label>
-              </div>
+            <div class="group" data-group="w-fishery" data-type="radioOne">
+  <div class="group-title">Fishery type</div>
+  <label class="option"><input type="radio" name="w-fishery" value="__ALL__" data-role="all" checked> All</label>
+  <label class="option"><input type="radio" name="w-fishery" value="backcountry"> Backcountry</label>
+  <label class="option"><input type="radio" name="w-fishery" value="sea_run_salmon"> Sea-run salmon fishery</label>
+  <label class="option"><input type="radio" name="w-fishery" value="designated"> Designated water</label>
+  <label class="option"><input type="radio" name="w-fishery" value="controlled"> Controlled fishery</label>
+  <label class="option"><input type="radio" name="w-fishery" value="junior"> Junior fishery</label>
+  <label class="option"><input type="radio" name="w-fishery" value="stocked"> Stocked/put-take fishery</label>
+  <label class="option"><input type="radio" name="w-fishery" value="coarse"> Coarse fishery</label>
+</div>
 
+<!-- 
               <div class="group" data-group="w-species" data-type="checkboxAny">
                 <div class="group-title">Known Species</div>
                 <label class="option"><input type="checkbox" data-role="all" checked> All</label>
@@ -443,7 +746,7 @@
                 <label class="option"><input type="checkbox" value="brook_trout" checked> Brook Trout</label>
                 <label class="option"><input type="checkbox" value="sockeye_salmon" checked> Sockeye salmon</label>
                 <label class="option"><input type="checkbox" value="chinook_salmon" checked> Chinook salmon</label>
-              </div>
+              </div> -->
             </div>
           </div>
 
@@ -462,8 +765,10 @@
                 <label class="option"><input type="checkbox" data-role="all" checked> Select all</label>
 
                 <!-- Values map to your existing 'point_type' field -->
-                <label class="option"><input type="checkbox" value="AccessPoint" data-values='["AccessPoint","Parking","Warning"]' checked> F&amp;G Access</label>
-                <label class="option"><input type="checkbox" value="TrampingAccess" checked> F&amp;G Tramping Access</label>
+                <label class="option"><input type="checkbox" value="AccessPoint"
+                    data-values='["AccessPoint","Parking","Warning"]' checked> F&amp;G Access</label>
+                <label class="option"><input type="checkbox" value="TrampingAccess" checked> F&amp;G Tramping
+                  Access</label>
                 <label class="option"><input type="checkbox" value="4x4Access" checked> F&amp;G 4x4 Access</label>
                 <label class="option"><input type="checkbox" value="BoatRamp" checked> Boat ramp</label>
                 <label class="option"><input type="checkbox" value="FlyFishing" checked> Fishing spot - Fly</label>
@@ -473,7 +778,8 @@
                 <label class="option"><input type="checkbox" value="Lodge" checked> Fly fishing lodgees</label>
                 <label class="option"><input type="checkbox" value="Hut" checked> DOC Huts</label>
                 <label class="option"><input type="checkbox" value="Campsite" checked> DOC Campgrounds</label>
-                <label class="option"> <input type="checkbox" value="Beat" data-values='["BeatYR","BeatBY","BeatBR"]' checked> Beat markers </label>
+                <label class="option"> <input type="checkbox" value="Beat" data-values='["BeatYR","BeatBY","BeatBR"]'
+                    checked> Beat markers </label>
 
               </div>
             </div>
@@ -489,11 +795,11 @@
               </div>
             </div>
             <div class="source-body">
-             <div class="hint">
-  <a href="https://www.herengaanuku.govt.nz/types-of-access" target="_blank">
-    Learn more about legal public access in NZ
-  </a>
-</div>
+              <div class="hint">
+                <a href="https://www.herengaanuku.govt.nz/types-of-access" target="_blank">
+                  Learn more about legal public access in NZ
+                </a>
+              </div>
             </div>
           </div>
 
@@ -515,8 +821,8 @@
 
         <script>
           // Expand/collapse UI (no map dependency)
-          document.querySelectorAll('#filters-body .toggle-expand').forEach(btn=>{
-            btn.addEventListener('click', e=>{
+          document.querySelectorAll('#filters-body .toggle-expand').forEach(btn => {
+            btn.addEventListener('click', e => {
               const body = e.target.closest('.source-card').querySelector('.source-body');
               const open = body.style.display === 'block';
               body.style.display = open ? 'none' : 'block';
@@ -526,15 +832,15 @@
           });
 
           // “Select all” behavior for multi groups
-          document.querySelectorAll('#filters-body .group[data-type="checkboxAny"]').forEach(group=>{
+          document.querySelectorAll('#filters-body .group[data-type="checkboxAny"]').forEach(group => {
             const allBox = group.querySelector('input[data-role="all"]');
             const boxes = Array.from(group.querySelectorAll('input[type="checkbox"]:not([data-role="all"])'));
-            if(allBox){
-              allBox.addEventListener('change', ()=> boxes.forEach(cb=> cb.checked = allBox.checked));
-              boxes.forEach(cb=>{
-                cb.addEventListener('change', ()=>{
-                  if(!cb.checked) allBox.checked = false;
-                  if(boxes.every(b=>b.checked)) allBox.checked = true;
+            if (allBox) {
+              allBox.addEventListener('change', () => boxes.forEach(cb => cb.checked = allBox.checked));
+              boxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                  if (!cb.checked) allBox.checked = false;
+                  if (boxes.every(b => b.checked)) allBox.checked = true;
                 });
               });
             }
@@ -542,25 +848,25 @@
 
           // Debounce helper to avoid spamming setFilter
           let filterTimer = null;
-          function scheduleApply(fn){
+          function scheduleApply(fn) {
             if (filterTimer) cancelAnimationFrame(filterTimer);
             let t;
-            filterTimer = requestAnimationFrame(()=>{
+            filterTimer = requestAnimationFrame(() => {
               clearTimeout(t);
-              t = setTimeout(()=>fn(), 120);
+              t = setTimeout(() => fn(), 120);
             });
           }
 
           // Expose a function so we can wire MapLibre once the map exists
-          window.setupAWFilters = function(map){
+          window.setupAWFilters = function (map) {
             if (window.__filtersWired) return;
             window.__filtersWired = true;
 
             const LAYERS = {
-              waterways: ['AW Rivers-line','AW Rivers-fill'],
+              waterways: ['AW Rivers-line', 'AW Rivers-fill'],
               points: ['data-points-all'],
               publicAccess: ['PublicAccessAreas-fill'],
-              regions: ['FG Regions-line','FG Region Labels']
+              regions: ['FG Regions-line', 'FG Region Labels']
             };
 
             const PROPS = {
@@ -571,64 +877,74 @@
                 closed: 'permanently_closed',
                 open_start: 'open_date_unix',
                 open_end: 'close_date_unix',
-                type: null,     // supply when available
+                type: 'water_type',     // supply when available
                 fishery: null,  // supply when available
                 species: null   // supply when available
               },
               points: { type: 'point_type' }
             };
 
+            const FISHERY_FIELDS = {
+              backcountry: 'backcountry',
+              sea_run_salmon: 'searun_salmon_fishery',
+              designated: 'designated_water',
+              controlled: 'controlled_fishery',
+              junior: 'junior_fishery',
+              stocked: 'stocked_put_take_fishery',
+              coarse: 'coarse_fishery'
+            };
+
             const filtersRoot = document.getElementById('filters-body');
 
             // Helpers
-            const getRadio = (group)=> {
+            const getRadio = (group) => {
               const el = filtersRoot.querySelector(`.group[data-group="${group}"] input[type="radio"]:checked`);
               return el ? el.value : null;
             };
-           // Replace your current getChecks() with this version
-const getChecks = (group) => {
-  const groupEl = filtersRoot.querySelector(`.group[data-group="${group}"]`);
-  if (!groupEl) return null;
+            // Replace your current getChecks() with this version
+            const getChecks = (group) => {
+              const groupEl = filtersRoot.querySelector(`.group[data-group="${group}"]`);
+              if (!groupEl) return null;
 
-  const allBox = groupEl.querySelector('input[data-role="all"]');
-  const boxes = [...groupEl.querySelectorAll('input[type="checkbox"]:not([data-role="all"])')];
+              const allBox = groupEl.querySelector('input[data-role="all"]');
+              const boxes = [...groupEl.querySelectorAll('input[type="checkbox"]:not([data-role="all"])')];
 
-  // If "Select all" is checked or no boxes at all, treat as ALL
-  if ((allBox && allBox.checked) || boxes.length === 0) return null;
+              // If "Select all" is checked or no boxes at all, treat as ALL
+              if ((allBox && allBox.checked) || boxes.length === 0) return null;
 
-  // Gather checked boxes and EXPAND umbrellas with data-values
-  const out = [];
-  for (const b of boxes) {
-    if (!b.checked) continue;
+              // Gather checked boxes and EXPAND umbrellas with data-values
+              const out = [];
+              for (const b of boxes) {
+                if (!b.checked) continue;
 
-    const dv = b.dataset.values; // e.g. '["BeatYR","BeatBY","BeatBR"]' or "A,B,C"
-    if (dv) {
-      try {
-        out.push(...JSON.parse(dv));                    // JSON array
-      } catch {
-        out.push(...dv.split(',').map(s => s.trim()).filter(Boolean)); // CSV fallback
-      }
-    } else if (b.value) {
-      out.push(b.value);
-    }
-  }
+                const dv = b.dataset.values; // e.g. '["BeatYR","BeatBY","BeatBR"]' or "A,B,C"
+                if (dv) {
+                  try {
+                    out.push(...JSON.parse(dv));                    // JSON array
+                  } catch {
+                    out.push(...dv.split(',').map(s => s.trim()).filter(Boolean)); // CSV fallback
+                  }
+                } else if (b.value) {
+                  out.push(b.value);
+                }
+              }
 
-  // If none checked, return [] (your caller hides all)
-  if (out.length === 0) return [];
+              // If none checked, return [] (your caller hides all)
+              if (out.length === 0) return [];
 
-  // De-dup for safety
-  return [...new Set(out)];
-};
+              // De-dup for safety
+              return [...new Set(out)];
+            };
 
-            const setVisibility = (ids, visible)=>{
-              ids.forEach(id=>{
-                if (map.getLayer(id)) map.setLayoutProperty(id,'visibility', visible ? 'visible':'none');
+            const setVisibility = (ids, visible) => {
+              ids.forEach(id => {
+                if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
               });
             };
 
             // Master show/hide
-            document.querySelectorAll('#filters-body .toggle-visible').forEach(btn=>{
-              btn.addEventListener('click', e=>{
+            document.querySelectorAll('#filters-body .toggle-visible').forEach(btn => {
+              btn.addEventListener('click', e => {
                 const pressed = e.target.getAttribute('aria-pressed') === 'true';
                 const src = e.target.dataset.source;
                 e.target.setAttribute('aria-pressed', String(!pressed));
@@ -638,20 +954,20 @@ const getChecks = (group) => {
             });
 
             // ====== Filter application with no-op guard ======
-        const lastFilters = Object.create(null); // keyed by layerId
+            const lastFilters = Object.create(null); // keyed by layerId
 
-function safeSetFilter(layerId, expr) {
-  const json = JSON.stringify(expr);
-  if (lastFilters[layerId] === json) return; // no-op for this specific layer
-  lastFilters[layerId] = json;
-  if (map.getLayer(layerId)) map.setFilter(layerId, expr);
-}
+            function safeSetFilter(layerId, expr) {
+              const json = JSON.stringify(expr);
+              if (lastFilters[layerId] === json) return; // no-op for this specific layer
+              lastFilters[layerId] = json;
+              if (map.getLayer(layerId)) map.setFilter(layerId, expr);
+            }
 
-            function applyWaterwayFilters(){
+            function applyWaterwayFilters() {
               const m = getRadio('w-method');             // __ALL__, fly, spin, bait, fly_only
               const openMode = getRadio('w-open');        // style_today, filter_today
               const wtype = getRadio('w-type');           // __ALL__, river, lake, canal, pond
-              const fishery = getChecks('w-fishery');     // null (all) | [] none | [...]
+              const fishery = getRadio('w-fishery');   // null (all) | [] none | [...]
               const species = getChecks('w-species');     // null (all) | [] none | [...]
 
               const p = PROPS.waterways;
@@ -660,13 +976,13 @@ function safeSetFilter(layerId, expr) {
               if (m && m !== '__ALL__') {
                 if (m === 'fly_only') {
                   clauses.push(['all',
-                    ['==',['get',p.fly],1],
-                    ['==',['get',p.spin],0],
-                    ['==',['get',p.bait],0],
-                    ['==',['get',p.closed],0]
+                    ['==', ['get', p.fly], 1],
+                    ['==', ['get', p.spin], 0],
+                    ['==', ['get', p.bait], 0],
+                    ['==', ['get', p.closed], 0]
                   ]);
-                } else if (['fly','spin','bait'].includes(m)) {
-                  clauses.push(['==',['get',p[m]],1]);
+                } else if (['fly', 'spin', 'bait'].includes(m)) {
+                  clauses.push(['==', ['get', p[m]], 1]);
                 }
               }
 
@@ -674,9 +990,18 @@ function safeSetFilter(layerId, expr) {
                 clauses.push(['==', ['get', p.type], wtype]);
               }
 
-              if (fishery && fishery.length && p.fishery) {
-                clauses.push(['in', ['get', p.fishery], ['literal', fishery]]);
-              }
+if (fishery && fishery !== '__ALL__') {
+  const field = FISHERY_FIELDS[fishery];
+  if (field) {
+    // robust to "0"/"1" strings
+    clauses.push(['==', ['to-number', ['get', field]], 1]);
+  } else {
+    // unknown selection → hide all
+    clauses.push(['==', ['literal', 1], 2]);
+  }
+}
+
+
 
               if (species && species.length && p.species) {
                 clauses.push(['in', ['get', p.species], ['literal', species]]);
@@ -694,33 +1019,33 @@ function safeSetFilter(layerId, expr) {
               (LAYERS.waterways || []).forEach(id => safeSetFilter(id, finalExpr));
             }
 
-            function applyPointFilters(){
+            function applyPointFilters() {
               const selected = getChecks('p-type'); // null=all; []=none; otherwise list
               let expr = true;
               if (selected === null) {
                 expr = true;
               } else if (selected.length === 0) {
-                expr = ['==', ['get','point_type'], '__NONE__']; // hide all
+                expr = ['==', ['get', 'point_type'], '__NONE__']; // hide all
               } else {
                 expr = ['in', ['get', PROPS.points.type], ['literal', selected]];
               }
-             (LAYERS.points || []).forEach(id => safeSetFilter(id, expr));
+              (LAYERS.points || []).forEach(id => safeSetFilter(id, expr));
             }
-            
+
 
             // One change handler for all groups, debounced
-            filtersRoot.addEventListener('change', (e)=>{
+            filtersRoot.addEventListener('change', (e) => {
               const container = e.target.closest('.source-card');
-              if(!container) return;
+              if (!container) return;
               const src = container.dataset.source;
-              scheduleApply(()=>{
+              scheduleApply(() => {
                 if (src === 'waterways') applyWaterwayFilters();
                 if (src === 'points') applyPointFilters();
               });
             });
 
             // Apply once layers are present
-            function applyAllIfReady(){
+            function applyAllIfReady() {
               if (map.getLayer('AW Rivers-line') && map.getLayer('data-points-all')) {
                 applyWaterwayFilters();
                 applyPointFilters();
@@ -736,37 +1061,37 @@ function safeSetFilter(layerId, expr) {
   </div>
   <!-- ========================================================= -->
 
-  
 
-<div id="combined-basemaps" style="display:none;">
-  <div class="map-overlay-inner">
-    <button class="close-button" onclick="closeCard()">&times;</button>
 
-    <div class="panel-scroll">
+  <div id="combined-basemaps" style="display:none;">
+    <div class="map-overlay-inner">
+      <button class="close-button" onclick="closeCard()">&times;</button>
 
-      <div class="basemap-body">
-        <div class="source-card">
-          <div class="source-head">
-            <div class="source-name">Basemaps</div>
-          </div>
-          <div class="source-controls">
-            <button class="basemap-btn" data-basemap="Satellite">LINZ Satellite</button>
-            <button class="basemap-btn" data-basemap="TopoLite">LINZ Topo Lite</button>
-            <button class="basemap-btn" data-basemap="Topo">LINZ Topo50</button>
+      <div class="panel-scroll">
+
+        <div class="basemap-body">
+          <div class="source-card">
+            <div class="source-head">
+              <div class="source-name">Basemaps</div>
+            </div>
+            <div class="source-controls">
+              <button class="basemap-btn" data-basemap="Satellite">LINZ Satellite</button>
+              <button class="basemap-btn" data-basemap="TopoLite">LINZ Topo Lite</button>
+              <button class="basemap-btn" data-basemap="Topo">LINZ Topo50</button>
+            </div>
           </div>
         </div>
-      </div>
 
+      </div>
     </div>
   </div>
-</div>
 
   <div class="map-overlay" id="properties"></div>
 
   <script>
     const styleURL = 'https://basemaps.linz.govt.nz/v1/styles/topo-raster.json?api=d01hep5551e30kxb7w85hck49tp';
     // const TODAY_UNIX = Math.floor(Date.now()/1000); // cache once per load 
-     
+
     const TODAY_UNIX = 1786611515
     const map = new maplibregl.Map({
       container: 'map',
@@ -790,7 +1115,7 @@ function safeSetFilter(layerId, expr) {
       const modalImg = document.getElementById("modalImage");
       modalImg.src = imageUrl;
       modal.classList.add("show");
-      modal.onclick = function(event) { if (event.target === modal) closeModal(); };
+      modal.onclick = function (event) { if (event.target === modal) closeModal(); };
     }
     function closeModal() {
       const modal = document.getElementById("imageModal");
@@ -811,67 +1136,67 @@ function safeSetFilter(layerId, expr) {
     });
 
 
-  function openPanel(which) {
-  const cardEl = document.getElementById('properties');
-  const filtersEl = document.getElementById('combined-filters');
-  const basemapsEl = document.getElementById('combined-basemaps');
+    function openPanel(which) {
+      const cardEl = document.getElementById('properties');
+      const filtersEl = document.getElementById('combined-filters');
+      const basemapsEl = document.getElementById('combined-basemaps');
 
-  // Hide all first
-  cardEl.style.display = 'none';
-  filtersEl.style.display = 'none';
-  basemapsEl.style.display = 'none';
-  activePanel = null;
+      // Hide all first
+      cardEl.style.display = 'none';
+      filtersEl.style.display = 'none';
+      basemapsEl.style.display = 'none';
+      activePanel = null;
 
-  if (which === 'card') {
-    cardEl.style.display = 'block';
-    activePanel = 'card';
-  } else if (which === 'filters') {
-    filtersEl.style.display = 'block';
-    activePanel = 'filters';
-  } else if (which === 'basemaps') {
-    basemapsEl.style.display = 'block';
-    activePanel = 'basemaps';
-  }
-}
-
-    
-   function toggleFilters(event) {
-  if (activePanel === 'filters') {
-    openPanel(null);
-  } else {
-    openPanel('filters');
-  }
-}
-
-function toggleBasemaps(event) {
-  if (activePanel === 'basemaps') {
-    openPanel(null);
-  } else {
-    openPanel('basemaps');
-  }
-}
+      if (which === 'card') {
+        cardEl.style.display = 'block';
+        activePanel = 'card';
+      } else if (which === 'filters') {
+        filtersEl.style.display = 'block';
+        activePanel = 'filters';
+      } else if (which === 'basemaps') {
+        basemapsEl.style.display = 'block';
+        activePanel = 'basemaps';
+      }
+    }
 
 
-function normalizeUrl(raw) {
-  if (!raw) return null;
-  let u = String(raw).trim();
-  if (!u) return null;
+    function toggleFilters(event) {
+      if (activePanel === 'filters') {
+        openPanel(null);
+      } else {
+        openPanel('filters');
+      }
+    }
 
-  // block dangerous protocols
-  const lower = u.toLowerCase();
-  if (lower.startsWith('javascript:') || lower.startsWith('data:')) return null;
+    function toggleBasemaps(event) {
+      if (activePanel === 'basemaps') {
+        openPanel(null);
+      } else {
+        openPanel('basemaps');
+      }
+    }
 
-  // add https:// if missing
-  if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
 
-  try {
-    const url = new URL(u);
-    if (!/^https?:$/.test(url.protocol)) return null;
-    return url.href;
-  } catch {
-    return null;
-  }
-}
+    function normalizeUrl(raw) {
+      if (!raw) return null;
+      let u = String(raw).trim();
+      if (!u) return null;
+
+      // block dangerous protocols
+      const lower = u.toLowerCase();
+      if (lower.startsWith('javascript:') || lower.startsWith('data:')) return null;
+
+      // add https:// if missing
+      if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+
+      try {
+        const url = new URL(u);
+        if (!/^https?:$/.test(url.protocol)) return null;
+        return url.href;
+      } catch {
+        return null;
+      }
+    }
 
 
     const card = document.getElementById('properties');
@@ -906,21 +1231,21 @@ function normalizeUrl(raw) {
         more_info_url: "More Info",
       };
 
-  let typeImage = null;
+      let typeImage = null;
 
-// Point features
-if (feature.layer && feature.layer.id === 'data-points-all') {
-  if (props.point_type && props.point_type.toLowerCase() !== 'na') {
-    typeImage = pointTypeDefaultImages[props.point_type] || null;
-  }
-// River features
-} else if (feature.layer && (feature.layer.id === 'AW Rivers-line' || feature.layer.id === 'AW Rivers-fill')) {
-  typeImage = riverDefaultImage;
-}
+      // Point features
+      if (feature.layer && feature.layer.id === 'data-points-all') {
+        if (props.point_type && props.point_type.toLowerCase() !== 'na') {
+          typeImage = pointTypeDefaultImages[props.point_type] || null;
+        }
+        // River features
+      } else if (feature.layer && (feature.layer.id === 'AW Rivers-line' || feature.layer.id === 'AW Rivers-fill')) {
+        typeImage = riverDefaultImage;
+      }
 
-// Add any extra images from properties
-const extraImages = [props.image1, props.Image2, props.image3].filter(url => url && url.trim() !== '');
-const photoList = (typeImage ? [typeImage] : []).concat(extraImages);
+      // Add any extra images from properties
+      const extraImages = [props.image1, props.Image2, props.image3].filter(url => url && url.trim() !== '');
+      const photoList = (typeImage ? [typeImage] : []).concat(extraImages);
 
       let content = `
 <div class="map-overlay-inner">
@@ -971,19 +1296,19 @@ const photoList = (typeImage ? [typeImage] : []).concat(extraImages);
 
       content += `<hr><ul class="card-list">`;
       for (const [key, label] of Object.entries(displayFields)) {
-  const val = props[key];
-  if (val === undefined || val === '') continue;
+        const val = props[key];
+        if (val === undefined || val === '') continue;
 
-  if (key === 'more_info_url') {
-    const href = normalizeUrl(val);
-    if (href) {
-      const host = new URL(href).hostname.replace(/^www\./, '');
-      content += `<li><b>${label}</b>: <a href="${href}" target="_blank" rel="noopener noreferrer">${host}</a></li>`;
-    }
-  } else {
-    content += `<li><b>${label}</b>: ${val}</li>`;
-  }
-}
+        if (key === 'more_info_url') {
+          const href = normalizeUrl(val);
+          if (href) {
+            const host = new URL(href).hostname.replace(/^www\./, '');
+            content += `<li><b>${label}</b>: <a href="${href}" target="_blank" rel="noopener noreferrer">${host}</a></li>`;
+          }
+        } else {
+          content += `<li><b>${label}</b>: ${val}</li>`;
+        }
+      }
 
       if (props.URL1 && props.URL1.trim() !== "") {
         content += `<li><b>More Information</b>: <a href="${props.URL1}" target="_blank" rel="noopener noreferrer">Click here</a></li>`;
@@ -1017,31 +1342,31 @@ const photoList = (typeImage ? [typeImage] : []).concat(extraImages);
 
     let selectedRiverId = null;
 
-function updateSelectedRiverLayers() {
-  const visibleExpr = selectedRiverId == null
-    ? ['==', ['id'], -1]     // hide when nothing selected
-    : ['==', ['id'], selectedRiverId];
+    function updateSelectedRiverLayers() {
+      const visibleExpr = selectedRiverId == null
+        ? ['==', ['id'], -1]     // hide when nothing selected
+        : ['==', ['id'], selectedRiverId];
 
-  if (map.getLayer('AW Rivers-selected-halo')) {
-    map.setFilter('AW Rivers-selected-halo', visibleExpr);
-  }
-}
+      if (map.getLayer('AW Rivers-selected-halo')) {
+        map.setFilter('AW Rivers-selected-halo', visibleExpr);
+      }
+    }
 
 
     const customImages = [
       { name: 'AccessPoint-icon', url: 'images/FGAccess.png' },
       { name: 'TrampingAccess-icon', url: 'images/WalkingAccess.png' },
       { name: '4x4Access-icon', url: 'images/4x4Access.png' },
-      
+
       { name: 'BoatRamp-icon', url: 'images/BoatRamp.png' },
-      
+
       { name: 'Toilet-icon', url: 'images/Toilet.png' },
-      
+
       { name: 'Warning-icon', url: 'images/Warning.png' },
-      
+
       { name: 'Parking-icon', url: 'images/Parking.png' },
-      
-      
+
+
       { name: 'Shop-icon', url: 'images/Store.png' },
       { name: 'Lodge-icon', url: 'images/Lodge.png' },
 
@@ -1052,7 +1377,7 @@ function updateSelectedRiverLayers() {
       { name: 'Hut-icon', url: 'images/DOC Hut.png' },
       { name: 'Campsite-icon', url: 'images/DOC Camp.png' },
 
-      
+
       { name: 'BeatYR-icon', url: 'images/BeatYR.png' },
       { name: 'BeatBY-icon', url: 'images/BeatBY.png' },
       { name: 'BeatBR-icon', url: 'images/BeatBR.png' },
@@ -1075,37 +1400,37 @@ function updateSelectedRiverLayers() {
     let selectedFeatureId = null;
     let hoverFeatureId = null;
 
-   function getIconSizeExpr(selectedId, hoverId) {
-  return [
-    'interpolate', ['linear'], ['zoom'],
-    7, 0.01,
-    12, [
-      'case',
-      // hover (but not selected)
-      ['all', ['==', ['id'], hoverId ?? -1], ['!=', ['id'], selectedId ?? -2]], 0.25,
-      // selected
-      ['==', ['id'], selectedId ?? -2], 0.30,
-      // default
-      0.20
-    ]
-  ];
-}
+    function getIconSizeExpr(selectedId, hoverId) {
+      return [
+        'interpolate', ['linear'], ['zoom'],
+        7, 0.01,
+        12, [
+          'case',
+          // hover (but not selected)
+          ['all', ['==', ['id'], hoverId ?? -1], ['!=', ['id'], selectedId ?? -2]], 0.25,
+          // selected
+          ['==', ['id'], selectedId ?? -2], 0.30,
+          // default
+          0.20
+        ]
+      ];
+    }
 
     function updateIconSize() {
-      if(!map.getLayer('data-points-all')) return;
+      if (!map.getLayer('data-points-all')) return;
       map.setLayoutProperty('data-points-all', 'icon-size', getIconSizeExpr(selectedFeatureId, hoverFeatureId));
     }
 
     const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-if (!isTouch) {
-  // keep your existing hover handlers for points/rivers here
-  // (mousemove, mouseenter, mouseleave)
-} else {
-  // Ensure no hover state remains on touch
-  hoverFeatureId = null;
-  if (map.getLayer('data-points-all')) updateIconSize();
-}
+    if (!isTouch) {
+      // keep your existing hover handlers for points/rivers here
+      // (mousemove, mouseenter, mouseleave)
+    } else {
+      // Ensure no hover state remains on touch
+      hoverFeatureId = null;
+      if (map.getLayer('data-points-all')) updateIconSize();
+    }
 
     // Ensure images are loaded before adding layers
     map.on('styledata', () => {
@@ -1113,156 +1438,156 @@ if (!isTouch) {
     });
 
 
-function setBasemap(type) {
-  if (type === "Satellite") {
-     const aerial_style = {
-    "id": "st_aerial",
-    "name": "aerial",
-    "version": 8,
-    // 🔑 Provide glyphs so text can render
-    "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-    "sources": {
-      "basemaps-aerial": {
-        "type": "raster",
-        "tiles": [
-          "https://basemaps.linz.govt.nz/v1/tiles/aerial/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
-        ],
-        "tileSize": 256,
-        "attribution": "© CC BY 4.0 LINZ"
-      },
-      "LINZ-Terrain": {
-        "type": "raster-dem",
-        "tileSize": 256,
-        "maxzoom": 18,
-        "tiles": [
-          "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
-        ]
+    function setBasemap(type) {
+      if (type === "Satellite") {
+        const aerial_style = {
+          "id": "st_aerial",
+          "name": "aerial",
+          "version": 8,
+          // 🔑 Provide glyphs so text can render
+          "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+          "sources": {
+            "basemaps-aerial": {
+              "type": "raster",
+              "tiles": [
+                "https://basemaps.linz.govt.nz/v1/tiles/aerial/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
+              ],
+              "tileSize": 256,
+              "attribution": "© CC BY 4.0 LINZ"
+            },
+            "LINZ-Terrain": {
+              "type": "raster-dem",
+              "tileSize": 256,
+              "maxzoom": 18,
+              "tiles": [
+                "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
+              ]
+            }
+          },
+          "layers": [
+            { "id": "basemaps-aerial", "type": "raster", "source": "basemaps-aerial" }
+          ],
+          // optional, if you plan to use terrain/extrusions:
+          "terrain": { "source": "LINZ-Terrain", "exaggeration": 1.0 }
+        };
+
+
+        map.setStyle(aerial_style);
+        // map.setStyle('https://basemaps.linz.govt.nz/v1/styles/aerial.json?api=d01hep5551e30kxb7w85hck49tp');
+      } else if (type === "TopoLite") {
+        map.setStyle('https://basemaps.linz.govt.nz/v1/styles/topolite.json?api=d01hep5551e30kxb7w85hck49tp');
+      } else if (type === "Topo") {
+        const TopoStyle = {
+          "id": "st_topo-raster",
+          "version": 8,
+          "name": "st_topo-raster",
+          "metadata": { "maputnik:renderer": "mbgljs" },
+
+          "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+
+          "sources": {
+            "LINZ-Elevation-Hillshade": {
+              "maxzoom": 18,
+              "minzoom": 0,
+              "tileSize": 256,
+              "tiles": [
+                "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?pipeline=terrain-rgb&api=d01hep5551e30kxb7w85hck49tp"
+              ],
+              "type": "raster-dem"
+            },
+            "LINZ-Topo-Raster": {
+              "attribution": "© 2024 Toitū Te Whenua - CC BY 4.0",
+              "maxzoom": 28,
+              "minzoom": 0,
+              "tileSize": 192,
+              "tiles": [
+                "https://basemaps.linz.govt.nz/v1/tiles/topo-raster/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
+              ],
+              "type": "raster"
+            },
+            "LINZ-Terrain": {
+              "type": "raster-dem",
+              "tileSize": 256,
+              "maxzoom": 18,
+              "tiles": [
+                "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
+              ]
+            }
+          },
+
+          "layers": [
+            {
+              "id": "Topo-Raster",
+              "type": "raster",
+              "source": "LINZ-Topo-Raster",
+              "layout": { "visibility": "visible" }
+            },
+            {
+              "id": "Hillshade",
+              "type": "hillshade",
+              "source": "LINZ-Elevation-Hillshade",
+              "layout": { "visibility": "visible" },
+              "paint": {
+                "hillshade-accent-color": [
+                  "interpolate", ["linear"], ["zoom"],
+                  0, "rgb(100, 100, 100)",
+                  3, "rgba(100, 100, 100, 0.400)",
+                  10, "rgba(100, 100, 100, 0.333)",
+                  11, "rgba(100, 100, 100, 0.267)"
+                ],
+                "hillshade-exaggeration": 0.4,
+                "hillshade-highlight-color": [
+                  "interpolate", ["linear"], ["zoom"],
+                  0, "rgb(225, 229, 224)",
+                  3, "rgba(225, 229, 224, 0.400)",
+                  10, "rgba(225, 229, 224, 0.333)",
+                  11, "rgba(225, 229, 224, 0.0667)"
+                ],
+                "hillshade-illumination-anchor": "map",
+                "hillshade-illumination-direction": 315,
+                "hillshade-shadow-color": [
+                  "interpolate", ["linear"], ["zoom"],
+                  0, "rgb(12, 12, 12)",
+                  3, "rgba(12, 12, 12, 0.400)",
+                  10, "rgba(12, 12, 12, 0.400)",
+                  16, "rgba(12, 12, 12, 1.00)"
+                ]
+              }
+            }
+          ],
+
+          "sky": {
+            "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 10, 1, 12, 0],
+            "fog-color": "#e8e8e8",
+            "fog-ground-blend": 0.8,
+            "horizon-color": "#ecffff",
+            "horizon-fog-blend": 0.65,
+            "sky-color": "#77b5fe",
+            "sky-horizon-blend": 0.5
+          }
+        }
+
+        map.setStyle(TopoStyle);
       }
-    },
-    "layers": [
-      { "id": "basemaps-aerial", "type": "raster", "source": "basemaps-aerial" }
-    ],
-    // optional, if you plan to use terrain/extrusions:
-    "terrain": { "source": "LINZ-Terrain", "exaggeration": 1.0 }
-  };
 
-
-    map.setStyle(aerial_style);
-    // map.setStyle('https://basemaps.linz.govt.nz/v1/styles/aerial.json?api=d01hep5551e30kxb7w85hck49tp');
-  } else if (type === "TopoLite") {
-    map.setStyle('https://basemaps.linz.govt.nz/v1/styles/topolite.json?api=d01hep5551e30kxb7w85hck49tp');
-  } else if (type === "Topo") {
-    const TopoStyle = {
-  "id": "st_topo-raster",
-  "version": 8,
-  "name": "st_topo-raster",
-  "metadata": { "maputnik:renderer": "mbgljs" },
-
-  "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-
-  "sources": {
-    "LINZ-Elevation-Hillshade": {
-      "maxzoom": 18,
-      "minzoom": 0,
-      "tileSize": 256,
-      "tiles": [
-        "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?pipeline=terrain-rgb&api=d01hep5551e30kxb7w85hck49tp"
-      ],
-      "type": "raster-dem"
-    },
-    "LINZ-Topo-Raster": {
-      "attribution": "© 2024 Toitū Te Whenua - CC BY 4.0",
-      "maxzoom": 28,
-      "minzoom": 0,
-      "tileSize": 192,
-      "tiles": [
-        "https://basemaps.linz.govt.nz/v1/tiles/topo-raster/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
-      ],
-      "type": "raster"
-    },
-    "LINZ-Terrain": {
-      "type": "raster-dem",
-      "tileSize": 256,
-      "maxzoom": 18,
-      "tiles": [
-        "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
-      ]
+      // Update button highlight
+      document.querySelectorAll(".basemap-btn").forEach(btn => {
+        btn.classList.remove("active");
+        if (btn.dataset.basemap === type) {
+          btn.classList.add("active");
+        }
+      });
     }
-  },
 
-  "layers": [
-    {
-      "id": "Topo-Raster",
-      "type": "raster",
-      "source": "LINZ-Topo-Raster",
-      "layout": { "visibility": "visible" }
-    },
-    {
-      "id": "Hillshade",
-      "type": "hillshade",
-      "source": "LINZ-Elevation-Hillshade",
-      "layout": { "visibility": "visible" },
-      "paint": {
-        "hillshade-accent-color": [
-          "interpolate", ["linear"], ["zoom"],
-          0, "rgb(100, 100, 100)",
-          3, "rgba(100, 100, 100, 0.400)",
-          10, "rgba(100, 100, 100, 0.333)",
-          11, "rgba(100, 100, 100, 0.267)"
-        ],
-        "hillshade-exaggeration": 0.4,
-        "hillshade-highlight-color": [
-          "interpolate", ["linear"], ["zoom"],
-          0, "rgb(225, 229, 224)",
-          3, "rgba(225, 229, 224, 0.400)",
-          10, "rgba(225, 229, 224, 0.333)",
-          11, "rgba(225, 229, 224, 0.0667)"
-        ],
-        "hillshade-illumination-anchor": "map",
-        "hillshade-illumination-direction": 315,
-        "hillshade-shadow-color": [
-          "interpolate", ["linear"], ["zoom"],
-          0, "rgb(12, 12, 12)",
-          3, "rgba(12, 12, 12, 0.400)",
-          10, "rgba(12, 12, 12, 0.400)",
-          16, "rgba(12, 12, 12, 1.00)"
-        ]
-      }
-    }
-  ],
+    // Hook up the new basemap buttons
+    document.querySelectorAll(".basemap-btn").forEach(btn => {
+      btn.addEventListener("click", () => setBasemap(btn.dataset.basemap));
+    });
 
-  "sky": {
-    "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 10, 1, 12, 0],
-    "fog-color": "#e8e8e8",
-    "fog-ground-blend": 0.8,
-    "horizon-color": "#ecffff",
-    "horizon-fog-blend": 0.65,
-    "sky-color": "#77b5fe",
-    "sky-horizon-blend": 0.5
-  }
-}
-
-    map.setStyle(TopoStyle);
-  }
-
-  // Update button highlight
-  document.querySelectorAll(".basemap-btn").forEach(btn => {
-    btn.classList.remove("active");
-    if (btn.dataset.basemap === type) {
-      btn.classList.add("active");
-    }
-  });
-}
-
-// Hook up the new basemap buttons
-document.querySelectorAll(".basemap-btn").forEach(btn => {
-  btn.addEventListener("click", () => setBasemap(btn.dataset.basemap));
-});
-
-// Default basemap selection
-window.addEventListener("load", () => {
-  setBasemap("Topo");
-});
+    // Default basemap selection
+    window.addEventListener("load", () => {
+      setBasemap("Topo");
+    });
 
 
     // Legacy helper (safe no-op if container missing)
@@ -1275,87 +1600,87 @@ window.addEventListener("load", () => {
       if (map.getLayer('data-points-all')) map.setFilter('data-points-all', filter);
     }
 
-   const clearSelection = () => {
-  unselectFeatures();
+    const clearSelection = () => {
+      unselectFeatures();
 
-  // Reset search + card UI
-  const input = document.getElementById('search');
-  const suggestions = document.getElementById('suggestions');
-  input.value = '';
-  suggestions.innerHTML = '';
-  suggestions.style.display = 'none';
+      // Reset search + card UI
+      const input = document.getElementById('search');
+      const suggestions = document.getElementById('suggestions');
+      input.value = '';
+      suggestions.innerHTML = '';
+      suggestions.style.display = 'none';
 
-  card.innerHTML = '';
-  card.style.display = 'none';
-};
+      card.innerHTML = '';
+      card.style.display = 'none';
+    };
 
-function closeCard() {
-  unselectFeatures();   // reset both points + rivers
-  openPanel(null);      // hide the panel
-}
+    function closeCard() {
+      unselectFeatures();   // reset both points + rivers
+      openPanel(null);      // hide the panel
+    }
 
-// make sure these exist once globally:
-// let selectedRiverId = null;
-// function updateSelectedRiverLayers(){ /* as given earlier */ }
+    // make sure these exist once globally:
+    // let selectedRiverId = null;
+    // function updateSelectedRiverLayers(){ /* as given earlier */ }
 
-const selectFeature = (feature) => {
-  clearSelection(); // this already unselects and hides the halo
+    const selectFeature = (feature) => {
+      clearSelection(); // this already unselects and hides the halo
 
-  if (feature.layer.id === 'data-points-all') {
-    selectedPoint = feature;
-    map.setFeatureState({ source: 'data-points', id: feature.id }, { selected: true });
+      if (feature.layer.id === 'data-points-all') {
+        selectedPoint = feature;
+        map.setFeatureState({ source: 'data-points', id: feature.id }, { selected: true });
 
-    selectedFeatureId = feature.id;
-    hoverFeatureId = null;
-    updateIconSize();
+        selectedFeatureId = feature.id;
+        hoverFeatureId = null;
+        updateIconSize();
 
-  } else if (feature.layer.id === 'AW Rivers-line' || feature.layer.id === 'AW Rivers-fill') {
-    selectedRiver = feature;
-    map.setFeatureState(
-      { source: 'AW Rivers', sourceLayer: 'waterways', id: feature.id },
-      { selected: true }
-    );
+      } else if (feature.layer.id === 'AW Rivers-line' || feature.layer.id === 'AW Rivers-fill') {
+        selectedRiver = feature;
+        map.setFeatureState(
+          { source: 'AW Rivers', sourceLayer: 'waterways', id: feature.id },
+          { selected: true }
+        );
 
-    // NEW: drive the selected halo
-    selectedRiverId = feature.id;
-    updateSelectedRiverLayers();
-  }
+        // NEW: drive the selected halo
+        selectedRiverId = feature.id;
+        updateSelectedRiverLayers();
+      }
 
-  showCard(feature);
-};
+      showCard(feature);
+    };
 
-function unselectFeatures() {
-  // Clear river selection
-  if (selectedRiver) {
-    try {
-      map.setFeatureState(
-        { source: 'AW Rivers', sourceLayer: 'waterways', id: selectedRiver.id },
-        { selected: false, highlight: false }
-      );
-    } catch (e) {}
-    selectedRiver = null;
-  }
+    function unselectFeatures() {
+      // Clear river selection
+      if (selectedRiver) {
+        try {
+          map.setFeatureState(
+            { source: 'AW Rivers', sourceLayer: 'waterways', id: selectedRiver.id },
+            { selected: false, highlight: false }
+          );
+        } catch (e) { }
+        selectedRiver = null;
+      }
 
-  // NEW: hide the halo layer
-  selectedRiverId = null;
-  updateSelectedRiverLayers();
+      // NEW: hide the halo layer
+      selectedRiverId = null;
+      updateSelectedRiverLayers();
 
-  // Clear point selection
-  if (selectedPoint) {
-    try {
-      map.setFeatureState(
-        { source: 'data-points', id: selectedPoint.id },
-        { selected: false }
-      );
-    } catch (e) {}
-    selectedPoint = null;
-  }
+      // Clear point selection
+      if (selectedPoint) {
+        try {
+          map.setFeatureState(
+            { source: 'data-points', id: selectedPoint.id },
+            { selected: false }
+          );
+        } catch (e) { }
+        selectedPoint = null;
+      }
 
-  // Reset the ID variables that drive icon size
-  selectedFeatureId = null;
-  hoverFeatureId = null;
-  updateIconSize();
-}
+      // Reset the ID variables that drive icon size
+      selectedFeatureId = null;
+      hoverFeatureId = null;
+      updateIconSize();
+    }
 
 
     let allFeatures = [];
@@ -1388,7 +1713,8 @@ function unselectFeatures() {
 
 
       if (!sources['PublicAccessAreas']) {
-        map.addSource('PublicAccessAreas', { type: 'vector', tiles: ['https://data.fishandgameaccessmap.org/combined_public_access_layers/{z}/{x}/{y}'] ,
+        map.addSource('PublicAccessAreas', {
+          type: 'vector', tiles: ['https://data.fishandgameaccessmap.org/combined_public_access_layers/{z}/{x}/{y}'],
           minzoom: 0, maxzoom: 13
         });
       }
@@ -1401,21 +1727,21 @@ function unselectFeatures() {
           'source-layer': 'mylayer',
           minzoom: 12,
           paint: {
-            'fill-color':[
-              'match',['get','DataType'],
-              'DOC Conservation Area','#2d6c3e',
-              'Esplanade Reserve','#66f0cb',
-              'Esplanade Strip','#ff66dc',
-              'Hydro Parcel','#abecff',
+            'fill-color': [
+              'match', ['get', 'DataType'],
+              'DOC Conservation Area', '#2d6c3e',
+              'Esplanade Reserve', '#66f0cb',
+              'Esplanade Strip', '#ff66dc',
+              'Hydro Parcel', '#abecff',
               'Non-Primary Parcel', '#ffcc66',
-              'Public Access Easement','#ffd8f1',
-              'Reserve Land','#a9cb66',
-              'Road Parcel','#cca3e1',
-              'Walkway Easement','#ffb2b2',
+              'Public Access Easement', '#ffd8f1',
+              'Reserve Land', '#a9cb66',
+              'Road Parcel', '#cca3e1',
+              'Walkway Easement', '#ffb2b2',
               '#cccccc'
             ],
-            'fill-opacity':[
-              'match',['get','DataType'],
+            'fill-opacity': [
+              'match', ['get', 'DataType'],
               'Non-Primary Parcel', .1,
               .8
             ],
@@ -1463,7 +1789,7 @@ function unselectFeatures() {
               ['boolean', ['feature-state', 'highlight'], false], 4,
               3
             ],
-            'line-opacity':1
+            'line-opacity': 1
           }
         }, insertBeforeLayer);
       }
@@ -1504,16 +1830,16 @@ function unselectFeatures() {
 
       // --- Selected-only AW Rivers stroke (wide halo only) ---
 
-// --- Selected-only AW Rivers stroke (wide halo only) ---
-if (!map.getLayer('AW Rivers-selected-halo')) {
-  map.addLayer({
-    id: 'AW Rivers-selected-halo',
-    type: 'line',
-    source: 'AW Rivers',
-    'source-layer': 'waterways',
-    minzoom: 7,
-    layout: { 'line-join': 'round', 'line-cap': 'round' },
-    paint: {
+      // --- Selected-only AW Rivers stroke (wide halo only) ---
+      if (!map.getLayer('AW Rivers-selected-halo')) {
+        map.addLayer({
+          id: 'AW Rivers-selected-halo',
+          type: 'line',
+          source: 'AW Rivers',
+          'source-layer': 'waterways',
+          minzoom: 7,
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: {
             'line-color': [
               'case',
               ['any',
@@ -1537,26 +1863,26 @@ if (!map.getLayer('AW Rivers-selected-halo')) {
               ['boolean', ['feature-state', 'highlight'], false], 5,
               3
             ],
-            'line-opacity':1
+            'line-opacity': 1
           },
-    // Hidden until a river is selected; filter is updated by updateSelectedRiverLayers()
-    filter: ['==', ['id'], -1]
-  }); // note: appended on top (no insertBeforeLayer)
-}
+          // Hidden until a river is selected; filter is updated by updateSelectedRiverLayers()
+          filter: ['==', ['id'], -1]
+        }); // note: appended on top (no insertBeforeLayer)
+      }
 
 
 
 
- if (!sources['FG Regions']) {
-map.addSource('FG Regions', {
+      if (!sources['FG Regions']) {
+        map.addSource('FG Regions', {
           type: 'vector',
           tiles: ['https://data.fishandgameaccessmap.org/fg_regions/{z}/{x}/{y}'],
           minzoom: 0, maxzoom: 10
         });
       }
-    
-   
- 
+
+
+
       if (!map.getLayer('FG Regions-line')) {
         map.addLayer({
           id: 'FG Regions-line',
@@ -1569,7 +1895,7 @@ map.addSource('FG Regions', {
       }
 
 
-      
+
 
       if (!sources['Routes']) map.addSource('Routes', { type: 'geojson', data: 'https://data.fishandgameaccessmap.org/secure-geojson/Routes.geojson?token=fish-access-2025' });
 
@@ -1584,7 +1910,7 @@ map.addSource('FG Regions', {
         });
       }
 
-  
+
       // if (!sources['data-points']) {
       //   map.addSource('data-points', {
       //     type: 'geojson',
@@ -1593,15 +1919,15 @@ map.addSource('FG Regions', {
       //   });
       // }
 
-      
+
       if (!sources['data-points']) {
-                map.addSource('data-points', {
-                    type: 'geojson',
-                    data: 'https://data.fishandgameaccessmap.org/secure-geojson/AccessPoints.geojson?token=fish-access-2025',
-                    generateId: true
-                });
-            }
-            
+        map.addSource('data-points', {
+          type: 'geojson',
+          data: 'https://data.fishandgameaccessmap.org/secure-geojson/AccessPoints.geojson?token=fish-access-2025',
+          generateId: true
+        });
+      }
+
 
       if (!map.getLayer('data-points-all')) {
         map.addLayer({
@@ -1628,42 +1954,42 @@ map.addSource('FG Regions', {
         });
       }
 
-//          if (!map.getLayer('FG Regions-fill')) {
-//   map.addLayer({
-//     id: 'FG Regions-fill',
-//     type: 'fill',
-//     source: 'FG Regions',
-//     'source-layer': 'fg_regions',
-//     paint: {
-//       'fill-color': '#008678',
-//       'fill-opacity': 0.5
-//     },
-//     filter: ['in', 'RegionCode', 1,4,5,6,7,8,9,10,11,12,13] // ✅ only fills regions with these codes
-//   }, insertBeforeLayer);
-// }
+      //          if (!map.getLayer('FG Regions-fill')) {
+      //   map.addLayer({
+      //     id: 'FG Regions-fill',
+      //     type: 'fill',
+      //     source: 'FG Regions',
+      //     'source-layer': 'fg_regions',
+      //     paint: {
+      //       'fill-color': '#008678',
+      //       'fill-opacity': 0.5
+      //     },
+      //     filter: ['in', 'RegionCode', 1,4,5,6,7,8,9,10,11,12,13] // ✅ only fills regions with these codes
+      //   }, insertBeforeLayer);
+      // }
 
 
-      if (!sources['FG Region Centroids']) { map.addSource('FG Region Centroids', { type: 'geojson', data: 'https://data.fishandgameaccessmap.org/secure-geojson/fg_regions_centroid.geojson?token=fish-access-2025'}); }
-  map.addLayer({
-                id: 'FG Region Labels',
-                type: 'symbol',
-                source: 'FG Region Centroids',
-                maxzoom: 7,
-                layout: {
-                    'text-field': ['get', 'region'],       
-                    'text-font': ['Noto Sans Medium'],
-                    // 'text-font': ['Noto Sans Medium', 'Noto Sans Regular', 'Arial Unicode MS Regular'],
-                    'text-size': 12,
-                  
-                    'text-anchor': 'center',
-                    'text-allow-overlap': true,
-                },
-                paint: {
-                    'text-color': '#008678',
-                    'text-halo-color': '#ffffff',
-                    'text-halo-width': 2
-                }
-            });
+      if (!sources['FG Region Centroids']) { map.addSource('FG Region Centroids', { type: 'geojson', data: 'https://data.fishandgameaccessmap.org/secure-geojson/fg_regions_centroid.geojson?token=fish-access-2025' }); }
+      map.addLayer({
+        id: 'FG Region Labels',
+        type: 'symbol',
+        source: 'FG Region Centroids',
+        maxzoom: 7,
+        layout: {
+          'text-field': ['get', 'region'],
+          'text-font': ['Noto Sans Medium'],
+          // 'text-font': ['Noto Sans Medium', 'Noto Sans Regular', 'Arial Unicode MS Regular'],
+          'text-size': 12,
+
+          'text-anchor': 'center',
+          'text-allow-overlap': true,
+        },
+        paint: {
+          'text-color': '#008678',
+          'text-halo-color': '#ffffff',
+          'text-halo-width': 2
+        }
+      });
 
       // Wire filters
       if (window.setupAWFilters) window.setupAWFilters(map);
@@ -1671,26 +1997,26 @@ map.addSource('FG Regions', {
 
 
     // Make region names clickable → zoom to their centroid
-map.on('mouseenter', 'FG Region Labels', () => { map.getCanvas().style.cursor = 'pointer'; });
-map.on('mouseleave', 'FG Region Labels', () => { map.getCanvas().style.cursor = ''; });
+    map.on('mouseenter', 'FG Region Labels', () => { map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', 'FG Region Labels', () => { map.getCanvas().style.cursor = ''; });
 
-map.on('click', 'FG Region Labels', (e) => {
-  const f = e.features && e.features[0];
-  if (!f || !f.geometry || f.geometry.type !== 'Point') return;
+    map.on('click', 'FG Region Labels', (e) => {
+      const f = e.features && e.features[0];
+      if (!f || !f.geometry || f.geometry.type !== 'Point') return;
 
-  const [lng, lat] = f.geometry.coordinates;
+      const [lng, lat] = f.geometry.coordinates;
 
-  // If a side panel is open, pad left so the name doesn't end up under it
-  const leftPad = (window.activePanel === 'card' || window.activePanel === 'filters' || window.activePanel === 'basemaps')
-    ? 420 : 10;
+      // If a side panel is open, pad left so the name doesn't end up under it
+      const leftPad = (window.activePanel === 'card' || window.activePanel === 'filters' || window.activePanel === 'basemaps')
+        ? 420 : 10;
 
-  map.easeTo({
-    center: [lng, lat],
-    zoom: Math.max(map.getZoom(), 8),   // target zoom when you “drill in”
-    duration: 800,
-    padding: { top: 80, right: 10, bottom: 10, left: leftPad }
-  });
-});
+      map.easeTo({
+        center: [lng, lat],
+        zoom: Math.max(map.getZoom(), 8),   // target zoom when you “drill in”
+        duration: 800,
+        padding: { top: 80, right: 10, bottom: 10, left: leftPad }
+      });
+    });
 
     // Public access hover popup (single handler)
     const popup = document.createElement('div');
@@ -1735,17 +2061,17 @@ map.on('click', 'FG Region Labels', (e) => {
     });
 
     map.on('click', (e) => {
-  const features = map.queryRenderedFeatures(e.point, {
-    layers: ['data-points-all'] // your point layer
-  });
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ['data-points-all'] // your point layer
+      });
 
-  if (features.length === 0) {
-    // Reset selection + hover when basemap is clicked
-    selectedFeatureId = null;
-    hoverFeatureId = null;
-    updateIconSize();
-  }
-});
+      if (features.length === 0) {
+        // Reset selection + hover when basemap is clicked
+        selectedFeatureId = null;
+        hoverFeatureId = null;
+        updateIconSize();
+      }
+    });
 
     let hoverDirty = false;
     map.on('mousemove', 'data-points-all', e => {
@@ -1755,7 +2081,7 @@ map.on('click', 'FG Region Labels', (e) => {
         hoverFeatureId = hoveredId;
         if (!hoverDirty) {
           hoverDirty = true;
-          requestAnimationFrame(()=>{ hoverDirty = false; updateIconSize(); });
+          requestAnimationFrame(() => { hoverDirty = false; updateIconSize(); });
         }
       }
     });
@@ -1794,11 +2120,11 @@ map.on('click', 'FG Region Labels', (e) => {
     }
 
     map.on('mouseenter', 'AW Rivers-line', () => { hoveringLayers.add('line'); updateCursor(); });
-    map.on('mouseleave', 'AW Rivers-line', () => { hoveringLayers.delete('line'); updateCursor(); if (hoveringLayers.size===0) setRiverHover(null); });
+    map.on('mouseleave', 'AW Rivers-line', () => { hoveringLayers.delete('line'); updateCursor(); if (hoveringLayers.size === 0) setRiverHover(null); });
     map.on('mousemove', 'AW Rivers-line', (e) => { const f = e.features?.[0]; setRiverHover(f ? f.id : null); });
 
     map.on('mouseenter', 'AW Rivers-fill', () => { hoveringLayers.add('fill'); updateCursor(); });
-    map.on('mouseleave', 'AW Rivers-fill', () => { hoveringLayers.delete('fill'); updateCursor(); if (hoveringLayers.size===0) setRiverHover(null); });
+    map.on('mouseleave', 'AW Rivers-fill', () => { hoveringLayers.delete('fill'); updateCursor(); if (hoveringLayers.size === 0) setRiverHover(null); });
     map.on('mousemove', 'AW Rivers-fill', (e) => { const f = e.features?.[0]; setRiverHover(f ? f.id : null); });
 
     // Search (unchanged logic; could be debounced later if needed)
@@ -1880,4 +2206,5 @@ map.on('click', 'FG Region Labels', (e) => {
   </script>
 
 </body>
+
 </html>
