@@ -462,18 +462,19 @@
                 <label class="option"><input type="checkbox" data-role="all" checked> Select all</label>
 
                 <!-- Values map to your existing 'point_type' field -->
-                <label class="option"><input type="checkbox" value="AccessPoint" checked> F&amp;G Access</label>
-                <label class="option"><input type="checkbox" value="WalkingFGAccess" checked> F&amp;G Tramping Access</label>
+                <label class="option"><input type="checkbox" value="AccessPoint" data-values='["AccessPoint","Parking","Warning"]' checked> F&amp;G Access</label>
+                <label class="option"><input type="checkbox" value="TrampingAccess" checked> F&amp;G Tramping Access</label>
                 <label class="option"><input type="checkbox" value="4x4Access" checked> F&amp;G 4x4 Access</label>
                 <label class="option"><input type="checkbox" value="BoatRamp" checked> Boat ramp</label>
                 <label class="option"><input type="checkbox" value="FlyFishing" checked> Fishing spot - Fly</label>
                 <label class="option"><input type="checkbox" value="Jigging" checked> Fishing spot - Jigging</label>
                 <label class="option"><input type="checkbox" value="Trolling" checked> Fishing spot - Trolling</label>
-                <label class="option"><input type="checkbox" value="Store" checked> Fly fishing stores</label>
+                <label class="option"><input type="checkbox" value="Shop" checked> Fly fishing stores</label>
                 <label class="option"><input type="checkbox" value="Lodge" checked> Fly fishing lodgees</label>
                 <label class="option"><input type="checkbox" value="Hut" checked> DOC Huts</label>
                 <label class="option"><input type="checkbox" value="Campsite" checked> DOC Campgrounds</label>
-                <label class="option"><input type="checkbox" value="FlowStation" checked> River flow monitoring stations</label>
+                <label class="option"> <input type="checkbox" value="Beat" data-values='["BeatYR","BeatBY","BeatBR"]' checked> Beat markers </label>
+
               </div>
             </div>
           </div>
@@ -584,13 +585,41 @@
               const el = filtersRoot.querySelector(`.group[data-group="${group}"] input[type="radio"]:checked`);
               return el ? el.value : null;
             };
-            const getChecks = (group)=> {
-              const allBox = filtersRoot.querySelector(`.group[data-group="${group}"] input[data-role="all"]`);
-              const boxes = [...filtersRoot.querySelectorAll(`.group[data-group="${group}"] input[type="checkbox"]:not([data-role="all"])`)];
-              if (allBox && allBox.checked) return null; // null = all selected
-              const selected = boxes.filter(b=>b.checked).map(b=>b.value);
-              return selected.length ? selected : []; // [] = none
-            };
+           // Replace your current getChecks() with this version
+const getChecks = (group) => {
+  const groupEl = filtersRoot.querySelector(`.group[data-group="${group}"]`);
+  if (!groupEl) return null;
+
+  const allBox = groupEl.querySelector('input[data-role="all"]');
+  const boxes = [...groupEl.querySelectorAll('input[type="checkbox"]:not([data-role="all"])')];
+
+  // If "Select all" is checked or no boxes at all, treat as ALL
+  if ((allBox && allBox.checked) || boxes.length === 0) return null;
+
+  // Gather checked boxes and EXPAND umbrellas with data-values
+  const out = [];
+  for (const b of boxes) {
+    if (!b.checked) continue;
+
+    const dv = b.dataset.values; // e.g. '["BeatYR","BeatBY","BeatBR"]' or "A,B,C"
+    if (dv) {
+      try {
+        out.push(...JSON.parse(dv));                    // JSON array
+      } catch {
+        out.push(...dv.split(',').map(s => s.trim()).filter(Boolean)); // CSV fallback
+      }
+    } else if (b.value) {
+      out.push(b.value);
+    }
+  }
+
+  // If none checked, return [] (your caller hides all)
+  if (out.length === 0) return [];
+
+  // De-dup for safety
+  return [...new Set(out)];
+};
+
             const setVisibility = (ids, visible)=>{
               ids.forEach(id=>{
                 if (map.getLayer(id)) map.setLayoutProperty(id,'visibility', visible ? 'visible':'none');
@@ -677,6 +706,7 @@ function safeSetFilter(layerId, expr) {
               }
              (LAYERS.points || []).forEach(id => safeSetFilter(id, expr));
             }
+            
 
             // One change handler for all groups, debounced
             filtersRoot.addEventListener('change', (e)=>{
