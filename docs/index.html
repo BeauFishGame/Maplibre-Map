@@ -1755,7 +1755,16 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
       'Non-Primary Parcel', 0.10,
       /* default */           0.80
     ],
-    0.12   // scale factor at max zoom
+    0.15   // scale factor at max zoom
+  ],
+  20, [
+    '*',
+    [
+      'match', ['get', 'DataType'],
+      'Non-Primary Parcel', 0.10,
+      /* default */           0.80
+    ],
+    0.15   // scale factor at max zoom
   ]
 ]
     }
@@ -1828,8 +1837,8 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
                 '#ec7983'
               ],
               ['case',
-                ['boolean', ['feature-state', 'selected'], false], '#0c4194',
-                ['boolean', ['feature-state', 'highlight'], false], '#0c4194',
+                ['boolean', ['feature-state', 'selected'], false], '#0b46a1',
+                ['boolean', ['feature-state', 'highlight'], false], '#0b46a1',
                 '#0F52BA'
               ]
             ],
