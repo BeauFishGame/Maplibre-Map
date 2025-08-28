@@ -1719,35 +1719,49 @@ if (fishery && fishery !== '__ALL__') {
         });
       }
 
-      if (!map.getLayer('PublicAccessAreas-fill')) {
-        map.addLayer({
-          id: 'PublicAccessAreas-fill',
-          type: 'fill',
-          source: 'PublicAccessAreas',
-          'source-layer': 'mylayer',
-          minzoom: 12,
-          paint: {
-            'fill-color': [
-              'match', ['get', 'DataType'],
-              'DOC Conservation Area', '#2d6c3e',
-              'Esplanade Reserve', '#66f0cb',
-              'Esplanade Strip', '#ff66dc',
-              'Hydro Parcel', '#abecff',
-              'Non-Primary Parcel', '#ffcc66',
-              'Public Access Easement', '#ffd8f1',
-              'Reserve Land', '#a9cb66',
-              'Road Parcel', '#cca3e1',
-              'Walkway Easement', '#ffb2b2',
-              '#cccccc'
-            ],
-            'fill-opacity': [
-              'match', ['get', 'DataType'],
-              'Non-Primary Parcel', .1,
-              .8
-            ],
-          }
-        }, insertBeforeLayer);
-      }
+      
+if (!map.getLayer('PublicAccessAreas-fill')) {
+  map.addLayer({
+    id: 'PublicAccessAreas-fill',
+    type: 'fill',
+    source: 'PublicAccessAreas',
+    'source-layer': 'mylayer',
+    minzoom: 12,
+    paint: {
+      'fill-color': [
+        'match', ['get', 'DataType'],
+        'DOC Conservation Area', '#2d6c3e',
+        'Esplanade Reserve',     '#66f0cb',
+        'Esplanade Strip',       '#ff66dc',
+        'Hydro Parcel',          '#abecff',
+        'Non-Primary Parcel',    '#ffcc66',
+        'Public Access Easement','#ffd8f1',
+        'Reserve Land',          '#a9cb66',
+        'Road Parcel',           '#cca3e1',
+        'Walkway Easement',      '#ffb2b2',
+        /* default */            '#cccccc'
+      ],
+      'fill-opacity': [
+  'interpolate', ['linear'], ['zoom'],
+  12, [
+    'match', ['get', 'DataType'],
+    'Non-Primary Parcel', 0.10,
+    /* default */           0.80
+  ],
+  18, [
+    '*',
+    [
+      'match', ['get', 'DataType'],
+      'Non-Primary Parcel', 0.10,
+      /* default */           0.80
+    ],
+    0.12   // scale factor at max zoom
+  ]
+]
+    }
+  }, insertBeforeLayer);
+}
+
 
       if (!sources['AW Rivers']) {
         map.addSource('AW Rivers', {
