@@ -1092,7 +1092,7 @@ if (fishery && fishery !== '__ALL__') {
     const styleURL = 'https://basemaps.linz.govt.nz/v1/styles/topo-raster.json?api=d01hep5551e30kxb7w85hck49tp';
     // const TODAY_UNIX = Math.floor(Date.now()/1000); // cache once per load 
 
-    const TODAY_UNIX = 1786611515
+    const TODAY_UNIX = 1760266811
     const map = new maplibregl.Map({
       container: 'map',
       style: styleURL,
@@ -1923,7 +1923,7 @@ if (fishery && fishery !== '__ALL__') {
       if (!sources['data-points']) {
         map.addSource('data-points', {
           type: 'geojson',
-          data: 'https://data.fishandgameaccessmap.org/secure-geojson/AccessPoints.geojson?token=fish-access-2025',
+          data: 'https://data.fishandgameaccessmap.org/secure-geojson/AccessPoints.geojson',
           generateId: true
         });
       }
