@@ -1229,6 +1229,8 @@ if (fishery && fishery !== '__ALL__') {
         description: "Description",
         additional_requirements: "Additional Requirements",
         more_info_url: "More Info",
+        bearing: "Bearing",
+        id_code: "ID Code",
       };
 
       let typeImage = null;
@@ -1962,7 +1964,8 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
             'icon-image': ['concat', ['get', 'point_type'], '-icon'],
             'icon-size': getIconSizeExpr(selectedFeatureId, hoverFeatureId), /* final expr at creation */
             'icon-anchor': ['get', 'anchor'],
-            'icon-allow-overlap': true
+            'icon-allow-overlap': true,     
+           'icon-rotate': ['get', 'bearing'] 
           }
         });
       }
