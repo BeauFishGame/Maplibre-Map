@@ -1367,6 +1367,7 @@ if (fishery && fishery !== '__ALL__') {
       { name: 'Warning-icon', url: 'images/Warning.png' },
 
       { name: 'Parking-icon', url: 'images/Parking.png' },
+      { name: 'LandmarkPole-icon', url: 'images/LandmarkPole.png' },
 
 
       { name: 'Shop-icon', url: 'images/Store.png' },
@@ -1720,7 +1721,6 @@ if (fishery && fishery !== '__ALL__') {
           minzoom: 0, maxzoom: 13
         });
       }
-
       
 if (!map.getLayer('PublicAccessAreas-fill')) {
   map.addLayer({
@@ -1965,7 +1965,7 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
             'icon-size': getIconSizeExpr(selectedFeatureId, hoverFeatureId), /* final expr at creation */
             'icon-anchor': ['get', 'anchor'],
             'icon-allow-overlap': true,     
-           'icon-rotate': ['get', 'bearing'] 
+            'icon-rotate': ['get', 'bearing'] 
           }
         });
       }
