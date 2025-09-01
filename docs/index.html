@@ -863,7 +863,7 @@
             window.__filtersWired = true;
 
             const LAYERS = {
-              waterways: ['AW Rivers-line', 'AW Rivers-fill'],
+              waterways: ['Waterways-line', 'Waterways-fill'],
               points: ['data-points-all'],
               publicAccess: ['PublicAccessAreas-fill'],
               regions: ['FG Regions-line', 'FG Region Labels']
@@ -1046,7 +1046,7 @@ if (fishery && fishery !== '__ALL__') {
 
             // Apply once layers are present
             function applyAllIfReady() {
-              if (map.getLayer('AW Rivers-line') && map.getLayer('data-points-all')) {
+              if (map.getLayer('Waterways-line') && map.getLayer('data-points-all')) {
                 applyWaterwayFilters();
                 applyPointFilters();
               }
@@ -1241,7 +1241,7 @@ if (fishery && fishery !== '__ALL__') {
           typeImage = pointTypeDefaultImages[props.point_type] || null;
         }
         // River features
-      } else if (feature.layer && (feature.layer.id === 'AW Rivers-line' || feature.layer.id === 'AW Rivers-fill')) {
+      } else if (feature.layer && (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill')) {
         typeImage = riverDefaultImage;
       }
 
@@ -1349,8 +1349,8 @@ if (fishery && fishery !== '__ALL__') {
         ? ['==', ['id'], -1]     // hide when nothing selected
         : ['==', ['id'], selectedRiverId];
 
-      if (map.getLayer('AW Rivers-selected-halo')) {
-        map.setFilter('AW Rivers-selected-halo', visibleExpr);
+      if (map.getLayer('Waterways-selected-halo')) {
+        map.setFilter('Waterways-selected-halo', visibleExpr);
       }
     }
 
@@ -1637,10 +1637,10 @@ if (fishery && fishery !== '__ALL__') {
         hoverFeatureId = null;
         updateIconSize();
 
-      } else if (feature.layer.id === 'AW Rivers-line' || feature.layer.id === 'AW Rivers-fill') {
+      } else if (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill') {
         selectedRiver = feature;
         map.setFeatureState(
-          { source: 'AW Rivers', sourceLayer: 'waterways', id: feature.id },
+          { source: 'Waterways', sourceLayer: 'waterways', id: feature.id },
           { selected: true }
         );
 
@@ -1657,7 +1657,7 @@ if (fishery && fishery !== '__ALL__') {
       if (selectedRiver) {
         try {
           map.setFeatureState(
-            { source: 'AW Rivers', sourceLayer: 'waterways', id: selectedRiver.id },
+            { source: 'Waterways', sourceLayer: 'waterways', id: selectedRiver.id },
             { selected: false, highlight: false }
           );
         } catch (e) { }
@@ -1774,20 +1774,20 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
 }
 
 
-      if (!sources['AW Rivers']) {
-        map.addSource('AW Rivers', {
+      if (!sources['Waterways']) {
+        map.addSource('Waterways', {
           type: 'vector',
           tiles: ['https://data.fishandgameaccessmap.org/all_waters/{z}/{x}/{y}'],
           minzoom: 0, maxzoom: 13
         });
       }
 
-      if (!map.getLayer('AW Rivers-line')) {
+      if (!map.getLayer('Waterways-line')) {
         map.addLayer({
-          id: 'AW Rivers-line',
+          id: 'Waterways-line',
           type: 'line',
           minzoom: 7,
-          source: 'AW Rivers',
+          source: 'Waterways',
           'source-layer': 'waterways',
           layout: { 'line-join': 'round', 'line-cap': 'round' },
           paint: {
@@ -1799,8 +1799,8 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
               ],
               ['case',
                 ['boolean', ['feature-state', 'selected'], false], '#ac261f',
-                ['boolean', ['feature-state', 'highlight'], false], '#f42f58',
-                '#f42f58'
+                ['boolean', ['feature-state', 'highlight'], false], '#DE0125',
+                '#DE0125'
               ],
               ['case',
                 ['boolean', ['feature-state', 'selected'], false], '#3949ab',
@@ -1819,12 +1819,12 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
         }, insertBeforeLayer);
       }
 
-      if (!map.getLayer('AW Rivers-fill')) {
+      if (!map.getLayer('Waterways-fill')) {
         map.addLayer({
-          id: 'AW Rivers-fill',
+          id: 'Waterways-fill',
           type: 'fill',
           minzoom: 7,
-          source: 'AW Rivers',
+          source: 'Waterways',
           'source-layer': 'waterways',
           paint: {
             'fill-color': [
@@ -1834,9 +1834,9 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
                 ['>', TODAY_UNIX, ['get', 'close_date_unix']]
               ],
               ['case',
-                ['boolean', ['feature-state', 'selected'], false], '#f42f58 ',
-                ['boolean', ['feature-state', 'highlight'], false], '#f42f58 ',
-                '#ec7983'
+                ['boolean', ['feature-state', 'selected'], false], '#DE0125',
+                ['boolean', ['feature-state', 'highlight'], false], '#DE0125',
+                '#f7022a'
               ],
               ['case',
                 ['boolean', ['feature-state', 'selected'], false], '#0b46a1',
@@ -1853,14 +1853,14 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
         }, insertBeforeLayer);
       }
 
-      // --- Selected-only AW Rivers stroke (wide halo only) ---
+      // --- Selected-only Waterways stroke (wide halo only) ---
 
-      // --- Selected-only AW Rivers stroke (wide halo only) ---
-      if (!map.getLayer('AW Rivers-selected-halo')) {
+      // --- Selected-only Waterways stroke (wide halo only) ---
+      if (!map.getLayer('Waterways-selected-halo')) {
         map.addLayer({
-          id: 'AW Rivers-selected-halo',
+          id: 'Waterways-selected-halo',
           type: 'line',
-          source: 'AW Rivers',
+          source: 'Waterways',
           'source-layer': 'waterways',
           minzoom: 7,
           layout: { 'line-join': 'round', 'line-cap': 'round' },
@@ -1872,12 +1872,12 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
                 ['>', TODAY_UNIX, ['get', 'close_date_unix']]
               ],
               ['case',
-                ['boolean', ['feature-state', 'selected'], false], '#ac261f',
+                ['boolean', ['feature-state', 'selected'], false], '#9B0019', ///
                 ['boolean', ['feature-state', 'highlight'], false], '#f42f58',
                 '#f42f58'
               ],
               ['case',
-                ['boolean', ['feature-state', 'selected'], false], '#002366',
+                ['boolean', ['feature-state', 'selected'], false], '#002366', ///
                 ['boolean', ['feature-state', 'highlight'], false], '#4ca6e6',
                 '#4ca6e6'
               ]
@@ -2078,11 +2078,11 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
     // Unified click handler to prioritize points over rivers
     map.on('click', (e) => {
       const features = map.queryRenderedFeatures(e.point, {
-        layers: ['data-points-all', 'AW Rivers-line', 'AW Rivers-fill']
+        layers: ['data-points-all', 'Waterways-line', 'Waterways-fill']
       });
       if (features.length === 0) { clearSelection(); card.style.display = 'none'; return; }
       const pointFeature = features.find(f => f.layer.id === 'data-points-all');
-      const riverFeature = features.find(f => f.layer.id === 'AW Rivers-line') || features.find(f => f.layer.id === 'AW Rivers-fill');
+      const riverFeature = features.find(f => f.layer.id === 'Waterways-line') || features.find(f => f.layer.id === 'Waterways-fill');
       if (pointFeature) selectFeature(pointFeature); else if (riverFeature) selectFeature(riverFeature);
     });
 
@@ -2135,23 +2135,23 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
         hoverScheduled = false;
         if (hoveredRiverId !== nextHoverId) {
           if (hoveredRiverId != null) {
-            map.setFeatureState({ source: 'AW Rivers', sourceLayer: 'waterways', id: hoveredRiverId }, { highlight: false });
+            map.setFeatureState({ source: 'Waterways', sourceLayer: 'waterways', id: hoveredRiverId }, { highlight: false });
           }
           hoveredRiverId = nextHoverId;
           if (hoveredRiverId != null) {
-            map.setFeatureState({ source: 'AW Rivers', sourceLayer: 'waterways', id: hoveredRiverId }, { highlight: true });
+            map.setFeatureState({ source: 'Waterways', sourceLayer: 'waterways', id: hoveredRiverId }, { highlight: true });
           }
         }
       });
     }
 
-    map.on('mouseenter', 'AW Rivers-line', () => { hoveringLayers.add('line'); updateCursor(); });
-    map.on('mouseleave', 'AW Rivers-line', () => { hoveringLayers.delete('line'); updateCursor(); if (hoveringLayers.size === 0) setRiverHover(null); });
-    map.on('mousemove', 'AW Rivers-line', (e) => { const f = e.features?.[0]; setRiverHover(f ? f.id : null); });
+    map.on('mouseenter', 'Waterways-line', () => { hoveringLayers.add('line'); updateCursor(); });
+    map.on('mouseleave', 'Waterways-line', () => { hoveringLayers.delete('line'); updateCursor(); if (hoveringLayers.size === 0) setRiverHover(null); });
+    map.on('mousemove', 'Waterways-line', (e) => { const f = e.features?.[0]; setRiverHover(f ? f.id : null); });
 
-    map.on('mouseenter', 'AW Rivers-fill', () => { hoveringLayers.add('fill'); updateCursor(); });
-    map.on('mouseleave', 'AW Rivers-fill', () => { hoveringLayers.delete('fill'); updateCursor(); if (hoveringLayers.size === 0) setRiverHover(null); });
-    map.on('mousemove', 'AW Rivers-fill', (e) => { const f = e.features?.[0]; setRiverHover(f ? f.id : null); });
+    map.on('mouseenter', 'Waterways-fill', () => { hoveringLayers.add('fill'); updateCursor(); });
+    map.on('mouseleave', 'Waterways-fill', () => { hoveringLayers.delete('fill'); updateCursor(); if (hoveringLayers.size === 0) setRiverHover(null); });
+    map.on('mousemove', 'Waterways-fill', (e) => { const f = e.features?.[0]; setRiverHover(f ? f.id : null); });
 
     // Search (unchanged logic; could be debounced later if needed)
     const inputEl = document.getElementById('search');
@@ -2213,9 +2213,9 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
       showCard(f);
 
       if (isRiver) {
-        map.setFilter('AW Rivers-line', null);
-        map.setFilter('AW Rivers-fill', null);
-        map.setFeatureState({ source: 'AW Rivers', sourceLayer: 'waterways', id: f.id }, { selected: true });
+        map.setFilter('Waterways-line', null);
+        map.setFilter('Waterways-fill', null);
+        map.setFeatureState({ source: 'Waterways', sourceLayer: 'waterways', id: f.id }, { selected: true });
         selectedRiver = { id: f.id };
       } else {
         selectedFeatureId = f.id;
