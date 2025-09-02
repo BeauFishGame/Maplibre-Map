@@ -771,7 +771,7 @@
                   Access</label>
                 <label class="option"><input type="checkbox" value="4x4Access" checked> F&amp;G 4x4 Access</label>
                 <label class="option"><input type="checkbox" value="BoatRamp" checked> Boat ramp</label>
-                <label class="option"><input type="checkbox" value="FlyFishing" checked> Fishing spot - Fly</label>
+                <label class="option"><input type="checkbox" value="Hotspot" checked> Fishing Hotspot</label>
                 <label class="option"><input type="checkbox" value="Jigging" checked> Fishing spot - Jigging</label>
                 <label class="option"><input type="checkbox" value="Trolling" checked> Fishing spot - Trolling</label>
                 <label class="option"><input type="checkbox" value="Shop" checked> Fly fishing stores</label>
@@ -1211,7 +1211,7 @@ function normalizeUrl(raw) {
       'Trolling': 'images/Slide5.PNG',
       'Toilet': 'images/Slide6.PNG',
       'Jigging': 'images/Slide7.PNG',
-      'FlyFishing': 'images/Slide8.PNG',
+      'Hotspot': 'images/Slide8.PNG',
       'Warning': 'images/Slide9.PNG',
       'DOC Hut': 'images/Slide10.PNG',
       'DOC campground': 'images/Slide11.PNG',
@@ -1379,11 +1379,13 @@ for (const [key, label] of Object.entries(displayFields)) {
       { name: 'Parking-icon', url: 'images/Parking.png' },
       { name: 'LandmarkPole-icon', url: 'images/LandmarkPole.png' },
 
-
       { name: 'Shop-icon', url: 'images/Store.png' },
       { name: 'Lodge-icon', url: 'images/Lodge.png' },
 
-      { name: 'FlyFishing-icon', url: 'images/Flyfishing.png' },
+      
+      { name: 'RegBoundary-icon', url: 'images/RegBoundary.png' },
+      { name: 'BuyDW-icon', url: 'images/BuyDW.png' },
+      { name: 'Hotspot-icon', url: 'images/Hotspot.png' },
       { name: 'Trolling-icon', url: 'images/Trolling.png' },
       { name: 'Jigging-icon', url: 'images/Jigging.png' },
 
@@ -1930,8 +1932,6 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
           paint: { 'line-color': '#008678', 'line-width': 2, 'line-opacity': 1 }
         }, insertBeforeLayer);
       }
-
-
 
 
       if (!sources['Routes']) map.addSource('Routes', { type: 'geojson', data: 'https://data.fishandgameaccessmap.org/secure-geojson/Routes.geojson?token=fish-access-2025' });
