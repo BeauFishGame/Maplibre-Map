@@ -1176,27 +1176,26 @@ if (fishery && fishery !== '__ALL__') {
       }
     }
 
+function normalizeUrl(raw) {
+  if (!raw) return null;
+  let u = String(raw).trim();
+  if (!u) return null;
 
-    function normalizeUrl(raw) {
-      if (!raw) return null;
-      let u = String(raw).trim();
-      if (!u) return null;
+  // block dangerous protocols
+  const lower = u.toLowerCase();
+  if (lower.startsWith('javascript:') || lower.startsWith('data:')) return null;
 
-      // block dangerous protocols
-      const lower = u.toLowerCase();
-      if (lower.startsWith('javascript:') || lower.startsWith('data:')) return null;
+  // add https:// if missing
+  if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
 
-      // add https:// if missing
-      if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
-
-      try {
-        const url = new URL(u);
-        if (!/^https?:$/.test(url.protocol)) return null;
-        return url.href;
-      } catch {
-        return null;
-      }
-    }
+  try {
+    const url = new URL(u);
+    if (!/^https?:$/.test(url.protocol)) return null;
+    return url.href; // <-- return string like before
+  } catch {
+    return null;
+  }
+}
 
 
     const card = document.getElementById('properties');
@@ -1297,20 +1296,31 @@ if (fishery && fishery !== '__ALL__') {
       }
 
       content += `<hr><ul class="card-list">`;
-      for (const [key, label] of Object.entries(displayFields)) {
-        const val = props[key];
-        if (val === undefined || val === '') continue;
 
-        if (key === 'more_info_url') {
-          const href = normalizeUrl(val);
-          if (href) {
-            const host = new URL(href).hostname.replace(/^www\./, '');
-            content += `<li><b>${label}</b>: <a href="${href}" target="_blank" rel="noopener noreferrer">${host}</a></li>`;
-          }
-        } else {
-          content += `<li><b>${label}</b>: ${val}</li>`;
-        }
-      }
+for (const [key, label] of Object.entries(displayFields)) {
+  const val = props[key];
+  if (val === undefined || val === '') continue;
+
+  if (key === 'more_info_url') {
+    const href = normalizeUrl(val);
+    if (href) {
+      const name = props.more_info_name;
+      const hasName = name != null
+        && String(name).trim() !== ''
+        && !/^(na|n\/a|null|undefined)$/i.test(String(name).trim());
+
+      const text = hasName
+        ? String(name).trim()
+        : new URL(href).hostname.replace(/^www\./, ''); // tidy fallback
+
+      content += `<li><b>${label}</b>: <a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`;
+    }
+  } else {
+    content += `<li><b>${label}</b>: ${val}</li>`;
+  }
+}
+
+
 
       if (props.URL1 && props.URL1.trim() !== "") {
         content += `<li><b>More Information</b>: <a href="${props.URL1}" target="_blank" rel="noopener noreferrer">Click here</a></li>`;
@@ -1933,7 +1943,7 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
           type: 'line',
           source: 'Routes',
           minzoom: 9.5,
-          paint: { 'line-width': ['get', 'line_width'], 'line-color': ['get', 'line_color'], 'line-dasharray': [2, 1] }
+          paint: { 'line-width': 3.5, 'line-color': ['get', 'line_color'], 'line-dasharray': [2, 1] }
         });
       }
 
