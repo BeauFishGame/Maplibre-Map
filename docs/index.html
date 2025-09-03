@@ -857,6 +857,19 @@
             });
           }
 
+          // Helpers available to ALL functions
+function isBlankish(v) {
+  if (v === null || v === undefined) return true;
+  const s = String(v).trim();
+  if (!s) return true;
+  return /^(na|n\/a|null|undefined|none)$/i.test(s);
+}
+function safeGet(obj, key) {
+  const v = obj?.[key];
+  return isBlankish(v) ? null : v;
+}
+
+
           // Expose a function so we can wire MapLibre once the map exists
           window.setupAWFilters = function (map) {
             if (window.__filtersWired) return;
@@ -895,6 +908,9 @@
             };
 
             const filtersRoot = document.getElementById('filters-body');
+
+
+            
 
             // Helpers
             const getRadio = (group) => {
@@ -1232,21 +1248,32 @@ function normalizeUrl(raw) {
         id_code: "ID Code",
       };
 
-      let typeImage = null;
+// ---- pick a default image based on feature type ----
+let typeImage = null;
+const looksLikeRiver =
+  !!(props.Water || props.water_type || props.open_date_unix || props.close_date_unix);
+const looksLikePoint =
+  !!(props.point_type || feature.geometry?.type === 'Point');
 
-      // Point features
-      if (feature.layer && feature.layer.id === 'data-points-all') {
-        if (props.point_type && props.point_type.toLowerCase() !== 'na') {
-          typeImage = pointTypeDefaultImages[props.point_type] || null;
-        }
-        // River features
-      } else if (feature.layer && (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill')) {
-        typeImage = riverDefaultImage;
-      }
+if (feature.layer && feature.layer.id === 'data-points-all') {
+  if (props.point_type && props.point_type.toLowerCase() !== 'na') {
+    typeImage = pointTypeDefaultImages[props.point_type] || null;
+  }
+} else if (
+  (feature.layer && (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill')) ||
+  (looksLikeRiver && !looksLikePoint)
+) {
+  typeImage = riverDefaultImage;
+}
 
-      // Add any extra images from properties
-      const extraImages = [props.image1, props.Image2, props.image3].filter(url => url && url.trim() !== '');
-      const photoList = (typeImage ? [typeImage] : []).concat(extraImages);
+// ---- images (sanitize, drop bad URLs) ----
+const extrasRaw = [props.image1, props.Image2, props.image3]
+  .map(u => (u && normalizeUrl(u)) || null)
+  .filter(Boolean);
+
+const photoList = (typeImage ? [typeImage] : []).concat(extrasRaw);
+
+
 
       let content = `
 <div class="map-overlay-inner">
@@ -1298,33 +1325,30 @@ function normalizeUrl(raw) {
       content += `<hr><ul class="card-list">`;
 
 for (const [key, label] of Object.entries(displayFields)) {
-  const val = props[key];
-  if (val === undefined || val === '') continue;
+  const raw = props[key];
+  if (isBlankish(raw)) continue;
 
   if (key === 'more_info_url') {
-    const href = normalizeUrl(val);
+    const href = normalizeUrl(raw);
     if (href) {
-      const name = props.more_info_name;
-      const hasName = name != null
-        && String(name).trim() !== ''
-        && !/^(na|n\/a|null|undefined)$/i.test(String(name).trim());
-
-      const text = hasName
-        ? String(name).trim()
-        : new URL(href).hostname.replace(/^www\./, ''); // tidy fallback
-
+      const nameRaw = safeGet(props, 'more_info_name');
+      const text = nameRaw ? nameRaw
+                           : new URL(href).hostname.replace(/^www\./, '');
       content += `<li><b>${label}</b>: <a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`;
     }
   } else {
-    content += `<li><b>${label}</b>: ${val}</li>`;
+    content += `<li><b>${label}</b>: ${raw}</li>`;
   }
 }
 
 
 
-      if (props.URL1 && props.URL1.trim() !== "") {
-        content += `<li><b>More Information</b>: <a href="${props.URL1}" target="_blank" rel="noopener noreferrer">Click here</a></li>`;
-      }
+
+     const u1 = normalizeUrl(props.URL1);
+if (u1) {
+  content += `<li><b>More Information</b>: <a href="${u1}" target="_blank" rel="noopener noreferrer">Click here</a></li>`;
+}
+
       content += `</ul></div></div>`; /* close panel-scroll + map-overlay-inner */
       card.innerHTML = content;
       openPanel('card');
@@ -1828,7 +1852,7 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
               ['boolean', ['feature-state', 'highlight'], false], 4,
               3
             ],
-            'line-opacity': .3
+            'line-opacity': .5
           }
         }, insertBeforeLayer);
       }
@@ -1861,7 +1885,8 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
             'fill-opacity': [
               'interpolate', ['linear'], ['zoom'],
               14, .5,
-              14.01, .4
+              17.01, .4,
+              20, .01
             ]
           }
         }, insertBeforeLayer);
@@ -2213,29 +2238,82 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
 
       suggestions.style.display = (riverMatches.length || pointMatches.length) ? 'block' : 'none';
     });
+function selectFeatureFromSearch(f) {
+  const isRiver = typeof f.properties.Water !== 'undefined';
+  const coords = f.geometry.coordinates;
 
-    function selectFeatureFromSearch(f) {
-      const coords = f.geometry.coordinates;
-      clearSelection();
-      map.flyTo({ center: coords, zoom: 12 });
+  clearSelection();
+  // center first so tiles are present
+  map.flyTo({ center: coords, zoom: Math.max(map.getZoom(), 12) });
 
-      const isRiver = f.properties.Water !== undefined;
-      inputEl.value = isRiver ? f.properties.Water : f.properties.title;
-      suggestions.style.display = 'none';
-      showCard(f);
+  // After the move completes, pull the real feature under the crosshair
+  map.once('moveend', () => {
+    const pt = map.project(coords);
+    // small hitbox around the coordinate
+    const bbox = [
+      { x: pt.x - 10, y: pt.y - 10 },
+      { x: pt.x + 10, y: pt.y + 10 }
+    ];
 
-      if (isRiver) {
-        map.setFilter('Waterways-line', null);
-        map.setFilter('Waterways-fill', null);
-        map.setFeatureState({ source: 'Waterways', sourceLayer: 'waterways', id: f.id }, { selected: true });
-        selectedRiver = { id: f.id };
-      } else {
-        selectedFeatureId = f.id;
-        hoverFeatureId = null;
-        updateIconSize();
-        selectedPoint = { id: f.id };
+    let found = null;
+    if (isRiver) {
+      const rivers = map.queryRenderedFeatures([bbox[0], bbox[1]], {
+        layers: ['Waterways-line', 'Waterways-fill']
+      });
+      // optional: try to match on names/section to be robust
+      found = rivers.find(r =>
+        (r.properties?.Water === f.properties.Water) &&
+        (isBlankish(f.properties.Section) || r.properties?.Section === f.properties.Section)
+      ) || rivers[0];
+
+      if (found) {
+        selectFeature(found);
+        return;
       }
+
+      // Fallback: synthesize a river-like feature so showCard gives the default river image
+      found = {
+        type: 'Feature',
+        geometry: f.geometry,
+        properties: f.properties,
+        layer: { id: 'Waterways-line' }, // <- makes showCard treat as river
+        id: f.id
+      };
+      showCard(found);
+      return;
+    } else {
+      const points = map.queryRenderedFeatures([bbox[0], bbox[1]], {
+        layers: ['data-points-all']
+      });
+      // Try to match by title/region if present
+      found = points.find(p =>
+        (p.properties?.title && f.properties?.title && p.properties.title === f.properties.title) ||
+        (p.properties?.Region && f.properties?.Region && p.properties.Region === f.properties.Region)
+      ) || points[0];
+
+      if (found) {
+        selectFeature(found);
+        return;
+      }
+
+      // Fallback: synthesize a point-like feature so showCard can pick default point image
+      found = {
+        type: 'Feature',
+        geometry: f.geometry,
+        properties: f.properties,
+        layer: { id: 'data-points-all' }, // <- makes showCard treat as point
+        id: f.id
+      };
+      showCard(found);
+      return;
     }
+  });
+
+  // keep the input tidy & hide list immediately
+  inputEl.value = isRiver ? (f.properties.Water || '') : (f.properties.title || '');
+  suggestions.style.display = 'none';
+}
+
 
     // Initialize filter wiring now that the map object exists
     if (window.setupAWFilters) window.setupAWFilters(map);
