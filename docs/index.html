@@ -681,6 +681,24 @@
             font-size: 11px;
             opacity: .8
           }
+
+          /* No sticky — just a normal block under the text */
+.regs-cta {
+  margin-top: 16px;
+  text-align: center;
+}
+
+/* Keep your button styling */
+.regs-btn {
+  display: inline-block;
+  text-decoration: none;
+  background: #008678;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
         </style>
 
         <div id="filters-body" class="filters-body">
@@ -1399,24 +1417,14 @@ content += `</ul>`; // close the list first
 const regsHref = getRegionRegUrlFromProps(props);
 if (regsHref) {
   content += `
-    <div style="
-      position: sticky;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      text-align: center;
-      padding: 12px 0;
-      margin-top: 12px;
-      background: linear-gradient(180deg, rgba(255,255,255,0) 0%, #fff 35%);
-    ">
-      <a href="${regsHref}" target="_blank" rel="noopener noreferrer"
-         style="display:inline-block; text-decoration:none; background:#008678; color:#fff;
-                padding:10px 16px; border-radius:6px; font-weight:600;">
+    <div class="regs-cta">
+      <a href="${regsHref}" target="_blank" rel="noopener noreferrer" class="regs-btn">
         Download Full Regional Regulations
       </a>
     </div>
   `;
 }
+
 
 // close the scroller + card shell ONCE
 content += `</div></div>`;  // </div> .panel-scroll, </div> .map-overlay-inner
