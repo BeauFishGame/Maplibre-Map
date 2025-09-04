@@ -2357,6 +2357,32 @@ function selectFeatureFromSearch(f) {
     if (window.setupAWFilters) window.setupAWFilters(map);
     // Expose TODAY_UNIX to filter script
     window.__TODAY_UNIX__ = TODAY_UNIX;
+
+
+map.getCanvas().addEventListener('contextmenu', (ev) => ev.preventDefault());
+
+map.on('contextmenu', (e) => {
+  const { lng, lat } = e.lngLat.wrap();
+
+  // format as "lat<TAB>lng"
+  const textToCopy = `${lng.toFixed(6)}\t${lat.toFixed(6)}`;
+
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    new maplibregl.Popup({ closeButton: false, closeOnClick: false })
+      .setLngLat(e.lngLat)
+      .setHTML(`<div style="font:12px Arial;">
+        Copied: <b>${lng.toFixed(6)}, ${lat.toFixed(6)}</b><br>
+        
+      </div>`)
+      .addTo(map);
+
+    setTimeout(() => {
+      const popups = document.getElementsByClassName("maplibregl-popup");
+      if (popups.length > 0) popups[0].remove();
+    }, 1500);
+  });
+});
+
   </script>
 
 </body>
