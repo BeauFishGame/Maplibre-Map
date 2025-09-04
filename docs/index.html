@@ -869,6 +869,38 @@ function safeGet(obj, key) {
   return isBlankish(v) ? null : v;
 }
 
+const REGION_REG_URLS = {
+  1: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.03-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Northland-V2-WEB.pdf",
+  2: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Auckland-Waikato-V4-WEB.pdf",  // Auckland/Waikato
+  3: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Eastern-V3-WEB.pdf",  // Eastern
+  4: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Taranaki-V2-WEB.pdf", 
+  5: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.03-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Hawkes-Bay-V3-WEB.pdf",
+  6: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Wellington-V3-WEB.pdf",
+  7: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Nelson-Marlborough-V2-WEB.pdf",
+  8: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.01-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-North-Canterbury-V3-WEB.pdf",
+  9: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-25-SI-West-Coast-V3-WEB.pdf",
+  10: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.01-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Central-South-Island-V5-WEB.pdf",
+  11: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.01-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Otago-V3-WEB.pdf",
+  12: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Southland-V5-WEB.pdf",
+  13: "https://www.doc.govt.nz/parks-and-recreation/places-to-go/central-north-island/places/taupo-trout-fishery/other-pages/rules-and-regulation---what-you-need-to-know/"
+};
+
+
+function getRegionRegUrlFromProps(props) {
+  // accept RegionCode as number or string; treat NA-ish as missing
+  const raw =
+    props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
+
+  // reuse your isBlankish if present
+  if (typeof isBlankish === "function" && isBlankish(raw)) return null;
+
+  const rc = Number.parseInt(String(raw).trim(), 10);
+  if (!Number.isInteger(rc) || rc < 1 || rc > 13) return null;
+
+  // only return if we actually have a URL for this code
+  return REGION_REG_URLS[rc] || null;
+}
+
 
           // Expose a function so we can wire MapLibre once the map exists
           window.setupAWFilters = function (map) {
@@ -1107,8 +1139,8 @@ if (fishery && fishery !== '__ALL__') {
   <script>
     const styleURL = 'https://basemaps.linz.govt.nz/v1/styles/topo-raster.json?api=d01hep5551e30kxb7w85hck49tp';
     // const TODAY_UNIX = Math.floor(Date.now()/1000); // cache once per load 
-    //  1760266811 -  Oct 12 2025
-    const TODAY_UNIX = 1787842134
+    //  1760266811 -  Oct 12 2025  1787842134 
+    const TODAY_UNIX = 1760266811
     const map = new maplibregl.Map({
       container: 'map',
       style: styleURL,
@@ -1151,7 +1183,21 @@ if (fishery && fishery !== '__ALL__') {
       }
     });
 
+// Selection state used by selectFeature/unselectFeatures
+let selectedPoint = null;
+let selectedRiver = null;
+let selectedRiverId = null;
 
+// Keep the selected river halo layer in sync (or hidden when none)
+function updateSelectedRiverLayers() {
+  const filterExpr = (selectedRiverId == null)
+    ? ['==', ['id'], -1]                // hide halo
+    : ['==', ['id'], selectedRiverId];  // show only the selected one
+
+  if (map.getLayer('Waterways-selected-halo')) {
+    map.setFilter('Waterways-selected-halo', filterExpr);
+  }
+}
     function openPanel(which) {
       const cardEl = document.getElementById('properties');
       const filtersEl = document.getElementById('combined-filters');
@@ -1322,7 +1368,11 @@ const photoList = (typeImage ? [typeImage] : []).concat(extrasRaw);
         content += `<div class="card-subtitle subtitle-region">${props.Region || props.region} Fish & Game Region</div>`;
       }
 
+
+
       content += `<hr><ul class="card-list">`;
+
+     
 
 for (const [key, label] of Object.entries(displayFields)) {
   const raw = props[key];
@@ -1339,53 +1389,41 @@ for (const [key, label] of Object.entries(displayFields)) {
   } else {
     content += `<li><b>${label}</b>: ${raw}</li>`;
   }
+  
 }
 
+// --- Region regulations button/link (only if RegionCode is valid) ---
+// NOTE: keep this INSIDE .panel-scroll so it sticks to the bottom of the scroller
+content += `</ul>`; // close the list first
 
-
-
-     const u1 = normalizeUrl(props.URL1);
-if (u1) {
-  content += `<li><b>More Information</b>: <a href="${u1}" target="_blank" rel="noopener noreferrer">Click here</a></li>`;
+const regsHref = getRegionRegUrlFromProps(props);
+if (regsHref) {
+  content += `
+    <div style="
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      padding: 12px 0;
+      margin-top: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0) 0%, #fff 35%);
+    ">
+      <a href="${regsHref}" target="_blank" rel="noopener noreferrer"
+         style="display:inline-block; text-decoration:none; background:#008678; color:#fff;
+                padding:10px 16px; border-radius:6px; font-weight:600;">
+        View Region Regulations
+      </a>
+    </div>
+  `;
 }
 
-      content += `</ul></div></div>`; /* close panel-scroll + map-overlay-inner */
-      card.innerHTML = content;
-      openPanel('card');
+// close the scroller + card shell ONCE
+content += `</div></div>`;  // </div> .panel-scroll, </div> .map-overlay-inner
 
-      if (photoList.length > 1) {
-        window.currentPhotoIndex = 0;
-        window.cardPhotoList = photoList;
-        window.updateCardImage = function () {
-          const img = document.getElementById('cardMainImage');
-          const url = window.cardPhotoList[window.currentPhotoIndex];
-          img.src = url;
-          img.onclick = () => openImageModal(url);
-        };
-        window.prevImage = function () {
-          window.currentPhotoIndex = (window.currentPhotoIndex - 1 + window.cardPhotoList.length) % window.cardPhotoList.length;
-          window.updateCardImage();
-        };
-        window.nextImage = function () {
-          window.currentPhotoIndex = (window.currentPhotoIndex + 1) % window.cardPhotoList.length;
-          window.updateCardImage();
-        };
-      }
-    };
-
-    let selectedPoint = null;
-    let selectedRiver = null;
-
-    let selectedRiverId = null;
-
-    function updateSelectedRiverLayers() {
-      const visibleExpr = selectedRiverId == null
-        ? ['==', ['id'], -1]     // hide when nothing selected
-        : ['==', ['id'], selectedRiverId];
-
-      if (map.getLayer('Waterways-selected-halo')) {
-        map.setFilter('Waterways-selected-halo', visibleExpr);
-      }
+// write once, open once
+card.innerHTML = content;
+openPanel('card');
     }
 
 
