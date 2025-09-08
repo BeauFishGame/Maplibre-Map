@@ -542,16 +542,56 @@
         position: static;
         /* ensure NOT absolute on mobile */
       }
+
+
+      .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.85); }
+.modal.show { display: flex; justify-content: center; align-items: center; }
+
+.modal-content { max-width: 80%; max-height: 80%; border-radius: 6px; box-shadow: 0 0 20px rgba(0,0,0,.5); }
+
+.modal-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: clamp(44px, 6vw, 64px);
+  height: clamp(44px, 6vw, 64px);
+  border: none;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  font-size: clamp(24px, 4vw, 36px);
+  line-height: 1;
+  display: grid; place-items: center;
+  cursor: pointer;
+  backdrop-filter: blur(2px);
+}
+.modal-nav:hover { background: rgba(255,255,255,0.28); }
+.modal-nav.prev { left: min(24px, 4vw); }
+.modal-nav.next { right: min(24px, 4vw); }
+
+.close-modal {
+  position: absolute; top: 30px; right: 50px; color: #fff;
+  font-size: 40px; font-weight: bold; cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .modal-content { max-width: 92%; max-height: 82%; }
+  .modal-nav.prev { left: 12px; } .modal-nav.next { right: 12px; }
+}
+
     }
   </style>
 </head>
 
 <body>
 
-  <div id="imageModal" class="modal">
-    <span class="close-modal" onclick="closeModal()">&times;</span>
-    <img class="modal-content" id="modalImage">
-  </div>
+<div id="imageModal" class="modal" role="dialog" aria-modal="true">
+  <button class="modal-nav prev" onclick="modalPrev(event)" aria-label="Previous image">❮</button>
+  <img class="modal-content" id="modalImage" alt="Location Photo (fullscreen)">
+  <button class="modal-nav next" onclick="modalNext(event)" aria-label="Next image">❯</button>
+  <span class="close-modal" onclick="closeModal()" aria-label="Close">×</span>
+</div>
 
   <div id="map"></div>
 
@@ -698,6 +738,49 @@
   border-radius: 6px;
   font-weight: 600;
 }
+
+/* Showcard image */
+.card-image-wrap{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;          /* keeps a tidy frame */
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f2f2f2;         /* nice fallback while loading */
+  margin-bottom: 10px;
+}
+.card-image-wrap img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;           /* no distortion */
+  object-position: center;
+  display: block;
+}
+
+/* In-card carousel arrows */
+.carousel-button{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px; height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0,0,0,.35);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  display: grid; place-items: center;
+  cursor: pointer;
+}
+.carousel-button:hover{ background: rgba(0,0,0,.5); }
+.carousel-button.prev{ left: 8px; }
+.carousel-button.next{ right: 8px; }
+
+/* optional: small index line under the image (remove if not needed) */
+.carousel-meta{
+  margin-top: 6px; font-size: 12px; color: #666; text-align:center;
+}
+
 
         </style>
 
@@ -1176,18 +1259,129 @@ if (fishery && fishery !== '__ALL__') {
     map.dragRotate.disable();
     map.touchZoomRotate.disableRotation();
 
-    function openImageModal(imageUrl) {
-      const modal = document.getElementById("imageModal");
-      const modalImg = document.getElementById("modalImage");
-      modalImg.src = imageUrl;
-      modal.classList.add("show");
-      modal.onclick = function (event) { if (event.target === modal) closeModal(); };
+    (function addModalSwipe() {
+  let startX = 0, startY = 0, tracking = false;
+
+  const modal = document.getElementById('imageModal');
+  const img = document.getElementById('modalImage');
+
+  function onStart(e) {
+    const t = e.touches?.[0];
+    if (!t) return;
+    startX = t.clientX; startY = t.clientY; tracking = true;
+  }
+  function onEnd(e) {
+    if (!tracking) return;
+    const t = e.changedTouches?.[0];
+    if (!t) return;
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+    tracking = false;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) modalNext(); else modalPrev();
     }
-    function closeModal() {
-      const modal = document.getElementById("imageModal");
-      modal.classList.remove("show");
-      modal.onclick = null;
-    }
+  }
+
+  img.addEventListener('touchstart', onStart, { passive: true });
+  img.addEventListener('touchend', onEnd, { passive: true });
+})();
+
+function setCardImage(index){
+  const photos = window.__cardPhotos || [];
+  if (!photos.length) return;
+  const n = ((index % photos.length) + photos.length) % photos.length;
+  window.__cardPhotoIndex = n;
+
+  const main = document.getElementById('cardMainImage');
+  if (main){
+    main.src = photos[n];
+    main.onclick = () => openImageModal(n);
+  }
+
+  const modal = document.getElementById('imageModal');
+  const modalImg = document.getElementById('modalImage');
+  if (modal?.classList.contains('show') && modalImg){
+    modalImg.src = photos[n];
+  }
+
+  const meta = document.querySelector('.carousel-meta');
+  if (meta){
+    meta.textContent = `${n+1} / ${photos.length}`;
+  }
+}
+
+
+function openImageModal(arg) {
+  const modal = document.getElementById("imageModal");
+  const modalImg = document.getElementById("modalImage");
+
+  // decide which image index to show
+  let idx = window.__cardPhotoIndex || 0;
+
+  if (typeof arg === 'number' && Number.isFinite(arg)) {
+    idx = arg;
+  } else if (typeof arg === 'string' && window.__cardPhotos?.length) {
+    const found = window.__cardPhotos.indexOf(arg);
+    if (found >= 0) idx = found;
+  }
+
+  // sync both the card + modal to the chosen index
+  setCardImage(idx);
+  modalImg.src = window.__cardPhotos[idx];
+
+  // show modal
+  modal.classList.add("show");
+updateModalNavVisibility();
+  // clicking the dark backdrop closes; clicks on content/controls should not
+  modal.onclick = (ev) => {
+    if (ev.target === modal) closeModal();
+  };
+
+  // keyboard navigation while modal is open
+  window.addEventListener('keydown', handleModalKeys);
+}
+
+function updateModalNavVisibility() {
+  const count = (window.__cardPhotos || []).length;
+  const prevBtn = document.querySelector('#imageModal .modal-nav.prev');
+  const nextBtn = document.querySelector('#imageModal .modal-nav.next');
+  const show = count > 1;
+  if (prevBtn) prevBtn.style.display = show ? '' : 'none';
+  if (nextBtn) nextBtn.style.display = show ? '' : 'none';
+}
+
+function closeModal() {
+  const modal = document.getElementById("imageModal");
+  modal.classList.remove("show");
+  modal.onclick = null;
+  window.removeEventListener('keydown', handleModalKeys);
+}
+
+function handleModalKeys(e) {
+  const count = (window.__cardPhotos || []).length;
+  if (e.key === 'Escape') { closeModal(); return; }
+  if (count < 2) return;           // nothing to cycle
+  if (e.key === 'ArrowRight') { modalNext(e); }
+  else if (e.key === 'ArrowLeft') { modalPrev(e); }
+}
+
+// in-modal nav buttons (reuse carousel state)
+function modalNext(ev) {
+  if (ev) ev.stopPropagation();
+  const photos = window.__cardPhotos || [];
+  if (photos.length < 2) return;   // no-op if only 1
+  setCardImage((window.__cardPhotoIndex || 0) + 1);
+  const modalImg = document.getElementById("modalImage");
+  if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
+}
+function modalPrev(ev) {
+  if (ev) ev.stopPropagation();
+  const photos = window.__cardPhotos || [];
+  if (photos.length < 2) return;   // no-op if only 1
+  setCardImage((window.__cardPhotoIndex || 0) - 1);
+  const modalImg = document.getElementById("modalImage");
+  if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
+}
 
     // Panel logic
     let activePanel = null;
@@ -1255,28 +1449,95 @@ function updateSelectedRiverLayers() {
         openPanel('basemaps');
       }
     }
-
 function normalizeUrl(raw) {
   if (!raw) return null;
   let u = String(raw).trim();
   if (!u) return null;
 
-  // block dangerous protocols
   const lower = u.toLowerCase();
-  if (lower.startsWith('javascript:') || lower.startsWith('data:')) return null;
+  // block dangerous protocols
+  if (lower.startsWith('javascript:')) return null;
 
-  // add https:// if missing
-  if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+  // If it’s a data URL for an <img>, allow it (you previously blocked all data:)
+  // If you truly don't want data URLs, remove this allowance.
+  if (lower.startsWith('data:image/')) return u;
 
+  // Allow relative paths as-is:
+  // - starts with /, ./, ../
+  // - or no scheme/host and looks like a path or filename (contains a slash or a dot)
+  if (
+    u.startsWith('/') ||
+    u.startsWith('./') ||
+    u.startsWith('../') ||
+    !/^[a-z]+:\/\//i.test(u)
+  ) {
+    return u; // treat as same-origin relative path
+  }
+
+  // Otherwise must be http/https
   try {
     const url = new URL(u);
     if (!/^https?:$/.test(url.protocol)) return null;
-    return url.href; // <-- return string like before
+    return url.href;
   } catch {
-    return null;
+    // Maybe bare domain without scheme → add https
+    try {
+      const url2 = new URL('https://' + u);
+      if (!/^https?:$/.test(url2.protocol)) return null;
+      return url2.href;
+    } catch {
+      return null;
+    }
   }
 }
+window.__cardPhotos = [];
+window.__cardPhotoIndex = 0;
 
+function collectPhotoUrls(props) {
+  // Look for multiple common field names/casings
+  const candidates = [
+    props.image, props.images, props.photo, props.photos, // generic
+    props.image1, props.image2, props.image3, props.image4, // lower
+    props.Image1, props.Image2, props.Image3, props.Image4, // TitleCase
+    props.img1, props.img2, props.img3, props.img4
+  ];
+
+  // Also handle comma-separated strings in any of those fields
+  const out = [];
+  for (const c of candidates) {
+    if (!c) continue;
+    if (Array.isArray(c)) {
+      out.push(...c);
+    } else {
+      const s = String(c).trim();
+      if (!s) continue;
+      // split on comma if it looks like a list; otherwise single value
+      if (s.includes(','))
+        out.push(...s.split(',').map(x => x.trim()).filter(Boolean));
+      else
+        out.push(s);
+    }
+  }
+
+  // Dedup + sanitize
+  const cleaned = [];
+  const seen = new Set();
+  for (const v of out) {
+    const n = normalizeUrl(v);
+    if (!n) continue;
+    if (!seen.has(n)) { seen.add(n); cleaned.push(n); }
+  }
+  return cleaned;
+}
+
+
+
+function nextImage() {
+  setCardImage(window.__cardPhotoIndex + 1);
+}
+function prevImage() {
+  setCardImage(window.__cardPhotoIndex - 1);
+}
 
     const card = document.getElementById('properties');
 
@@ -1330,13 +1591,13 @@ if (feature.layer && feature.layer.id === 'data-points-all') {
   typeImage = riverDefaultImage;
 }
 
-// ---- images (sanitize, drop bad URLs) ----
-const extrasRaw = [props.image1, props.Image2, props.image3]
-  .map(u => (u && normalizeUrl(u)) || null)
-  .filter(Boolean);
 
-const photoList = (typeImage ? [typeImage] : []).concat(extrasRaw);
+const extraPhotos = collectPhotoUrls(props);
+const photoList = (typeImage ? [typeImage] : []).concat(extraPhotos);
 
+// Keep global state for the carousel
+window.__cardPhotos = photoList;
+window.__cardPhotoIndex = 0;
 
 
       let content = `
@@ -1347,21 +1608,19 @@ const photoList = (typeImage ? [typeImage] : []).concat(extrasRaw);
   <div class="panel-scroll">
 `;
 
-      if (photoList.length > 0) {
-        content += `
-  <div class="card-image-container" style="margin-bottom: 10px;">
-    <img id="cardMainImage" src="${photoList[0]}" 
-      alt="Location Photo"
-      onclick="openImageModal('${photoList[0]}')"
-      style="width: 100%; height: 160px; object-fit: cover; object-position: center; border-radius: 6px; cursor: pointer;">
-    ${photoList.length > 1 ? `
-    <div class="carousel-controls" style="display: flex; justify-content: space-between; margin-top: 4px;">
-      <button onclick="prevImage()" class="carousel-button">❮</button>
-      <button onclick="nextImage()" class="carousel-button">❯</button>
-    </div>` : ''}
-  </div>
-`;
-      }
+if (photoList.length > 0) {
+  content += `
+    <div class="card-image-wrap">
+      <img id="cardMainImage" src="${photoList[0]}" alt="Location Photo" onclick="openImageModal()" />
+      ${photoList.length > 1 ? `
+        <button class="carousel-button prev" onclick="prevImage()" aria-label="Previous image">❮</button>
+        <button class="carousel-button next" onclick="nextImage()" aria-label="Next image">❯</button>
+      ` : ``}
+    </div>
+    ${photoList.length > 1 ? `<div class="carousel-meta">${1} / ${photoList.length}</div>` : ``}
+  `;
+}
+
 
       content += `
   <code class="card-title">${props.Water || props.name || props.title || 'No Title'}</code>
@@ -1431,6 +1690,8 @@ content += `</div></div>`;  // </div> .panel-scroll, </div> .map-overlay-inner
 
 // write once, open once
 card.innerHTML = content;
+if (photoList.length) setCardImage(0);
+
 openPanel('card');
     }
 
