@@ -1449,6 +1449,74 @@ function updateSelectedRiverLayers() {
         openPanel('basemaps');
       }
     }
+
+function splitList(raw) {
+  if (isBlankish(raw)) return [];
+  return String(raw)
+    .split(/[;,\|\n]+/g)
+    .map(s => s.trim())
+    .filter(Boolean);
+}
+
+// Build [{href, text}] from props.more_info_url(+name). Also accepts JSON arrays.
+function parseMultiLinks(props) {
+  const urlsRaw  = safeGet(props, 'more_info_url')  ?? safeGet(props, 'moreinfo_url')  ?? safeGet(props, 'MoreInfoURL');
+  const namesRaw = safeGet(props, 'more_info_name') ?? safeGet(props, 'moreinfo_name') ?? safeGet(props, 'MoreInfoName');
+
+  // if someone stored JSON arrays, accept those too
+  const toArray = (v) => {
+    if (Array.isArray(v)) return v;
+    const s = (v ?? '').toString().trim();
+    if (!s) return [];
+    if (s.startsWith('[') && s.endsWith(']')) {
+      try { 
+        const arr = JSON.parse(s);
+        return Array.isArray(arr) ? arr : splitList(s);
+      } catch { return splitList(s); }
+    }
+    return splitList(s);
+  };
+
+  const urlList  = toArray(urlsRaw);
+  const nameList = toArray(namesRaw);
+
+  const out = [];
+  for (let i = 0; i < urlList.length; i++) {
+    const href = normalizeUrl(urlList[i]);
+    if (!href) continue;
+    // pick name if available, else hostname
+    let text = nameList[i] && !isBlankish(nameList[i])
+      ? nameList[i]
+      : (() => {
+          try { return new URL(href).hostname.replace(/^www\./, ''); }
+          catch { return href; }
+        })();
+    out.push({ href, text });
+  }
+  return out;
+}
+
+// Render a list of links as <ul>...</ul>
+function renderMultiLinks(props, label = 'More Info') {
+  const links = parseMultiLinks(props);
+  if (!links.length) return ''; // nothing to show
+
+  if (links.length === 1) {
+    const { href, text } = links[0];
+    return `<li><b>${label}</b>: <a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`;
+  }
+
+  const items = links.map(({ href, text }) =>
+    `<li style="margin:2px 0;"><a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`
+  ).join('');
+
+  return `<li><b>${label}</b>:
+            <ul style="margin:4px 0 0 18px; padding:0;">${items}</ul>
+          </li>`;
+}
+
+
+
 function normalizeUrl(raw) {
   if (!raw) return null;
   let u = String(raw).trim();
@@ -1656,18 +1724,13 @@ for (const [key, label] of Object.entries(displayFields)) {
   if (isBlankish(raw)) continue;
 
   if (key === 'more_info_url') {
-    const href = normalizeUrl(raw);
-    if (href) {
-      const nameRaw = safeGet(props, 'more_info_name');
-      const text = nameRaw ? nameRaw
-                           : new URL(href).hostname.replace(/^www\./, '');
-      content += `<li><b>${label}</b>: <a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`;
-    }
+    // NEW: supports multiple URLs + names
+    content += renderMultiLinks(props, label);
   } else {
     content += `<li><b>${label}</b>: ${raw}</li>`;
   }
-  
 }
+
 
 // --- Region regulations button/link (only if RegionCode is valid) ---
 // NOTE: keep this INSIDE .panel-scroll so it sticks to the bottom of the scroller
