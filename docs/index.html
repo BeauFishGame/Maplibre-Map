@@ -9,7 +9,12 @@
   <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
   <link href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" rel="stylesheet" />
 
+ 
+  <script async src="https://stats.fishandgameaccessmap.org/script.js"
+          data-website-id="727d8b53-6b74-4eef-8258-daf48932ff65"></script>
+
   <style>
+
     body {
       margin: 0;
       padding: 0;
@@ -1884,7 +1889,7 @@ openPanel('card');
 
 
         map.setStyle(aerial_style);
-        // map.setStyle('https://basemaps.linz.govt.nz/v1/styles/aerial.json?api=d01hep5551e30kxb7w85hck49tp');
+        //map.setStyle('https://basemaps.linz.govt.nz/v1/styles/aerial.json?api=c01k4rjkthp83wawd7at9n3fwg7&labels=true');
       } else if (type === "TopoLite") {
         map.setStyle('https://basemaps.linz.govt.nz/v1/styles/topolite.json?api=d01hep5551e30kxb7w85hck49tp');
       } else if (type === "Topo") {
@@ -2401,28 +2406,34 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
       //   }, insertBeforeLayer);
       // }
 
+if (!sources['FG Region Centroids']) {
+  map.addSource('FG Region Centroids', {
+    type: 'geojson',
+    data: 'https://data.fishandgameaccessmap.org/secure-geojson/fg_regions_centroid.geojson?token=fish-access-2025'
+  });
+}
 
-      if (!sources['FG Region Centroids']) { map.addSource('FG Region Centroids', { type: 'geojson', data: 'https://data.fishandgameaccessmap.org/secure-geojson/fg_regions_centroid.geojson?token=fish-access-2025' }); }
-      map.addLayer({
-        id: 'FG Region Labels',
-        type: 'symbol',
-        source: 'FG Region Centroids',
-        maxzoom: 7,
-        layout: {
-          'text-field': ['get', 'region'],
-          'text-font': ['Noto Sans Medium'],
-          // 'text-font': ['Noto Sans Medium', 'Noto Sans Regular', 'Arial Unicode MS Regular'],
-          'text-size': 12,
+if (!map.getLayer('FG Region Labels')) {
+  map.addLayer({
+    id: 'FG Region Labels',
+    type: 'symbol',
+    source: 'FG Region Centroids',
+    maxzoom: 7,
+    layout: {
+      'text-field': ['get', 'region'],
+      'text-font': ['Noto Sans Medium'],
+      'text-size': 12,
+      'text-anchor': 'center',
+      'text-allow-overlap': true
+    },
+    paint: {
+      'text-color': '#008678',
+      'text-halo-color': '#ffffff',
+      'text-halo-width': 2
+    }
+  });
+}
 
-          'text-anchor': 'center',
-          'text-allow-overlap': true,
-        },
-        paint: {
-          'text-color': '#008678',
-          'text-halo-color': '#ffffff',
-          'text-halo-width': 2
-        }
-      });
 
       // Wire filters
       if (window.setupAWFilters) window.setupAWFilters(map);
