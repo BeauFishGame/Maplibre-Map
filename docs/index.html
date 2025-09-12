@@ -2115,7 +2115,7 @@ openPanel('card');
 
 const host   = location.hostname;
 const params = new URLSearchParams(location.search);
-const isDev  = params.get('data') === 'dev' || host.startsWith('beta.') || host.includes('localhost');
+const isDev  = params.get('data') === 'dev' || host.includes('localhost');
 
 // One server; different filenames
 const TILES_BASE   = 'https://data.fishandgameaccessmap.org';
