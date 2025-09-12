@@ -571,6 +571,7 @@
   cursor: pointer;
   backdrop-filter: blur(2px);
 }
+
 .modal-nav:hover { background: rgba(255,255,255,0.28); }
 .modal-nav.prev { left: min(24px, 4vw); }
 .modal-nav.next { right: min(24px, 4vw); }
@@ -2102,11 +2103,6 @@ openPanel('card');
     let allFeatures = [];
     let allPointsFeatures = [];
 
-    fetch('https://data.fishandgameaccessmap.org/secure-geojson/waterway_search_index.geojson?token=fish-access-2025').then(res => res.json()).then(data => { allFeatures = data.features; });
-    fetch('https://data.fishandgameaccessmap.org/secure-geojson/AccessPoints.geojson?token=fish-access-2025')
-      .then(res => res.json())
-      .then(data => { allPointsFeatures = data.features; })
-      .catch(err => console.error('Failed to load points data:', err));
 
     const zoomLevel = document.getElementById('zoom-level');
     zoomLevel.textContent = `Zoom: ${map.getZoom().toFixed(2)}`;
@@ -2116,6 +2112,34 @@ openPanel('card');
     const legacyCheckboxes = document.querySelectorAll('#point-type-filter input[type="checkbox"]');
     legacyCheckboxes.forEach(cb => cb.addEventListener('change', updateLayerFilter));
 
+
+const host   = location.hostname;
+const params = new URLSearchParams(location.search);
+const isDev  = params.get('data') === 'dev' || host.startsWith('beta.') || host.includes('localhost');
+
+// One server; different filenames
+const TILES_BASE   = 'https://data.fishandgameaccessmap.org';
+const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson'; // keep if that's where files live
+
+// Names flip by env
+const WATERWAYS_NAME = isDev ? 'all_waters_dev'                : 'all_waters';
+const POINTS_FILE    = isDev ? 'AccessPoints_dev.geojson?token=fish-access-2025'      : 'AccessPoints.geojson?token=fish-access-2025';
+const SEARCH_FILE    = isDev ? 'waterway_search_index_dev.geojson?token=fish-access-2025' : 'waterway_search_index.geojson?token=fish-access-2025';
+
+// URLs used by your sources
+const URL_WATERWAYS_TILES = `${TILES_BASE}/${WATERWAYS_NAME}/{z}/{x}/{y}`;
+const URL_POINTS_GEOJSON  = `${GEOJSON_BASE}/${POINTS_FILE}`;
+const URL_SEARCH_INDEX    = `${GEOJSON_BASE}/${SEARCH_FILE}`;
+
+
+fetch(URL_SEARCH_INDEX)
+  .then(res => res.json()).then(d => { allFeatures = d.features; })
+  .catch(err => console.error('Failed to load search index:', err));
+
+fetch(URL_POINTS_GEOJSON)
+  .then(res => res.json()).then(d => { allPointsFeatures = d.features; })
+  .catch(err => console.error('Failed to load points data:', err));
+    
     function addCustomDataAndLayers() {
       const sources = map.getStyle().sources;
 
@@ -2187,13 +2211,13 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
 }
 
 
-      if (!sources['Waterways']) {
-        map.addSource('Waterways', {
-          type: 'vector',
-          tiles: ['https://data.fishandgameaccessmap.org/all_waters/{z}/{x}/{y}'],
-          minzoom: 0, maxzoom: 13
-        });
-      }
+if (!sources['Waterways']) {
+  map.addSource('Waterways', {
+    type: 'vector',
+    tiles: [ URL_WATERWAYS_TILES ],
+    minzoom: 0, maxzoom: 13
+  });
+}
 
       if (!map.getLayer('Waterways-line')) {
         map.addLayer({
@@ -2348,23 +2372,16 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
       }
 
 
-      // if (!sources['data-points']) {
-      //   map.addSource('data-points', {
-      //     type: 'geojson',
-      //     data: 'AccessPoints.geojson',
-      //     generateId: true
-      //   });
-      // }
+  
 
 
-      if (!sources['data-points']) {
-        map.addSource('data-points', {
-          type: 'geojson',
-          data: 'https://data.fishandgameaccessmap.org/secure-geojson/AccessPoints.geojson?token=fish-access-2025',
-          generateId: true
-        });
-      }
-
+     if (!sources['data-points']) {
+  map.addSource('data-points', {
+    type: 'geojson',
+    data: URL_POINTS_GEOJSON,
+    generateId: true
+  });
+}
 
       if (!map.getLayer('data-points-all')) {
         map.addLayer({
@@ -2382,7 +2399,10 @@ if (!map.getLayer('PublicAccessAreas-fill')) {
         });
       }
 
-      if (!sources['search']) map.addSource('search', { type: 'geojson', data: 'https://data.fishandgameaccessmap.org/secure-geojson/waterway_search_index.geojson?token=fish-access-2025' });
+      if (!sources['search']) {
+  map.addSource('search', { type: 'geojson', data: URL_SEARCH_INDEX });
+}
+      
       if (!map.getLayer('search-points-all')) {
         map.addLayer({
           id: 'search-points-all',
