@@ -2112,24 +2112,30 @@ openPanel('card');
     const legacyCheckboxes = document.querySelectorAll('#point-type-filter input[type="checkbox"]');
     legacyCheckboxes.forEach(cb => cb.addEventListener('change', updateLayerFilter));
 
+const url   = new URL(window.location.href); // robust: survives redirects & full URL
+const host  = url.hostname;
+const dataQ = (url.searchParams.get('data') || '').trim().toLowerCase();
 
-const host   = location.hostname;
-const params = new URLSearchParams(location.search);
-const isDev  = params.get('data') === 'dev' || host.includes('localhost');
+const isDev = dataQ === 'dev' || host === 'localhost' || host === '127.0.0.1';
 
 // One server; different filenames
 const TILES_BASE   = 'https://data.fishandgameaccessmap.org';
-const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson'; // keep if that's where files live
+const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson';
 
 // Names flip by env
-const WATERWAYS_NAME = isDev ? 'all_waters_dev'                : 'all_waters';
-const POINTS_FILE    = isDev ? 'AccessPoints_dev.geojson?token=fish-access-2025'      : 'AccessPoints.geojson?token=fish-access-2025';
-const SEARCH_FILE    = isDev ? 'waterway_search_index_dev.geojson?token=fish-access-2025' : 'waterway_search_index.geojson?token=fish-access-2025';
+const WATERWAYS_NAME = isDev ? 'all_waters_dev' : 'all_waters';
+const POINTS_FILE    = isDev ? 'AccessPoints_dev.geojson?token=fish-access-2025'
+                             : 'AccessPoints.geojson?token=fish-access-2025';
+const SEARCH_FILE    = isDev ? 'waterway_search_index_dev.geojson?token=fish-access-2025'
+                             : 'waterway_search_index.geojson?token=fish-access-2025';
 
 // URLs used by your sources
 const URL_WATERWAYS_TILES = `${TILES_BASE}/${WATERWAYS_NAME}/{z}/{x}/{y}`;
 const URL_POINTS_GEOJSON  = `${GEOJSON_BASE}/${POINTS_FILE}`;
 const URL_SEARCH_INDEX    = `${GEOJSON_BASE}/${SEARCH_FILE}`;
+
+console.log({ isDev, host, dataQ, URL_POINTS_GEOJSON, URL_SEARCH_INDEX, URL_WATERWAYS_TILES });
+
 
 
 fetch(URL_SEARCH_INDEX)
