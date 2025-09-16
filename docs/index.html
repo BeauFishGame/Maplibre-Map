@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Auckland Waikato Fishing Map</title>
+  <title>Fishing Map | Fish & Game NZ</title>
   <link rel="icon" href="images/favicon.png" type="image/png">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
   <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
@@ -804,6 +804,7 @@
             <div class="source-body">
 
               <div class="group" data-group="w-method" data-type="radioOne">
+                <div class="group-title">Currently available for Northland, Auckland/Waikato and Eastern</div>
                 <div class="group-title">Allowed Method</div>
                 <label class="option"><input type="radio" name="w-method" value="__ALL__" checked> ALL</label>
                 <label class="option"><input type="radio" name="w-method" value="fly"> Fly</label>
@@ -1616,7 +1617,24 @@ function prevImage() {
     const card = document.getElementById('properties');
 
 
-    const riverDefaultImage = 'images/Slide12.PNG';
+const DOC_REGION_CODE = 13;
+
+const riverDefaultImage = {
+  FG:  'images/Slide12.PNG', // Fish & Game-managed
+  DOC: 'images/Slide13.PNG'  // Taupō Trout Fishery (DOC)
+};
+
+function getRiverDefaultImage(props){
+  const raw =
+    props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
+  const rc = Number.parseInt(String(raw ?? '').trim(), 10);
+  return rc === DOC_REGION_CODE ? riverDefaultImage.DOC : riverDefaultImage.FG;
+}
+
+['images/Slide12.PNG','images/Slide13.PNG'].forEach(src => {
+  const im = new Image();
+  im.src = src;
+});
 
     const pointTypeDefaultImages = {
       'AccessPoint': 'images/Slide1.PNG',
@@ -1662,7 +1680,7 @@ if (feature.layer && feature.layer.id === 'data-points-all') {
   (feature.layer && (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill')) ||
   (looksLikeRiver && !looksLikePoint)
 ) {
-  typeImage = riverDefaultImage;
+  typeImage = getRiverDefaultImage(props); // <-- pick a single image path
 }
 
 
@@ -1715,9 +1733,11 @@ if (photoList.length > 0) {
         content += `</div>`;
       }
 
-      if (props.region || props.Region) {
-        content += `<div class="card-subtitle subtitle-region">${props.Region || props.region} Fish & Game Region</div>`;
-      }
+   if (props.region || props.Region) {
+  const regionName = props.Region || props.region;
+  const label = (props.RegionCode == 13) ? "Fishing District" : "Fish & Game Region";
+  content += `<div class="card-subtitle subtitle-region">${regionName} ${label}</div>`;
+}
 
 
 
@@ -2116,7 +2136,7 @@ const url   = new URL(window.location.href); // robust: survives redirects & ful
 const host  = url.hostname;
 const dataQ = (url.searchParams.get('data') || '').trim().toLowerCase();
 
-const isDev = dataQ === 'dev' || host === 'localhost' || host === '127.0.0.1';
+const isDev = dataQ === 'dev' ;
 
 // One server; different filenames
 const TILES_BASE   = 'https://data.fishandgameaccessmap.org';
@@ -2124,7 +2144,7 @@ const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson';
 
 // Names flip by env
 const WATERWAYS_NAME = isDev ? 'all_waters_dev' : 'all_waters';
-const POINTS_FILE    = isDev ? 'AccessPoints_dev.geojson?token=fish-access-2025'
+const POINTS_FILE    = isDev ? 'AccessPoints.geojson?token=fish-access-2025' //change to _dev when available
                              : 'AccessPoints.geojson?token=fish-access-2025';
 const SEARCH_FILE    = isDev ? 'waterway_search_index_dev.geojson?token=fish-access-2025'
                              : 'waterway_search_index.geojson?token=fish-access-2025';
