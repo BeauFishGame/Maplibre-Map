@@ -1246,6 +1246,49 @@ if (fishery && fishery !== '__ALL__') {
   <div class="map-overlay" id="properties"></div>
 
   <script>
+
+
+// --- decide initial view from URL (run FIRST) ---
+const url = new URL(window.location.href);
+const regionParam = url.searchParams.get('region');
+const latParam    = parseFloat(url.searchParams.get('lat'));
+const lngParam    = parseFloat(url.searchParams.get('lng'));
+const zParam      = parseFloat(url.searchParams.get('z'));
+const bboxParam   = (url.searchParams.get('bbox') || '').trim();
+175.718208	-40.534386
+const REGION_VIEWS = {
+  1:{center:[174.15,-35.70],zoom:6.9}, 2:{center:[175.30,-37.40],zoom:6.9},
+  3:{center:[176.30,-38.60],zoom:6.9}, 4:{center:[174.60,-39.30],zoom:6.9},
+  5:{center:[176.80,-39.40],zoom:6.9}, 6:{center:[175.718208, -40.534386],zoom:6.9},
+  7:{center:[173.069873,	-41.681397],zoom:6.9}, 8:{center:[172.20,-43.30],zoom:6.9},
+  9:{center:[170.728991,	-43.047237],zoom:6.9}, 10:{center:[170.30,-44.10],zoom:6.9},
+  11:{center:[169.40,-45.10],zoom:6.9}, 12:{center:[167.969988,	-45.709747],zoom:6.9},
+  13:{center:[175.80,-38.80],zoom:6.9}
+};
+
+let initialCamera = { center: [173.792725, -40.784701], zoom: 5.3 }; // default
+
+if (bboxParam) {
+  const parts = bboxParam.split(',').map(Number);
+  if (parts.length === 4 && parts.every(Number.isFinite)) {
+    initialCamera = {
+      bounds: [[parts[0], parts[1]], [parts[2], parts[3]]],
+      fitBoundsOptions: { padding: { top:80, right:10, bottom:10, left:10 } } // instant at init
+    };
+  }
+} else if (Number.isFinite(latParam) && Number.isFinite(lngParam)) {
+  initialCamera = { center: [lngParam, latParam], zoom: Number.isFinite(zParam) ? zParam : 10 };
+} else if (regionParam && REGION_VIEWS[+regionParam]) {
+  initialCamera = REGION_VIEWS[+regionParam];
+}
+
+
+
+
+
+
+
+
     const styleURL = 'https://basemaps.linz.govt.nz/v1/styles/topo-raster.json?api=d01hep5551e30kxb7w85hck49tp';
     // const TODAY_UNIX = Math.floor(Date.now()/1000); // cache once per load 
     //  1760266811 -  Oct 12 2025  1787842134 
@@ -1255,7 +1298,7 @@ if (fishery && fishery !== '__ALL__') {
       style: styleURL,
       center: [173.792725, -40.784701],
       minZoom: 5,
-      zoom: 5.3
+      ...initialCamera
     });
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }));
@@ -1647,8 +1690,12 @@ function getRiverDefaultImage(props){
       'Jigging': 'images/Slide7.PNG',
       'Hotspot': 'images/Slide8.PNG',
       'Warning': 'images/Slide9.PNG',
-      'DOC Hut': 'images/Slide10.PNG',
-      'DOC campground': 'images/Slide11.PNG',
+      'Hut': 'images/Slide10.PNG',
+      'Campsite': 'images/Slide11.PNG',
+      'LandmarkPole': 'images/Slide14.PNG',
+      'Parking': 'images/Slide15.PNG',
+      'Shop': 'images/Slide16.PNG',
+      'Lodge': 'images/Slide17.PNG',
     };
 
     const showCard = (feature) => {
@@ -2133,7 +2180,10 @@ openPanel('card');
     const legacyCheckboxes = document.querySelectorAll('#point-type-filter input[type="checkbox"]');
     legacyCheckboxes.forEach(cb => cb.addEventListener('change', updateLayerFilter));
 
-const url   = new URL(window.location.href); // robust: survives redirects & full URL
+
+
+    
+
 const host  = url.hostname;
 const dataQ = (url.searchParams.get('data') || '').trim().toLowerCase();
 
