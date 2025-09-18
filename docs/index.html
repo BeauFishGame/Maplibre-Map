@@ -905,9 +905,17 @@
             </div>
             <div class="source-body">
               <div class="hint">
+Last updated: 18/09/2025 <br><br>
                 <a href="https://www.herengaanuku.govt.nz/types-of-access" target="_blank">
-                  Learn more about legal public access in NZ
+                  Learn more about legal public access in NZ here
+                </a> <nr></br><br>
+                <a href="https://www.herengaanuku.govt.nz/types-of-access/rivers-lakes-and-coast/hydro-parcels" target="_blank">
+                  Hydro parcels are complicated. Learn more here.
                 </a>
+
+                <br> <br>
+                <b> Disclaimer: </b>All efforts were made to ensure the accuracy of this information, however there may be circumstances beyond our control that alter or preclude public access.
+                Please note that the onus is on anglers to ensure they are not trespassing – so if in doubt, please ask the adjacent landowner.  
               </div>
             </div>
           </div>
@@ -1262,7 +1270,7 @@ const REGION_VIEWS = {
   5:{center:[176.80,-39.40],zoom:6.9}, 6:{center:[175.718208, -40.534386],zoom:6.9},
   7:{center:[173.069873,	-41.681397],zoom:6.9}, 8:{center:[172.20,-43.30],zoom:6.9},
   9:{center:[170.728991,	-43.047237],zoom:6.9}, 10:{center:[170.30,-44.10],zoom:6.9},
-  11:{center:[169.40,-45.10],zoom:6.9}, 12:{center:[167.969988,	-45.709747],zoom:6.9},
+  11:{center:[169.422244,	-45.454679],zoom:6.9}, 12:{center:[167.969988,	-45.709747],zoom:6.9},
   13:{center:[175.80,-38.80],zoom:6.9}
 };
 
@@ -1772,9 +1780,9 @@ if (photoList.length > 0) {
         if (feature.geometry?.type === 'Point' && Array.isArray(feature.geometry.coordinates)) {
           const [lng, lat] = feature.geometry.coordinates;
           const googleMapsLink = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-          content += `
-       <a href="${googleMapsLink}" target="_blank" title="Get Directions" style="font-weight: normal; text-decoration: none; color: blue;">
-  (get directions)
+          content += `<br>  
+       <a href="${googleMapsLink}" target="_blank" title="Get Directions in Google Maps" style="font-weight: normal; text-decoration: none; color: blue; font-size: 0.9em">
+  (Get Directions in Google Maps)
 </a>
           `;
         }
