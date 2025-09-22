@@ -1028,7 +1028,7 @@ function getRegionRegUrlFromProps(props) {
               waterways: ['Waterways-line', 'Waterways-fill'],
               points: ['data-points-all'],
               publicAccess: ['PublicAccessAreas-fill'],
-              regions: ['FG Regions-line', 'FG Region Labels']
+              regions: ['FG Regions-line', 'FG Regions-linebackground', 'FG Region Labels']
             };
 
             const PROPS = {
@@ -2429,18 +2429,47 @@ if (!sources['Waterways']) {
         });
       }
 
+ if (!map.getLayer('FG Regions-linebackground')) {
+  map.addLayer({
+    id: 'FG Regions-linebackground',
+    type: 'line',
+    source: 'FG Regions',
+    'source-layer': 'fg_regions',
+    layout: { 'line-join': 'round', 'line-cap': 'round' },
+    paint: {
+      'line-color': '#fff',
+      'line-width': [
+        'interpolate', ['linear'], ['zoom'],
+        5, 3,   
+        10, 4,   // at zoom 10 → 2px
+        14, 8,   // at zoom 14 → 6px
+        18, 12   // at zoom 18 → 12px
+      ],
+      'line-opacity': 1
+    }
+  }, insertBeforeLayer);
+}
 
-
-      if (!map.getLayer('FG Regions-line')) {
-        map.addLayer({
-          id: 'FG Regions-line',
-          type: 'line',
-          source: 'FG Regions',
-          'source-layer': 'fg_regions',
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: { 'line-color': '#008678', 'line-width': 2, 'line-opacity': 1 }
-        }, insertBeforeLayer);
-      }
+if (!map.getLayer('FG Regions-line')) {
+  map.addLayer({
+    id: 'FG Regions-line',
+    type: 'line',
+    source: 'FG Regions',
+    'source-layer': 'fg_regions',
+    layout: { 'line-join': 'round', 'line-cap': 'round' },
+    paint: {
+      'line-color': '#008678',
+      'line-width': [
+        'interpolate', ['linear'], ['zoom'],
+        5, 1.5,
+        10, 2,   // at zoom 10 → 1px
+        14, 4,   // at zoom 14 → 3px
+        18, 8    // at zoom 18 → 8px
+      ],
+      'line-opacity': 1
+    }
+  }, insertBeforeLayer);
+}
 
 
       if (!sources['Routes']) map.addSource('Routes', { type: 'geojson', data: 'https://data.fishandgameaccessmap.org/secure-geojson/Routes.geojson?token=fish-access-2025' });
