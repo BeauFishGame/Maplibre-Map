@@ -746,6 +746,17 @@
   font-weight: 600;
 }
 
+.licence-btn {
+  display: inline-block;
+  text-decoration: none;
+  background: #ED6429;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+
 /* Showcard image */
 .card-image-wrap{
   position: relative;
@@ -1292,11 +1303,6 @@ if (bboxParam) {
 
 
 
-
-
-
-
-
     const styleURL = 'https://basemaps.linz.govt.nz/v1/styles/topo-raster.json?api=d01hep5551e30kxb7w85hck49tp';
     // const TODAY_UNIX = Math.floor(Date.now()/1000); // cache once per load 
     //  1760266811 -  Oct 12 2025  1787842134 
@@ -1718,7 +1724,7 @@ function getRiverDefaultImage(props){
         additional_requirements: "Additional Requirements",
         more_info_url: "More Info",
         bearing: "Bearing",
-        id_code: "ID Code",
+        //id_code: "ID Code",
       };
 
 // ---- pick a default image based on feature type ----
@@ -1829,6 +1835,13 @@ if (regsHref) {
   `;
 }
 
+// content += `
+//     <div class="regs-cta">
+//       <a href="https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/fishing-licences-and-regulations/general-fishing-licence-info/" target="_blank" rel="noopener noreferrer" class="licence-btn">
+//         Purchase a 2025/2026 Fish & Game Licence
+//       </a>
+//     </div>
+//   `;
 
 // close the scroller + card shell ONCE
 content += `</div></div>`;  // </div> .panel-scroll, </div> .map-overlay-inner
