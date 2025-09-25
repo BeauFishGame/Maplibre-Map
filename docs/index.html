@@ -2852,17 +2852,22 @@ function selectFeatureFromSearch(f) {
 map.getCanvas().addEventListener('contextmenu', (ev) => ev.preventDefault());
 
 map.on('contextmenu', (e) => {
-  const { lng, lat } = e.lngLat.wrap();
+  const { lat, lng } = e.lngLat.wrap();
 
   // format as "lat<TAB>lng"
-  const textToCopy = `${lng.toFixed(6)}\t${lat.toFixed(6)}`;
+  const textToCopy = `${lat.toFixed(6)}\t${lng.toFixed(6)}`;
 
   navigator.clipboard.writeText(textToCopy).then(() => {
+    // Remove any existing popup before adding a new one
+    const existingPopups = document.getElementsByClassName("maplibregl-popup");
+    while (existingPopups.length > 0) {
+      existingPopups[0].remove();
+    }
+
     new maplibregl.Popup({ closeButton: false, closeOnClick: false })
       .setLngLat(e.lngLat)
       .setHTML(`<div style="font:12px Arial;">
-        Copied: <b>${lng.toFixed(6)}, ${lat.toFixed(6)}</b><br>
-        
+        Copied: <b>${lat.toFixed(6)}, ${lng.toFixed(6)}</b>
       </div>`)
       .addTo(map);
 
