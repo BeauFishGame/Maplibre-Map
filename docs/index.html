@@ -8,7 +8,7 @@
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
   <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
   <link href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" rel="stylesheet" />
-
+  <script src="https://cdn.jsdelivr.net/npm/proj4@2.11.0/dist/proj4.js"></script>
  
   <script async src="https://stats.fishandgameaccessmap.org/script.js"
           data-website-id="727d8b53-6b74-4eef-8258-daf48932ff65"></script>
@@ -2216,7 +2216,7 @@ const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson';
 
 // Names flip by env
 const WATERWAYS_NAME = isDev ? 'all_waters_dev' : 'all_waters';
-const POINTS_FILE    = isDev ? 'AccessPoints.geojson?token=fish-access-2025' //change to _dev when available
+const POINTS_FILE    = isDev ? 'AccessPoints_dev.geojson?token=fish-access-2025' //change to _dev when available
                              : 'AccessPoints.geojson?token=fish-access-2025';
 const SEARCH_FILE    = isDev ? 'waterway_search_index_dev.geojson?token=fish-access-2025'
                              : 'waterway_search_index.geojson?token=fish-access-2025';
@@ -2848,35 +2848,118 @@ function selectFeatureFromSearch(f) {
     // Expose TODAY_UNIX to filter script
     window.__TODAY_UNIX__ = TODAY_UNIX;
 
+    // Define NZTM2000 once (after proj4 is loaded)
+proj4.defs("EPSG:2193",
+  "+proj=tmerc +lat_0=0 +lon_0=173 +k=0.9996 " +
+  "+x_0=1600000 +y_0=10000000 +datum=NZGD2000 +units=m +no_defs"
+);
+// Disable the browser context menu over the map canvas
+map.getCanvas().addEventListener("contextmenu", (ev) => ev.preventDefault());
 
-map.getCanvas().addEventListener('contextmenu', (ev) => ev.preventDefault());
-
-map.on('contextmenu', (e) => {
+// Right-click menu: Copy coords / Open in WAMS (Herenga ā Nuku)
+map.on("contextmenu", (e) => {
   const { lat, lng } = e.lngLat.wrap();
 
-  // format as "lat<TAB>lng"
-  const textToCopy = `${lat.toFixed(6)}\t${lng.toFixed(6)}`;
+  // Small card with two action buttons (styled inline for portability)
+const html = `
+  <div style="
+    font: 13px 'Segoe UI', Arial, sans-serif;
+    min-width: 160px;
+    background: #fff;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    overflow: hidden;
+  ">
+    <div id="copyCoords" style="
+      padding: 8px 10px;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+    " onmouseover="this.style.background='#f6f8fa'" onmouseout="this.style.background='#fff'">
+      📋 Copy coordinates
+    </div>
+    <div id="openWAMS" style="
+      padding: 8px 10px;
+      cursor: pointer;
+    " onmouseover="this.style.background='#f6f8fa'" onmouseout="this.style.background='#fff'">
+      🌏 Open in WAMS
+    </div>
+  </div>
+`;
 
-  navigator.clipboard.writeText(textToCopy).then(() => {
-    // Remove any existing popup before adding a new one
-    const existingPopups = document.getElementsByClassName("maplibregl-popup");
-    while (existingPopups.length > 0) {
-      existingPopups[0].remove();
+
+  // Remove any existing popups first
+  document.querySelectorAll(".maplibregl-popup").forEach(p => p.remove());
+
+  // Create the popup menu at the click location
+  const menu = new maplibregl.Popup({
+    closeButton: true,
+    closeOnClick: true,
+    anchor: "bottom",
+    offset: 8
+  })
+    .setLngLat(e.lngLat)
+    .setHTML(html)
+    .addTo(map);
+
+  const el = menu.getElement();
+
+  // Slight hover affordance (no external CSS)
+  const styleHover = (btn, on) => {
+    btn.style.background = on ? "#f6f8fa" : "#fff";
+  };
+  const hookHover = (btn) => {
+    btn.addEventListener("mouseenter", () => styleHover(btn, true));
+    btn.addEventListener("mouseleave", () => styleHover(btn, false));
+    btn.addEventListener("focus",     () => styleHover(btn, true));
+    btn.addEventListener("blur",      () => styleHover(btn, false));
+  };
+
+  const btnCopy = el.querySelector("#copyCoords");
+  const btnWams = el.querySelector("#openWAMS");
+  hookHover(btnCopy);
+  hookHover(btnWams);
+
+  // ACTION: Copy coords as "lat<TAB>lon" (no confirmation popup)
+  btnCopy.addEventListener("click", async (ev) => {
+    ev.preventDefault();
+    try {
+      await navigator.clipboard.writeText(`${lat.toFixed(6)}\t${lng.toFixed(6)}`);
+    } catch (err) {
+      // Fallback: create a temporary text area if clipboard API fails
+      const ta = document.createElement("textarea");
+      ta.value = `${lat.toFixed(6)}\t${lng.toFixed(6)}`;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
     }
+    // Close the menu immediately
+    menu.remove();
+  });
 
-    new maplibregl.Popup({ closeButton: false, closeOnClick: false })
-      .setLngLat(e.lngLat)
-      .setHTML(`<div style="font:12px Arial;">
-        Copied: <b>${lat.toFixed(6)}, ${lng.toFixed(6)}</b>
-      </div>`)
-      .addTo(map);
+  // ACTION: Open Herenga ā Nuku viewer centered at this point (EPSG:2193)
+  btnWams.addEventListener("click", (ev) => {
+    ev.preventDefault();
 
-    setTimeout(() => {
-      const popups = document.getElementsByClassName("maplibregl-popup");
-      if (popups.length > 0) popups[0].remove();
-    }, 1500);
+    // 4326 (lng,lat) → 2193 (E,N)
+    const [E, N] = proj4("EPSG:4326", "EPSG:2193", [lng, lat]);
+    const Ee = E.toFixed(4);
+    const Nn = N.toFixed(4);
+
+    // Use current map zoom as level (clamped to sensible range)
+    const level = Math.max(0, Math.min(20, Math.round(map.getZoom())));
+
+    const base  = "https://maps.herengaanuku.govt.nz/Viewer/";
+    const mapId = "d6dfba1ab5ed455392575a66f1b32c59"; // your updated map
+    const url   = `${base}?map=${mapId}&center=${Ee},${Nn},2193&level=${level}`;
+
+    window.open(url, "_blank", "noopener");
+    // Close the menu immediately
+    menu.remove();
   });
 });
+
 
   </script>
 
