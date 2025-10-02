@@ -2946,12 +2946,11 @@ const html = `
     const [E, N] = proj4("EPSG:4326", "EPSG:2193", [lng, lat]);
     const Ee = E.toFixed(4);
     const Nn = N.toFixed(4);
-
     // Use current map zoom as level (clamped to sensible range)
     const level = Math.max(0, Math.min(20, Math.round(map.getZoom())));
 
     const base  = "https://maps.herengaanuku.govt.nz/Viewer/";
-    const mapId = "d6dfba1ab5ed455392575a66f1b32c59"; // your updated map
+    const mapId = "9cd99517a0db4d18a894c3839df4d3a3"; // your updated map
     const url   = `${base}?map=${mapId}&center=${Ee},${Nn},2193&level=${level}`;
 
     window.open(url, "_blank", "noopener");
