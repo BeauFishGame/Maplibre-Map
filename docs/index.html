@@ -1314,9 +1314,9 @@ if (bboxParam) {
 
 
     const styleURL = 'https://basemaps.linz.govt.nz/v1/styles/topo-raster.json?api=d01hep5551e30kxb7w85hck49tp';
-    // const TODAY_UNIX = Math.floor(Date.now()/1000); // cache once per load 
+    const TODAY_UNIX = Math.floor(Date.now()/1000); // cache once per load 
     //  1760266811 -  Oct 12 2025  1787842134 
-    const TODAY_UNIX = 1760266811
+    //const TODAY_UNIX = 1760266811
     const map = new maplibregl.Map({
       container: 'map',
       style: styleURL,
@@ -2452,7 +2452,7 @@ if (isTouch && !map.getLayer('Waterways-touch')) {
     layout: { 'line-join': 'round', 'line-cap': 'round' },
     paint: {
       // 1.5x the interactive width of the visual layer
-      'line-width': 8,
+      'line-width': 10,
       // Totally invisible but still hit-testable
       'line-opacity': 0,
       'line-color': '#000000'
