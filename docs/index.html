@@ -775,6 +775,16 @@
   display: block;
 }
 
+@media (max-width: 768px) {
+  .card-image-wrap {
+    aspect-ratio: 16/4.5; /* new mobile ratio: 10 long × 4 high */
+  }
+  .card-image-wrap img {
+    object-fit: cover;          /* still fills container */
+    object-position: 50% 50%;   /* centered vertically */
+  }
+}
+
 /* In-card carousel arrows */
 .carousel-button{
   position: absolute;
@@ -2389,7 +2399,7 @@ if (!sources['Waterways']) {
         }, insertBeforeLayer);
       }
 
-      // --- Selected-only Waterways stroke (wide halo only) ---
+      
 
       // --- Selected-only Waterways stroke (wide halo only) ---
       if (!map.getLayer('Waterways-selected-halo')) {
@@ -2431,6 +2441,24 @@ if (!sources['Waterways']) {
         }); // note: appended on top (no insertBeforeLayer)
       }
 
+// --- Transparent, wider hitbox for touch devices ---
+if (isTouch && !map.getLayer('Waterways-touch')) {
+  map.addLayer({
+    id: 'Waterways-touch',
+    type: 'line',
+    source: 'Waterways',
+    'source-layer': 'waterways',
+    minzoom: 7,
+    layout: { 'line-join': 'round', 'line-cap': 'round' },
+    paint: {
+      // 1.5x the interactive width of the visual layer
+      'line-width': 8,
+      // Totally invisible but still hit-testable
+      'line-opacity': 0,
+      'line-color': '#000000'
+    }
+  }); 
+}
 
 
 
@@ -2546,10 +2574,10 @@ if (!map.getLayer('FG Regions-line')) {
       //     source: 'FG Regions',
       //     'source-layer': 'fg_regions',
       //     paint: {
-      //       'fill-color': '#008678',
+      //       'fill-color': '#86000E',
       //       'fill-opacity': 0.5
       //     },
-      //     filter: ['in', 'RegionCode', 1,4,5,6,7,8,9,10,11,12,13] // ✅ only fills regions with these codes
+      //     filter: ['in', 'RegionCode', 13] // ✅ only fills regions with these codes
       //   }, insertBeforeLayer);
       // }
 
@@ -2642,9 +2670,14 @@ if (!map.getLayer('FG Region Labels')) {
 
     // Unified click handler to prioritize points over rivers
     map.on('click', (e) => {
-      const features = map.queryRenderedFeatures(e.point, {
-        layers: ['data-points-all', 'Waterways-line', 'Waterways-fill']
-      });
+     const riverTapLayers = isTouch
+  ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
+  : ['Waterways-line', 'Waterways-fill'];
+
+const features = map.queryRenderedFeatures(e.point, {
+  layers: ['data-points-all', ...riverTapLayers]
+});
+      
       if (features.length === 0) { clearSelection(); card.style.display = 'none'; return; }
       const pointFeature = features.find(f => f.layer.id === 'data-points-all');
       const riverFeature = features.find(f => f.layer.id === 'Waterways-line') || features.find(f => f.layer.id === 'Waterways-fill');
@@ -2785,9 +2818,11 @@ function selectFeatureFromSearch(f) {
 
     let found = null;
     if (isRiver) {
-      const rivers = map.queryRenderedFeatures([bbox[0], bbox[1]], {
-        layers: ['Waterways-line', 'Waterways-fill']
-      });
+    const rivers = map.queryRenderedFeatures([bbox[0], bbox[1]], {
+  layers: (isTouch
+    ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
+    : ['Waterways-line', 'Waterways-fill'])
+});
       // optional: try to match on names/section to be robust
       found = rivers.find(r =>
         (r.properties?.Water === f.properties.Water) &&
