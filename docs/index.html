@@ -9,12 +9,11 @@
   <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
   <link href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/proj4@2.11.0/dist/proj4.js"></script>
- 
+
   <script async src="https://stats.fishandgameaccessmap.org/script.js"
-          data-website-id="727d8b53-6b74-4eef-8258-daf48932ff65"></script>
+    data-website-id="727d8b53-6b74-4eef-8258-daf48932ff65"></script>
 
   <style>
-
     body {
       margin: 0;
       padding: 0;
@@ -549,42 +548,84 @@
       }
 
 
-      .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%;
-  background-color: rgba(0,0,0,0.85); }
-.modal.show { display: flex; justify-content: center; align-items: center; }
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.85);
+      }
 
-.modal-content { max-width: 80%; max-height: 80%; border-radius: 6px; box-shadow: 0 0 20px rgba(0,0,0,.5); }
+      .modal.show {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-.modal-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: clamp(44px, 6vw, 64px);
-  height: clamp(44px, 6vw, 64px);
-  border: none;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.18);
-  color: #fff;
-  font-size: clamp(24px, 4vw, 36px);
-  line-height: 1;
-  display: grid; place-items: center;
-  cursor: pointer;
-  backdrop-filter: blur(2px);
-}
+      .modal-content {
+        max-width: 80%;
+        max-height: 80%;
+        border-radius: 6px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, .5);
+      }
 
-.modal-nav:hover { background: rgba(255,255,255,0.28); }
-.modal-nav.prev { left: min(24px, 4vw); }
-.modal-nav.next { right: min(24px, 4vw); }
+      .modal-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: clamp(44px, 6vw, 64px);
+        height: clamp(44px, 6vw, 64px);
+        border: none;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.18);
+        color: #fff;
+        font-size: clamp(24px, 4vw, 36px);
+        line-height: 1;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        backdrop-filter: blur(2px);
+      }
 
-.close-modal {
-  position: absolute; top: 30px; right: 50px; color: #fff;
-  font-size: 40px; font-weight: bold; cursor: pointer;
-}
+      .modal-nav:hover {
+        background: rgba(255, 255, 255, 0.28);
+      }
 
-@media (max-width: 768px) {
-  .modal-content { max-width: 92%; max-height: 82%; }
-  .modal-nav.prev { left: 12px; } .modal-nav.next { right: 12px; }
-}
+      .modal-nav.prev {
+        left: min(24px, 4vw);
+      }
+
+      .modal-nav.next {
+        right: min(24px, 4vw);
+      }
+
+      .close-modal {
+        position: absolute;
+        top: 30px;
+        right: 50px;
+        color: #fff;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      @media (max-width: 768px) {
+        .modal-content {
+          max-width: 92%;
+          max-height: 82%;
+        }
+
+        .modal-nav.prev {
+          left: 12px;
+        }
+
+        .modal-nav.next {
+          right: 12px;
+        }
+      }
 
     }
   </style>
@@ -592,12 +633,12 @@
 
 <body>
 
-<div id="imageModal" class="modal" role="dialog" aria-modal="true">
-  <button class="modal-nav prev" onclick="modalPrev(event)" aria-label="Previous image">❮</button>
-  <img class="modal-content" id="modalImage" alt="Location Photo (fullscreen)">
-  <button class="modal-nav next" onclick="modalNext(event)" aria-label="Next image">❯</button>
-  <span class="close-modal" onclick="closeModal()" aria-label="Close">×</span>
-</div>
+  <div id="imageModal" class="modal" role="dialog" aria-modal="true">
+    <button class="modal-nav prev" onclick="modalPrev(event)" aria-label="Previous image">❮</button>
+    <img class="modal-content" id="modalImage" alt="Location Photo (fullscreen)">
+    <button class="modal-nav next" onclick="modalNext(event)" aria-label="Next image">❯</button>
+    <span class="close-modal" onclick="closeModal()" aria-label="Close">×</span>
+  </div>
 
   <div id="map"></div>
 
@@ -659,7 +700,7 @@
             padding: 10px 12px;
             background: #e9edf3;
             cursor: pointer;
-             font-family: "Arial", sans-serif;
+            font-family: "Arial", sans-serif;
           }
 
           .source-name {
@@ -712,6 +753,12 @@
             color: #374151
           }
 
+          .disclaimer {
+  font-style: italic;
+  font-weight: 300; /* lighter weight */
+  color: #555;      /* optional: softer gray tone */
+}
+
           .option {
             display: flex;
             align-items: center;
@@ -730,86 +777,106 @@
           }
 
           /* No sticky — just a normal block under the text */
-.regs-cta {
-  margin-top: 16px;
-  text-align: center;
-}
+          .regs-cta {
+            margin-top: 16px;
+            text-align: center;
+          }
 
-/* Keep your button styling */
-.regs-btn {
-  display: inline-block;
-  text-decoration: none;
-  background: #008678;
-  color: #fff;
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-weight: 600;
-}
+          /* Keep your button styling */
+          .regs-btn {
+            display: inline-block;
+            text-decoration: none;
+            background: #008678;
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+          }
 
-.licence-btn {
-  display: inline-block;
-  text-decoration: none;
-  background: #ED6429;
-  color: #fff;
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-weight: 600;
-}
-
-
-/* Showcard image */
-.card-image-wrap{
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16/9;          /* keeps a tidy frame */
-  border-radius: 8px;
-  overflow: hidden;
-  background: #f2f2f2;         /* nice fallback while loading */
-  margin-bottom: 10px;
-}
-.card-image-wrap img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;           /* no distortion */
-  object-position: center;
-  display: block;
-}
-
-@media (max-width: 768px) {
-  .card-image-wrap {
-    aspect-ratio: 16/4.5; /* new mobile ratio: 10 long × 4 high */
-  }
-  .card-image-wrap img {
-    object-fit: cover;          /* still fills container */
-    object-position: 50% 50%;   /* centered vertically */
-  }
-}
-
-/* In-card carousel arrows */
-.carousel-button{
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 36px; height: 36px;
-  border-radius: 999px;
-  border: none;
-  background: rgba(0,0,0,.35);
-  color: #fff;
-  font-size: 20px;
-  line-height: 1;
-  display: grid; place-items: center;
-  cursor: pointer;
-}
-.carousel-button:hover{ background: rgba(0,0,0,.5); }
-.carousel-button.prev{ left: 8px; }
-.carousel-button.next{ right: 8px; }
-
-/* optional: small index line under the image (remove if not needed) */
-.carousel-meta{
-  margin-top: 6px; font-size: 12px; color: #666; text-align:center;
-}
+          .licence-btn {
+            display: inline-block;
+            text-decoration: none;
+            background: #ED6429;
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+          }
 
 
+          /* Showcard image */
+          .card-image-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            /* keeps a tidy frame */
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f2f2f2;
+            /* nice fallback while loading */
+            margin-bottom: 10px;
+          }
+
+          .card-image-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* no distortion */
+            object-position: center;
+            display: block;
+          }
+
+          @media (max-width: 768px) {
+            .card-image-wrap {
+              aspect-ratio: 16/4.5;
+              /* new mobile ratio: 10 long × 4 high */
+            }
+
+            .card-image-wrap img {
+              object-fit: cover;
+              /* still fills container */
+              object-position: 50% 50%;
+              /* centered vertically */
+            }
+          }
+
+          /* In-card carousel arrows */
+          .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            border: none;
+            background: rgba(0, 0, 0, .35);
+            color: #fff;
+            font-size: 20px;
+            line-height: 1;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+          }
+
+          .carousel-button:hover {
+            background: rgba(0, 0, 0, .5);
+          }
+
+          .carousel-button.prev {
+            left: 8px;
+          }
+
+          .carousel-button.next {
+            right: 8px;
+          }
+
+          /* optional: small index line under the image (remove if not needed) */
+          .carousel-meta {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+          }
         </style>
 
         <div id="filters-body" class="filters-body">
@@ -826,7 +893,17 @@
             <div class="source-body">
 
               <div class="group" data-group="w-method" data-type="radioOne">
-                <div class="group-title">Currently available for Northland, Auckland/Waikato and Eastern</div>
+                <div class="group-title">
+                  Currently available for Northland, Auckland/Waikato and Eastern Fish & Game Regions. 
+                  <br><br>
+                  <i class="disclaimer">
+                    Disclaimer: The fisheries shown here are not exhaustive — some waterways are too small or remote to
+                    be mapped.
+                    Such fisheries are described as "all other waters" in regional regulations.
+                    Always refer to the full regulations before fishing.
+                  </i>
+                </div>
+
                 <div class="group-title">Allowed Method</div>
                 <label class="option"><input type="radio" name="w-method" value="__ALL__" checked> ALL</label>
                 <label class="option"><input type="radio" name="w-method" value="fly"> Fly</label>
@@ -852,19 +929,23 @@
                   today</label>
               </div>
 
-            <div class="group" data-group="w-fishery" data-type="radioOne">
-  <div class="group-title">Fishery type</div>
-  <label class="option"><input type="radio" name="w-fishery" value="__ALL__" data-role="all" checked> All</label>
-  <label class="option"><input type="radio" name="w-fishery" value="backcountry"> Backcountry</label>
-  <label class="option"><input type="radio" name="w-fishery" value="sea_run_salmon"> Sea-run salmon fishery</label>
-  <label class="option"><input type="radio" name="w-fishery" value="designated"> Designated water</label>
-  <label class="option"><input type="radio" name="w-fishery" value="controlled"> Controlled fishery</label>
-  <label class="option"><input type="radio" name="w-fishery" value="junior"> Junior fishery</label>
-  <label class="option"><input type="radio" name="w-fishery" value="stocked"> Stocked/put-take fishery</label>
-  <label class="option"><input type="radio" name="w-fishery" value="coarse"> Coarse fishery</label>
-</div>
+              <div class="group" data-group="w-fishery" data-type="radioOne">
+                <div class="group-title">Fishery type</div>
+                <label class="option"><input type="radio" name="w-fishery" value="__ALL__" data-role="all" checked>
+                  All</label>
+                <label class="option"><input type="radio" name="w-fishery" value="backcountry"> Backcountry</label>
+                <label class="option"><input type="radio" name="w-fishery" value="sea_run_salmon"> Sea-run salmon
+                  fishery</label>
+                <label class="option"><input type="radio" name="w-fishery" value="designated"> Designated water</label>
+                <label class="option"><input type="radio" name="w-fishery" value="controlled"> Controlled
+                  fishery</label>
+                <label class="option"><input type="radio" name="w-fishery" value="junior"> Junior fishery</label>
+                <label class="option"><input type="radio" name="w-fishery" value="stocked"> Stocked/put-take
+                  fishery</label>
+                <label class="option"><input type="radio" name="w-fishery" value="coarse"> Coarse fishery</label>
+              </div>
 
-<!-- 
+              <!-- 
               <div class="group" data-group="w-species" data-type="checkboxAny">
                 <div class="group-title">Known Species</div>
                 <label class="option"><input type="checkbox" data-role="all" checked> All</label>
@@ -908,8 +989,8 @@
                 <label class="option"><input type="checkbox" value="Lodge" checked> Fly fishing lodges</label>
                 <label class="option"><input type="checkbox" value="Hut" checked> DOC Huts</label>
                 <label class="option"><input type="checkbox" value="Campsite" checked> DOC Campgrounds</label>
-                <label class="option"> <input type="checkbox" value="Beat" data-values='["BeatYR","BeatBY","BeatBR", "BeatB", "BeatR", "BeatY"]'
-                    checked> Beat markers </label>
+                <label class="option"> <input type="checkbox" value="Beat"
+                    data-values='["BeatYR","BeatBY","BeatBR", "BeatB", "BeatR", "BeatY"]' checked> Beat markers </label>
 
               </div>
             </div>
@@ -925,22 +1006,25 @@
               </div>
             </div>
             <div class="source-body">
-              <div class="hint">
-Last updated: 18/09/2025 <br><br>
-                <a href="https://www.herengaanuku.govt.nz/types-of-access" target="_blank">
-                  Learn more about legal public access in NZ here
-                </a> <nr></br><br>
-                <a href="https://www.herengaanuku.govt.nz/types-of-access/rivers-lakes-and-coast/hydro-parcels" target="_blank">
-                  Hydro parcels are complicated. Learn more here.
-                </a>
-
-                <br> <br>
-                <b> Disclaimer: </b>All efforts were made to ensure the accuracy of this information, however there may be circumstances beyond our control that alter or preclude public access.
-                Please note that the onus is on anglers to ensure they are not trespassing – so if in doubt, please ask the adjacent landowner.  
-              </div>
-            </div>
-          </div>
-
+  <div class="hint">
+    Last updated: 18/09/2025 
+    <br><br>
+    <a href="https://www.herengaanuku.govt.nz/types-of-access" target="_blank">
+      Learn more about legal public access in NZ here
+    </a>
+    <br><br>
+    <a href="https://www.herengaanuku.govt.nz/types-of-access/rivers-lakes-and-coast/hydro-parcels" target="_blank">
+      Hydro parcels are complicated. Learn more here.
+    </a>
+    <br><br>
+    <i class="disclaimer">
+      Disclaimer: All efforts were made to ensure the accuracy of this information; however, there
+      may be circumstances beyond our control that alter or preclude public access. Please note that
+      the onus is on anglers to ensure they are not trespassing — if in doubt, please ask the adjacent
+      landowner.
+    </i>
+  </div>
+</div>
           <!-- ================= FISH & GAME REGIONS ================= -->
           <div class="source-card" data-source="regions">
             <div class="source-head">
@@ -996,48 +1080,48 @@ Last updated: 18/09/2025 <br><br>
           }
 
           // Helpers available to ALL functions
-function isBlankish(v) {
-  if (v === null || v === undefined) return true;
-  const s = String(v).trim();
-  if (!s) return true;
-  return /^(na|n\/a|null|undefined|none)$/i.test(s);
-}
-function safeGet(obj, key) {
-  const v = obj?.[key];
-  return isBlankish(v) ? null : v;
-}
+          function isBlankish(v) {
+            if (v === null || v === undefined) return true;
+            const s = String(v).trim();
+            if (!s) return true;
+            return /^(na|n\/a|null|undefined|none)$/i.test(s);
+          }
+          function safeGet(obj, key) {
+            const v = obj?.[key];
+            return isBlankish(v) ? null : v;
+          }
 
-const REGION_REG_URLS = {
-  1: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.03-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Northland-V2-WEB.pdf",
-  2: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Auckland-Waikato-V4-WEB.pdf",  // Auckland/Waikato
-  3: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Eastern-V3-WEB.pdf",  // Eastern
-  4: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Taranaki-V2-WEB.pdf", 
-  5: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.03-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Hawkes-Bay-V3-WEB.pdf",
-  6: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Wellington-V3-WEB.pdf",
-  7: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Nelson-Marlborough-V2-WEB.pdf",
-  8: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.01-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-North-Canterbury-V3-WEB.pdf",
-  9: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-25-SI-West-Coast-V3-WEB.pdf",
-  10: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.01-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Central-South-Island-V5-WEB.pdf",
-  11: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.01-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Otago-V3-WEB.pdf",
-  12: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Southland-V5-WEB.pdf",
-  13: "https://www.doc.govt.nz/parks-and-recreation/places-to-go/central-north-island/places/taupo-trout-fishery/other-pages/rules-and-regulation---what-you-need-to-know/"
-};
+          const REGION_REG_URLS = {
+            1: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.03-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Northland-V2-WEB.pdf",
+            2: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Auckland-Waikato-V4-WEB.pdf",  // Auckland/Waikato
+            3: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Eastern-V3-WEB.pdf",  // Eastern
+            4: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Taranaki-V2-WEB.pdf",
+            5: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.03-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Hawkes-Bay-V3-WEB.pdf",
+            6: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Wellington-V3-WEB.pdf",
+            7: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Nelson-Marlborough-V2-WEB.pdf",
+            8: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.01-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-North-Canterbury-V3-WEB.pdf",
+            9: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-25-SI-West-Coast-V3-WEB.pdf",
+            10: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.01-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Central-South-Island-V5-WEB.pdf",
+            11: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.01-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Otago-V3-WEB.pdf",
+            12: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Southland-V5-WEB.pdf",
+            13: "https://www.doc.govt.nz/parks-and-recreation/places-to-go/central-north-island/places/taupo-trout-fishery/other-pages/rules-and-regulation---what-you-need-to-know/"
+          };
 
 
-function getRegionRegUrlFromProps(props) {
-  // accept RegionCode as number or string; treat NA-ish as missing
-  const raw =
-    props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
+          function getRegionRegUrlFromProps(props) {
+            // accept RegionCode as number or string; treat NA-ish as missing
+            const raw =
+              props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
 
-  // reuse your isBlankish if present
-  if (typeof isBlankish === "function" && isBlankish(raw)) return null;
+            // reuse your isBlankish if present
+            if (typeof isBlankish === "function" && isBlankish(raw)) return null;
 
-  const rc = Number.parseInt(String(raw).trim(), 10);
-  if (!Number.isInteger(rc) || rc < 1 || rc > 13) return null;
+            const rc = Number.parseInt(String(raw).trim(), 10);
+            if (!Number.isInteger(rc) || rc < 1 || rc > 13) return null;
 
-  // only return if we actually have a URL for this code
-  return REGION_REG_URLS[rc] || null;
-}
+            // only return if we actually have a URL for this code
+            return REGION_REG_URLS[rc] || null;
+          }
 
 
           // Expose a function so we can wire MapLibre once the map exists
@@ -1080,7 +1164,7 @@ function getRegionRegUrlFromProps(props) {
             const filtersRoot = document.getElementById('filters-body');
 
 
-            
+
 
             // Helpers
             const getRadio = (group) => {
@@ -1176,16 +1260,16 @@ function getRegionRegUrlFromProps(props) {
                 clauses.push(['==', ['get', p.type], wtype]);
               }
 
-if (fishery && fishery !== '__ALL__') {
-  const field = FISHERY_FIELDS[fishery];
-  if (field) {
-    // robust to "0"/"1" strings
-    clauses.push(['==', ['to-number', ['get', field]], 1]);
-  } else {
-    // unknown selection → hide all
-    clauses.push(['==', ['literal', 1], 2]);
-  }
-}
+              if (fishery && fishery !== '__ALL__') {
+                const field = FISHERY_FIELDS[fishery];
+                if (field) {
+                  // robust to "0"/"1" strings
+                  clauses.push(['==', ['to-number', ['get', field]], 1]);
+                } else {
+                  // unknown selection → hide all
+                  clauses.push(['==', ['literal', 1], 2]);
+                }
+              }
 
 
 
@@ -1277,44 +1361,44 @@ if (fishery && fishery !== '__ALL__') {
   <script>
 
 
-// --- decide initial view from URL (run FIRST) ---
-const url = new URL(window.location.href);
-const regionParam = url.searchParams.get('region');
-const latParam    = parseFloat(url.searchParams.get('lat'));
-const lngParam    = parseFloat(url.searchParams.get('lng'));
-const zParam      = parseFloat(url.searchParams.get('z'));
-const bboxParam   = (url.searchParams.get('bbox') || '').trim();
+    // --- decide initial view from URL (run FIRST) ---
+    const url = new URL(window.location.href);
+    const regionParam = url.searchParams.get('region');
+    const latParam = parseFloat(url.searchParams.get('lat'));
+    const lngParam = parseFloat(url.searchParams.get('lng'));
+    const zParam = parseFloat(url.searchParams.get('z'));
+    const bboxParam = (url.searchParams.get('bbox') || '').trim();
 
-const REGION_VIEWS = {
-  1:{center:[174.15,-35.70],zoom:6.9}, 2:{center:[175.182251,	-37.998588],zoom:6.9},
-  3:{center:[177.127635,	-38.307814],zoom:6.9}, 4:{center:[174.788398,	-39.416080],zoom:6.9},
-  5:{center:[176.566401,	-39.552397],zoom:6.9}, 6:{center:[175.718208, -40.534386],zoom:6.9},
-  7:{center:[173.069873,	-41.681397],zoom:6.9}, 8:{center:[172.301859,	-43.106414],zoom:6.9},
-  9:{center:[170.728991,	-43.047237],zoom:6.9}, 10:{center:[170.745253,	-44.232766],zoom:6.9},
-  11:{center:[169.422244,	-45.454679],zoom:6.9}, 12:{center:[167.969988,	-45.709747],zoom:6.9},
-  13:{center:[175.80,-38.80],zoom:6.9}
-};
-
-let initialCamera = { center: [173.792725, -40.784701], zoom: 5.3 }; // default
-
-if (bboxParam) {
-  const parts = bboxParam.split(',').map(Number);
-  if (parts.length === 4 && parts.every(Number.isFinite)) {
-    initialCamera = {
-      bounds: [[parts[0], parts[1]], [parts[2], parts[3]]],
-      fitBoundsOptions: { padding: { top:80, right:10, bottom:10, left:10 } } // instant at init
+    const REGION_VIEWS = {
+      1: { center: [174.15, -35.70], zoom: 6.9 }, 2: { center: [175.182251, -37.998588], zoom: 6.9 },
+      3: { center: [177.127635, -38.307814], zoom: 6.9 }, 4: { center: [174.788398, -39.416080], zoom: 6.9 },
+      5: { center: [176.566401, -39.552397], zoom: 6.9 }, 6: { center: [175.718208, -40.534386], zoom: 6.9 },
+      7: { center: [173.069873, -41.681397], zoom: 6.9 }, 8: { center: [172.301859, -43.106414], zoom: 6.9 },
+      9: { center: [170.728991, -43.047237], zoom: 6.9 }, 10: { center: [170.745253, -44.232766], zoom: 6.9 },
+      11: { center: [169.422244, -45.454679], zoom: 6.9 }, 12: { center: [167.969988, -45.709747], zoom: 6.9 },
+      13: { center: [175.80, -38.80], zoom: 6.9 }
     };
-  }
-} else if (Number.isFinite(latParam) && Number.isFinite(lngParam)) {
-  initialCamera = { center: [lngParam, latParam], zoom: Number.isFinite(zParam) ? zParam : 10 };
-} else if (regionParam && REGION_VIEWS[+regionParam]) {
-  initialCamera = REGION_VIEWS[+regionParam];
-}
+
+    let initialCamera = { center: [173.792725, -40.784701], zoom: 5.3 }; // default
+
+    if (bboxParam) {
+      const parts = bboxParam.split(',').map(Number);
+      if (parts.length === 4 && parts.every(Number.isFinite)) {
+        initialCamera = {
+          bounds: [[parts[0], parts[1]], [parts[2], parts[3]]],
+          fitBoundsOptions: { padding: { top: 80, right: 10, bottom: 10, left: 10 } } // instant at init
+        };
+      }
+    } else if (Number.isFinite(latParam) && Number.isFinite(lngParam)) {
+      initialCamera = { center: [lngParam, latParam], zoom: Number.isFinite(zParam) ? zParam : 10 };
+    } else if (regionParam && REGION_VIEWS[+regionParam]) {
+      initialCamera = REGION_VIEWS[+regionParam];
+    }
 
 
 
     const styleURL = 'https://basemaps.linz.govt.nz/v1/styles/topo-raster.json?api=d01hep5551e30kxb7w85hck49tp';
-    const TODAY_UNIX = Math.floor(Date.now()/1000); // cache once per load 
+    const TODAY_UNIX = Math.floor(Date.now() / 1000); // cache once per load 
     //  1760266811 -  Oct 12 2025  1787842134 
     //const TODAY_UNIX = 1760266811
     const map = new maplibregl.Map({
@@ -1335,128 +1419,128 @@ if (bboxParam) {
     map.touchZoomRotate.disableRotation();
 
     (function addModalSwipe() {
-  let startX = 0, startY = 0, tracking = false;
+      let startX = 0, startY = 0, tracking = false;
 
-  const modal = document.getElementById('imageModal');
-  const img = document.getElementById('modalImage');
+      const modal = document.getElementById('imageModal');
+      const img = document.getElementById('modalImage');
 
-  function onStart(e) {
-    const t = e.touches?.[0];
-    if (!t) return;
-    startX = t.clientX; startY = t.clientY; tracking = true;
-  }
-  function onEnd(e) {
-    if (!tracking) return;
-    const t = e.changedTouches?.[0];
-    if (!t) return;
-    const dx = t.clientX - startX;
-    const dy = t.clientY - startY;
-    tracking = false;
-    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
-      if (dx < 0) modalNext(); else modalPrev();
+      function onStart(e) {
+        const t = e.touches?.[0];
+        if (!t) return;
+        startX = t.clientX; startY = t.clientY; tracking = true;
+      }
+      function onEnd(e) {
+        if (!tracking) return;
+        const t = e.changedTouches?.[0];
+        if (!t) return;
+        const dx = t.clientX - startX;
+        const dy = t.clientY - startY;
+        tracking = false;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) modalNext(); else modalPrev();
+        }
+      }
+
+      img.addEventListener('touchstart', onStart, { passive: true });
+      img.addEventListener('touchend', onEnd, { passive: true });
+    })();
+
+    function setCardImage(index) {
+      const photos = window.__cardPhotos || [];
+      if (!photos.length) return;
+      const n = ((index % photos.length) + photos.length) % photos.length;
+      window.__cardPhotoIndex = n;
+
+      const main = document.getElementById('cardMainImage');
+      if (main) {
+        main.src = photos[n];
+        main.onclick = () => openImageModal(n);
+      }
+
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImage');
+      if (modal?.classList.contains('show') && modalImg) {
+        modalImg.src = photos[n];
+      }
+
+      const meta = document.querySelector('.carousel-meta');
+      if (meta) {
+        meta.textContent = `${n + 1} / ${photos.length}`;
+      }
     }
-  }
-
-  img.addEventListener('touchstart', onStart, { passive: true });
-  img.addEventListener('touchend', onEnd, { passive: true });
-})();
-
-function setCardImage(index){
-  const photos = window.__cardPhotos || [];
-  if (!photos.length) return;
-  const n = ((index % photos.length) + photos.length) % photos.length;
-  window.__cardPhotoIndex = n;
-
-  const main = document.getElementById('cardMainImage');
-  if (main){
-    main.src = photos[n];
-    main.onclick = () => openImageModal(n);
-  }
-
-  const modal = document.getElementById('imageModal');
-  const modalImg = document.getElementById('modalImage');
-  if (modal?.classList.contains('show') && modalImg){
-    modalImg.src = photos[n];
-  }
-
-  const meta = document.querySelector('.carousel-meta');
-  if (meta){
-    meta.textContent = `${n+1} / ${photos.length}`;
-  }
-}
 
 
-function openImageModal(arg) {
-  const modal = document.getElementById("imageModal");
-  const modalImg = document.getElementById("modalImage");
+    function openImageModal(arg) {
+      const modal = document.getElementById("imageModal");
+      const modalImg = document.getElementById("modalImage");
 
-  // decide which image index to show
-  let idx = window.__cardPhotoIndex || 0;
+      // decide which image index to show
+      let idx = window.__cardPhotoIndex || 0;
 
-  if (typeof arg === 'number' && Number.isFinite(arg)) {
-    idx = arg;
-  } else if (typeof arg === 'string' && window.__cardPhotos?.length) {
-    const found = window.__cardPhotos.indexOf(arg);
-    if (found >= 0) idx = found;
-  }
+      if (typeof arg === 'number' && Number.isFinite(arg)) {
+        idx = arg;
+      } else if (typeof arg === 'string' && window.__cardPhotos?.length) {
+        const found = window.__cardPhotos.indexOf(arg);
+        if (found >= 0) idx = found;
+      }
 
-  // sync both the card + modal to the chosen index
-  setCardImage(idx);
-  modalImg.src = window.__cardPhotos[idx];
+      // sync both the card + modal to the chosen index
+      setCardImage(idx);
+      modalImg.src = window.__cardPhotos[idx];
 
-  // show modal
-  modal.classList.add("show");
-updateModalNavVisibility();
-  // clicking the dark backdrop closes; clicks on content/controls should not
-  modal.onclick = (ev) => {
-    if (ev.target === modal) closeModal();
-  };
+      // show modal
+      modal.classList.add("show");
+      updateModalNavVisibility();
+      // clicking the dark backdrop closes; clicks on content/controls should not
+      modal.onclick = (ev) => {
+        if (ev.target === modal) closeModal();
+      };
 
-  // keyboard navigation while modal is open
-  window.addEventListener('keydown', handleModalKeys);
-}
+      // keyboard navigation while modal is open
+      window.addEventListener('keydown', handleModalKeys);
+    }
 
-function updateModalNavVisibility() {
-  const count = (window.__cardPhotos || []).length;
-  const prevBtn = document.querySelector('#imageModal .modal-nav.prev');
-  const nextBtn = document.querySelector('#imageModal .modal-nav.next');
-  const show = count > 1;
-  if (prevBtn) prevBtn.style.display = show ? '' : 'none';
-  if (nextBtn) nextBtn.style.display = show ? '' : 'none';
-}
+    function updateModalNavVisibility() {
+      const count = (window.__cardPhotos || []).length;
+      const prevBtn = document.querySelector('#imageModal .modal-nav.prev');
+      const nextBtn = document.querySelector('#imageModal .modal-nav.next');
+      const show = count > 1;
+      if (prevBtn) prevBtn.style.display = show ? '' : 'none';
+      if (nextBtn) nextBtn.style.display = show ? '' : 'none';
+    }
 
-function closeModal() {
-  const modal = document.getElementById("imageModal");
-  modal.classList.remove("show");
-  modal.onclick = null;
-  window.removeEventListener('keydown', handleModalKeys);
-}
+    function closeModal() {
+      const modal = document.getElementById("imageModal");
+      modal.classList.remove("show");
+      modal.onclick = null;
+      window.removeEventListener('keydown', handleModalKeys);
+    }
 
-function handleModalKeys(e) {
-  const count = (window.__cardPhotos || []).length;
-  if (e.key === 'Escape') { closeModal(); return; }
-  if (count < 2) return;           // nothing to cycle
-  if (e.key === 'ArrowRight') { modalNext(e); }
-  else if (e.key === 'ArrowLeft') { modalPrev(e); }
-}
+    function handleModalKeys(e) {
+      const count = (window.__cardPhotos || []).length;
+      if (e.key === 'Escape') { closeModal(); return; }
+      if (count < 2) return;           // nothing to cycle
+      if (e.key === 'ArrowRight') { modalNext(e); }
+      else if (e.key === 'ArrowLeft') { modalPrev(e); }
+    }
 
-// in-modal nav buttons (reuse carousel state)
-function modalNext(ev) {
-  if (ev) ev.stopPropagation();
-  const photos = window.__cardPhotos || [];
-  if (photos.length < 2) return;   // no-op if only 1
-  setCardImage((window.__cardPhotoIndex || 0) + 1);
-  const modalImg = document.getElementById("modalImage");
-  if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
-}
-function modalPrev(ev) {
-  if (ev) ev.stopPropagation();
-  const photos = window.__cardPhotos || [];
-  if (photos.length < 2) return;   // no-op if only 1
-  setCardImage((window.__cardPhotoIndex || 0) - 1);
-  const modalImg = document.getElementById("modalImage");
-  if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
-}
+    // in-modal nav buttons (reuse carousel state)
+    function modalNext(ev) {
+      if (ev) ev.stopPropagation();
+      const photos = window.__cardPhotos || [];
+      if (photos.length < 2) return;   // no-op if only 1
+      setCardImage((window.__cardPhotoIndex || 0) + 1);
+      const modalImg = document.getElementById("modalImage");
+      if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
+    }
+    function modalPrev(ev) {
+      if (ev) ev.stopPropagation();
+      const photos = window.__cardPhotos || [];
+      if (photos.length < 2) return;   // no-op if only 1
+      setCardImage((window.__cardPhotoIndex || 0) - 1);
+      const modalImg = document.getElementById("modalImage");
+      if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
+    }
 
     // Panel logic
     let activePanel = null;
@@ -1470,21 +1554,21 @@ function modalPrev(ev) {
       }
     });
 
-// Selection state used by selectFeature/unselectFeatures
-let selectedPoint = null;
-let selectedRiver = null;
-let selectedRiverId = null;
+    // Selection state used by selectFeature/unselectFeatures
+    let selectedPoint = null;
+    let selectedRiver = null;
+    let selectedRiverId = null;
 
-// Keep the selected river halo layer in sync (or hidden when none)
-function updateSelectedRiverLayers() {
-  const filterExpr = (selectedRiverId == null)
-    ? ['==', ['id'], -1]                // hide halo
-    : ['==', ['id'], selectedRiverId];  // show only the selected one
+    // Keep the selected river halo layer in sync (or hidden when none)
+    function updateSelectedRiverLayers() {
+      const filterExpr = (selectedRiverId == null)
+        ? ['==', ['id'], -1]                // hide halo
+        : ['==', ['id'], selectedRiverId];  // show only the selected one
 
-  if (map.getLayer('Waterways-selected-halo')) {
-    map.setFilter('Waterways-selected-halo', filterExpr);
-  }
-}
+      if (map.getLayer('Waterways-selected-halo')) {
+        map.setFilter('Waterways-selected-halo', filterExpr);
+      }
+    }
     function openPanel(which) {
       const cardEl = document.getElementById('properties');
       const filtersEl = document.getElementById('combined-filters');
@@ -1525,184 +1609,184 @@ function updateSelectedRiverLayers() {
       }
     }
 
-function splitList(raw) {
-  if (isBlankish(raw)) return [];
-  return String(raw)
-    .split(/[;,\|\n]+/g)
-    .map(s => s.trim())
-    .filter(Boolean);
-}
-
-// Build [{href, text}] from props.more_info_url(+name). Also accepts JSON arrays.
-function parseMultiLinks(props) {
-  const urlsRaw  = safeGet(props, 'more_info_url')  ?? safeGet(props, 'moreinfo_url')  ?? safeGet(props, 'MoreInfoURL');
-  const namesRaw = safeGet(props, 'more_info_name') ?? safeGet(props, 'moreinfo_name') ?? safeGet(props, 'MoreInfoName');
-
-  // if someone stored JSON arrays, accept those too
-  const toArray = (v) => {
-    if (Array.isArray(v)) return v;
-    const s = (v ?? '').toString().trim();
-    if (!s) return [];
-    if (s.startsWith('[') && s.endsWith(']')) {
-      try { 
-        const arr = JSON.parse(s);
-        return Array.isArray(arr) ? arr : splitList(s);
-      } catch { return splitList(s); }
+    function splitList(raw) {
+      if (isBlankish(raw)) return [];
+      return String(raw)
+        .split(/[;,\|\n]+/g)
+        .map(s => s.trim())
+        .filter(Boolean);
     }
-    return splitList(s);
-  };
 
-  const urlList  = toArray(urlsRaw);
-  const nameList = toArray(namesRaw);
+    // Build [{href, text}] from props.more_info_url(+name). Also accepts JSON arrays.
+    function parseMultiLinks(props) {
+      const urlsRaw = safeGet(props, 'more_info_url') ?? safeGet(props, 'moreinfo_url') ?? safeGet(props, 'MoreInfoURL');
+      const namesRaw = safeGet(props, 'more_info_name') ?? safeGet(props, 'moreinfo_name') ?? safeGet(props, 'MoreInfoName');
 
-  const out = [];
-  for (let i = 0; i < urlList.length; i++) {
-    const href = normalizeUrl(urlList[i]);
-    if (!href) continue;
-    // pick name if available, else hostname
-    let text = nameList[i] && !isBlankish(nameList[i])
-      ? nameList[i]
-      : (() => {
-          try { return new URL(href).hostname.replace(/^www\./, ''); }
-          catch { return href; }
-        })();
-    out.push({ href, text });
-  }
-  return out;
-}
+      // if someone stored JSON arrays, accept those too
+      const toArray = (v) => {
+        if (Array.isArray(v)) return v;
+        const s = (v ?? '').toString().trim();
+        if (!s) return [];
+        if (s.startsWith('[') && s.endsWith(']')) {
+          try {
+            const arr = JSON.parse(s);
+            return Array.isArray(arr) ? arr : splitList(s);
+          } catch { return splitList(s); }
+        }
+        return splitList(s);
+      };
 
-// Render a list of links as <ul>...</ul>
-function renderMultiLinks(props, label = 'More Info') {
-  const links = parseMultiLinks(props);
-  if (!links.length) return ''; // nothing to show
+      const urlList = toArray(urlsRaw);
+      const nameList = toArray(namesRaw);
 
-  if (links.length === 1) {
-    const { href, text } = links[0];
-    return `<li><b>${label}</b>: <a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`;
-  }
+      const out = [];
+      for (let i = 0; i < urlList.length; i++) {
+        const href = normalizeUrl(urlList[i]);
+        if (!href) continue;
+        // pick name if available, else hostname
+        let text = nameList[i] && !isBlankish(nameList[i])
+          ? nameList[i]
+          : (() => {
+            try { return new URL(href).hostname.replace(/^www\./, ''); }
+            catch { return href; }
+          })();
+        out.push({ href, text });
+      }
+      return out;
+    }
 
-  const items = links.map(({ href, text }) =>
-    `<li style="margin:2px 0;"><a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`
-  ).join('');
+    // Render a list of links as <ul>...</ul>
+    function renderMultiLinks(props, label = 'More Info') {
+      const links = parseMultiLinks(props);
+      if (!links.length) return ''; // nothing to show
 
-  return `<li><b>${label}</b>:
+      if (links.length === 1) {
+        const { href, text } = links[0];
+        return `<li><b>${label}</b>: <a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`;
+      }
+
+      const items = links.map(({ href, text }) =>
+        `<li style="margin:2px 0;"><a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`
+      ).join('');
+
+      return `<li><b>${label}</b>:
             <ul style="margin:4px 0 0 18px; padding:0;">${items}</ul>
           </li>`;
-}
-
-
-
-function normalizeUrl(raw) {
-  if (!raw) return null;
-  let u = String(raw).trim();
-  if (!u) return null;
-
-  const lower = u.toLowerCase();
-  // block dangerous protocols
-  if (lower.startsWith('javascript:')) return null;
-
-  // If it’s a data URL for an <img>, allow it (you previously blocked all data:)
-  // If you truly don't want data URLs, remove this allowance.
-  if (lower.startsWith('data:image/')) return u;
-
-  // Allow relative paths as-is:
-  // - starts with /, ./, ../
-  // - or no scheme/host and looks like a path or filename (contains a slash or a dot)
-  if (
-    u.startsWith('/') ||
-    u.startsWith('./') ||
-    u.startsWith('../') ||
-    !/^[a-z]+:\/\//i.test(u)
-  ) {
-    return u; // treat as same-origin relative path
-  }
-
-  // Otherwise must be http/https
-  try {
-    const url = new URL(u);
-    if (!/^https?:$/.test(url.protocol)) return null;
-    return url.href;
-  } catch {
-    // Maybe bare domain without scheme → add https
-    try {
-      const url2 = new URL('https://' + u);
-      if (!/^https?:$/.test(url2.protocol)) return null;
-      return url2.href;
-    } catch {
-      return null;
     }
-  }
-}
-window.__cardPhotos = [];
-window.__cardPhotoIndex = 0;
 
-function collectPhotoUrls(props) {
-  // Look for multiple common field names/casings
-  const candidates = [
-    props.image, props.images, props.photo, props.photos, // generic
-    props.image1, props.image2, props.image3, props.image4, // lower
-    props.Image1, props.Image2, props.Image3, props.Image4, // TitleCase
-    props.img1, props.img2, props.img3, props.img4
-  ];
 
-  // Also handle comma-separated strings in any of those fields
-  const out = [];
-  for (const c of candidates) {
-    if (!c) continue;
-    if (Array.isArray(c)) {
-      out.push(...c);
-    } else {
-      const s = String(c).trim();
-      if (!s) continue;
-      // split on comma if it looks like a list; otherwise single value
-      if (s.includes(','))
-        out.push(...s.split(',').map(x => x.trim()).filter(Boolean));
-      else
-        out.push(s);
+
+    function normalizeUrl(raw) {
+      if (!raw) return null;
+      let u = String(raw).trim();
+      if (!u) return null;
+
+      const lower = u.toLowerCase();
+      // block dangerous protocols
+      if (lower.startsWith('javascript:')) return null;
+
+      // If it’s a data URL for an <img>, allow it (you previously blocked all data:)
+      // If you truly don't want data URLs, remove this allowance.
+      if (lower.startsWith('data:image/')) return u;
+
+      // Allow relative paths as-is:
+      // - starts with /, ./, ../
+      // - or no scheme/host and looks like a path or filename (contains a slash or a dot)
+      if (
+        u.startsWith('/') ||
+        u.startsWith('./') ||
+        u.startsWith('../') ||
+        !/^[a-z]+:\/\//i.test(u)
+      ) {
+        return u; // treat as same-origin relative path
+      }
+
+      // Otherwise must be http/https
+      try {
+        const url = new URL(u);
+        if (!/^https?:$/.test(url.protocol)) return null;
+        return url.href;
+      } catch {
+        // Maybe bare domain without scheme → add https
+        try {
+          const url2 = new URL('https://' + u);
+          if (!/^https?:$/.test(url2.protocol)) return null;
+          return url2.href;
+        } catch {
+          return null;
+        }
+      }
     }
-  }
+    window.__cardPhotos = [];
+    window.__cardPhotoIndex = 0;
 
-  // Dedup + sanitize
-  const cleaned = [];
-  const seen = new Set();
-  for (const v of out) {
-    const n = normalizeUrl(v);
-    if (!n) continue;
-    if (!seen.has(n)) { seen.add(n); cleaned.push(n); }
-  }
-  return cleaned;
-}
+    function collectPhotoUrls(props) {
+      // Look for multiple common field names/casings
+      const candidates = [
+        props.image, props.images, props.photo, props.photos, // generic
+        props.image1, props.image2, props.image3, props.image4, // lower
+        props.Image1, props.Image2, props.Image3, props.Image4, // TitleCase
+        props.img1, props.img2, props.img3, props.img4
+      ];
+
+      // Also handle comma-separated strings in any of those fields
+      const out = [];
+      for (const c of candidates) {
+        if (!c) continue;
+        if (Array.isArray(c)) {
+          out.push(...c);
+        } else {
+          const s = String(c).trim();
+          if (!s) continue;
+          // split on comma if it looks like a list; otherwise single value
+          if (s.includes(','))
+            out.push(...s.split(',').map(x => x.trim()).filter(Boolean));
+          else
+            out.push(s);
+        }
+      }
+
+      // Dedup + sanitize
+      const cleaned = [];
+      const seen = new Set();
+      for (const v of out) {
+        const n = normalizeUrl(v);
+        if (!n) continue;
+        if (!seen.has(n)) { seen.add(n); cleaned.push(n); }
+      }
+      return cleaned;
+    }
 
 
 
-function nextImage() {
-  setCardImage(window.__cardPhotoIndex + 1);
-}
-function prevImage() {
-  setCardImage(window.__cardPhotoIndex - 1);
-}
+    function nextImage() {
+      setCardImage(window.__cardPhotoIndex + 1);
+    }
+    function prevImage() {
+      setCardImage(window.__cardPhotoIndex - 1);
+    }
 
     const card = document.getElementById('properties');
 
 
-const DOC_REGION_CODE = 13;
+    const DOC_REGION_CODE = 13;
 
-const riverDefaultImage = {
-  FG:  'images/Slide12.PNG', // Fish & Game-managed
-  DOC: 'images/Slide13.PNG'  // Taupō Trout Fishery (DOC)
-};
+    const riverDefaultImage = {
+      FG: 'images/Slide12.PNG', // Fish & Game-managed
+      DOC: 'images/Slide13.PNG'  // Taupō Trout Fishery (DOC)
+    };
 
-function getRiverDefaultImage(props){
-  const raw =
-    props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
-  const rc = Number.parseInt(String(raw ?? '').trim(), 10);
-  return rc === DOC_REGION_CODE ? riverDefaultImage.DOC : riverDefaultImage.FG;
-}
+    function getRiverDefaultImage(props) {
+      const raw =
+        props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
+      const rc = Number.parseInt(String(raw ?? '').trim(), 10);
+      return rc === DOC_REGION_CODE ? riverDefaultImage.DOC : riverDefaultImage.FG;
+    }
 
-['images/Slide12.PNG','images/Slide13.PNG'].forEach(src => {
-  const im = new Image();
-  im.src = src;
-});
+    ['images/Slide12.PNG', 'images/Slide13.PNG'].forEach(src => {
+      const im = new Image();
+      im.src = src;
+    });
 
     const pointTypeDefaultImages = {
       'AccessPoint': 'images/Slide1.PNG',
@@ -1737,31 +1821,31 @@ function getRiverDefaultImage(props){
         //id_code: "ID Code",
       };
 
-// ---- pick a default image based on feature type ----
-let typeImage = null;
-const looksLikeRiver =
-  !!(props.Water || props.water_type || props.open_date_unix || props.close_date_unix);
-const looksLikePoint =
-  !!(props.point_type || feature.geometry?.type === 'Point');
+      // ---- pick a default image based on feature type ----
+      let typeImage = null;
+      const looksLikeRiver =
+        !!(props.Water || props.water_type || props.open_date_unix || props.close_date_unix);
+      const looksLikePoint =
+        !!(props.point_type || feature.geometry?.type === 'Point');
 
-if (feature.layer && feature.layer.id === 'data-points-all') {
-  if (props.point_type && props.point_type.toLowerCase() !== 'na') {
-    typeImage = pointTypeDefaultImages[props.point_type] || null;
-  }
-} else if (
-  (feature.layer && (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill')) ||
-  (looksLikeRiver && !looksLikePoint)
-) {
-  typeImage = getRiverDefaultImage(props); // <-- pick a single image path
-}
+      if (feature.layer && feature.layer.id === 'data-points-all') {
+        if (props.point_type && props.point_type.toLowerCase() !== 'na') {
+          typeImage = pointTypeDefaultImages[props.point_type] || null;
+        }
+      } else if (
+        (feature.layer && (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill')) ||
+        (looksLikeRiver && !looksLikePoint)
+      ) {
+        typeImage = getRiverDefaultImage(props); // <-- pick a single image path
+      }
 
 
-const extraPhotos = collectPhotoUrls(props);
-const photoList = (typeImage ? [typeImage] : []).concat(extraPhotos);
+      const extraPhotos = collectPhotoUrls(props);
+      const photoList = (typeImage ? [typeImage] : []).concat(extraPhotos);
 
-// Keep global state for the carousel
-window.__cardPhotos = photoList;
-window.__cardPhotoIndex = 0;
+      // Keep global state for the carousel
+      window.__cardPhotos = photoList;
+      window.__cardPhotoIndex = 0;
 
 
       let content = `
@@ -1772,8 +1856,8 @@ window.__cardPhotoIndex = 0;
   <div class="panel-scroll">
 `;
 
-if (photoList.length > 0) {
-  content += `
+      if (photoList.length > 0) {
+        content += `
     <div class="card-image-wrap">
       <img id="cardMainImage" src="${photoList[0]}" alt="Location Photo" onclick="openImageModal()" />
       ${photoList.length > 1 ? `
@@ -1783,7 +1867,7 @@ if (photoList.length > 0) {
     </div>
     ${photoList.length > 1 ? `<div class="carousel-meta">${1} / ${photoList.length}</div>` : ``}
   `;
-}
+      }
 
 
       content += `
@@ -1805,62 +1889,62 @@ if (photoList.length > 0) {
         content += `</div>`;
       }
 
-   if (props.region || props.Region) {
-  const regionName = props.Region || props.region;
-  const label = (props.RegionCode == 13) ? "Fishing District" : "Fish & Game Region 2025/2026";
-  content += `<div class="card-subtitle subtitle-region">${regionName} ${label}</div>`;
-}
+      if (props.region || props.Region) {
+        const regionName = props.Region || props.region;
+        const label = (props.RegionCode == 13) ? "Fishing District" : "Fish & Game Region 2025/2026";
+        content += `<div class="card-subtitle subtitle-region">${regionName} ${label}</div>`;
+      }
 
 
 
       content += `<hr><ul class="card-list">`;
 
-     
-
-for (const [key, label] of Object.entries(displayFields)) {
-  const raw = props[key];
-  if (isBlankish(raw)) continue;
-
-  if (key === 'more_info_url') {
-    // NEW: supports multiple URLs + names
-    content += renderMultiLinks(props, label);
-  } else {
-    content += `<li><b>${label}</b>: ${raw}</li>`;
-  }
-}
 
 
-// --- Region regulations button/link (only if RegionCode is valid) ---
-// NOTE: keep this INSIDE .panel-scroll so it sticks to the bottom of the scroller
-content += `</ul>`; // close the list first
+      for (const [key, label] of Object.entries(displayFields)) {
+        const raw = props[key];
+        if (isBlankish(raw)) continue;
 
-const regsHref = getRegionRegUrlFromProps(props);
-if (regsHref) {
-  content += `
+        if (key === 'more_info_url') {
+          // NEW: supports multiple URLs + names
+          content += renderMultiLinks(props, label);
+        } else {
+          content += `<li><b>${label}</b>: ${raw}</li>`;
+        }
+      }
+
+
+      // --- Region regulations button/link (only if RegionCode is valid) ---
+      // NOTE: keep this INSIDE .panel-scroll so it sticks to the bottom of the scroller
+      content += `</ul>`; // close the list first
+
+      const regsHref = getRegionRegUrlFromProps(props);
+      if (regsHref) {
+        content += `
     <div class="regs-cta">
       <a href="${regsHref}" target="_blank" rel="noopener noreferrer" class="regs-btn">
         Download Full Regional Regulations
       </a>
     </div>
   `;
-}
+      }
 
-// content += `
-//     <div class="regs-cta">
-//       <a href="https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/fishing-licences-and-regulations/general-fishing-licence-info/" target="_blank" rel="noopener noreferrer" class="licence-btn">
-//         Purchase a 2025/2026 Fish & Game Licence
-//       </a>
-//     </div>
-//   `;
+      // content += `
+      //     <div class="regs-cta">
+      //       <a href="https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/fishing-licences-and-regulations/general-fishing-licence-info/" target="_blank" rel="noopener noreferrer" class="licence-btn">
+      //         Purchase a 2025/2026 Fish & Game Licence
+      //       </a>
+      //     </div>
+      //   `;
 
-// close the scroller + card shell ONCE
-content += `</div></div>`;  // </div> .panel-scroll, </div> .map-overlay-inner
+      // close the scroller + card shell ONCE
+      content += `</div></div>`;  // </div> .panel-scroll, </div> .map-overlay-inner
 
-// write once, open once
-card.innerHTML = content;
-if (photoList.length) setCardImage(0);
+      // write once, open once
+      card.innerHTML = content;
+      if (photoList.length) setCardImage(0);
 
-openPanel('card');
+      openPanel('card');
     }
 
 
@@ -1881,7 +1965,7 @@ openPanel('card');
       { name: 'Shop-icon', url: 'images/Store.png' },
       { name: 'Lodge-icon', url: 'images/Lodge.png' },
 
-      
+
       { name: 'RegBoundary-icon', url: 'images/RegBoundary.png' },
       { name: 'BuyDW-icon', url: 'images/BuyDW.png' },
       { name: 'Hotspot-icon', url: 'images/Hotspot.png' },
@@ -2213,41 +2297,41 @@ openPanel('card');
 
 
 
-    
-
-const host  = url.hostname;
-const dataQ = (url.searchParams.get('data') || '').trim().toLowerCase();
-
-const isDev = dataQ === 'dev' ;
-
-// One server; different filenames
-const TILES_BASE   = 'https://data.fishandgameaccessmap.org';
-const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson';
-
-// Names flip by env
-const WATERWAYS_NAME = isDev ? 'all_waters_dev' : 'all_waters';
-const POINTS_FILE    = isDev ? 'AccessPoints_dev.geojson?token=fish-access-2025' //change to _dev when available
-                             : 'AccessPoints.geojson?token=fish-access-2025';
-const SEARCH_FILE    = isDev ? 'waterway_search_index_dev.geojson?token=fish-access-2025'
-                             : 'waterway_search_index.geojson?token=fish-access-2025';
-
-// URLs used by your sources
-const URL_WATERWAYS_TILES = `${TILES_BASE}/${WATERWAYS_NAME}/{z}/{x}/{y}`;
-const URL_POINTS_GEOJSON  = `${GEOJSON_BASE}/${POINTS_FILE}`;
-const URL_SEARCH_INDEX    = `${GEOJSON_BASE}/${SEARCH_FILE}`;
-
-console.log({ isDev, host, dataQ, URL_POINTS_GEOJSON, URL_SEARCH_INDEX, URL_WATERWAYS_TILES });
 
 
+    const host = url.hostname;
+    const dataQ = (url.searchParams.get('data') || '').trim().toLowerCase();
 
-fetch(URL_SEARCH_INDEX)
-  .then(res => res.json()).then(d => { allFeatures = d.features; })
-  .catch(err => console.error('Failed to load search index:', err));
+    const isDev = dataQ === 'dev';
 
-fetch(URL_POINTS_GEOJSON)
-  .then(res => res.json()).then(d => { allPointsFeatures = d.features; })
-  .catch(err => console.error('Failed to load points data:', err));
-    
+    // One server; different filenames
+    const TILES_BASE = 'https://data.fishandgameaccessmap.org';
+    const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson';
+
+    // Names flip by env
+    const WATERWAYS_NAME = isDev ? 'all_waters_dev' : 'all_waters';
+    const POINTS_FILE = isDev ? 'AccessPoints_dev.geojson?token=fish-access-2025' //change to _dev when available
+      : 'AccessPoints.geojson?token=fish-access-2025';
+    const SEARCH_FILE = isDev ? 'waterway_search_index_dev.geojson?token=fish-access-2025'
+      : 'waterway_search_index.geojson?token=fish-access-2025';
+
+    // URLs used by your sources
+    const URL_WATERWAYS_TILES = `${TILES_BASE}/${WATERWAYS_NAME}/{z}/{x}/{y}`;
+    const URL_POINTS_GEOJSON = `${GEOJSON_BASE}/${POINTS_FILE}`;
+    const URL_SEARCH_INDEX = `${GEOJSON_BASE}/${SEARCH_FILE}`;
+
+    console.log({ isDev, host, dataQ, URL_POINTS_GEOJSON, URL_SEARCH_INDEX, URL_WATERWAYS_TILES });
+
+
+
+    fetch(URL_SEARCH_INDEX)
+      .then(res => res.json()).then(d => { allFeatures = d.features; })
+      .catch(err => console.error('Failed to load search index:', err));
+
+    fetch(URL_POINTS_GEOJSON)
+      .then(res => res.json()).then(d => { allPointsFeatures = d.features; })
+      .catch(err => console.error('Failed to load points data:', err));
+
     function addCustomDataAndLayers() {
       const sources = map.getStyle().sources;
 
@@ -2266,66 +2350,66 @@ fetch(URL_POINTS_GEOJSON)
           minzoom: 0, maxzoom: 13
         });
       }
-      
-if (!map.getLayer('PublicAccessAreas-fill')) {
-  map.addLayer({
-    id: 'PublicAccessAreas-fill',
-    type: 'fill',
-    source: 'PublicAccessAreas',
-    'source-layer': 'mylayer',
-    minzoom: 12,
-    paint: {
-      'fill-color': [
-        'match', ['get', 'DataType'],
-        'DOC Conservation Area', '#2d6c3e',
-        'Esplanade Reserve',     '#66f0cb',
-        'Esplanade Strip',       '#ff66dc',
-        'Hydro Parcel',          '#abecff',
-        'Non-Primary Parcel',    '#ffcc66',
-        'Public Access Easement','#ffd8f1',
-        'Reserve Land',          '#a9cb66',
-        'Road Parcel',           '#cca3e1',
-        'Walkway Easement',      '#ffb2b2',
+
+      if (!map.getLayer('PublicAccessAreas-fill')) {
+        map.addLayer({
+          id: 'PublicAccessAreas-fill',
+          type: 'fill',
+          source: 'PublicAccessAreas',
+          'source-layer': 'mylayer',
+          minzoom: 12,
+          paint: {
+            'fill-color': [
+              'match', ['get', 'DataType'],
+              'DOC Conservation Area', '#2d6c3e',
+              'Esplanade Reserve', '#66f0cb',
+              'Esplanade Strip', '#ff66dc',
+              'Hydro Parcel', '#abecff',
+              'Non-Primary Parcel', '#ffcc66',
+              'Public Access Easement', '#ffd8f1',
+              'Reserve Land', '#a9cb66',
+              'Road Parcel', '#cca3e1',
+              'Walkway Easement', '#ffb2b2',
         /* default */            '#cccccc'
-      ],
-      'fill-opacity': [
-  'interpolate', ['linear'], ['zoom'],
-  12, [
-    'match', ['get', 'DataType'],
-    'Non-Primary Parcel', 0.10,
+            ],
+            'fill-opacity': [
+              'interpolate', ['linear'], ['zoom'],
+              12, [
+                'match', ['get', 'DataType'],
+                'Non-Primary Parcel', 0.10,
     /* default */           0.80
-  ],
-  16, [
-    '*',
-    [
-      'match', ['get', 'DataType'],
-      'Non-Primary Parcel', 0.10,
+              ],
+              16, [
+                '*',
+                [
+                  'match', ['get', 'DataType'],
+                  'Non-Primary Parcel', 0.10,
       /* default */           0.80
-    ],
-    0.4   // scale factor at max zoom
-  ],
-  17, [
-    '*',
-    [
-      'match', ['get', 'DataType'],
-      'Non-Primary Parcel', 0.10,
+                ],
+                0.4   // scale factor at max zoom
+              ],
+              17, [
+                '*',
+                [
+                  'match', ['get', 'DataType'],
+                  'Non-Primary Parcel', 0.10,
       /* default */           0.80
-    ],
-    0.3   // scale factor at max zoom
-  ]
-]
-    }
-  }, insertBeforeLayer);
-}
+                ],
+                0.3   // scale factor at max zoom
+              ]
+            ]
+          }
+        }, insertBeforeLayer);
+      }
 
 
-if (!sources['Waterways']) {
-  map.addSource('Waterways', {
-    type: 'vector',
-    tiles: [ URL_WATERWAYS_TILES ],
-    minzoom: 0, maxzoom: 13
-  });
-}
+      if (!sources['Waterways']) {
+        map.addSource('Waterways', {
+          type: 'vector',
+          tiles: [URL_WATERWAYS_TILES],
+          minzoom: 0, maxzoom: 13
+        });
+      }
 
       if (!map.getLayer('Waterways-line')) {
         map.addLayer({
@@ -2399,7 +2483,7 @@ if (!sources['Waterways']) {
         }, insertBeforeLayer);
       }
 
-      
+
 
       // --- Selected-only Waterways stroke (wide halo only) ---
       if (!map.getLayer('Waterways-selected-halo')) {
@@ -2441,24 +2525,24 @@ if (!sources['Waterways']) {
         }); // note: appended on top (no insertBeforeLayer)
       }
 
-// --- Transparent, wider hitbox for touch devices ---
-if (isTouch && !map.getLayer('Waterways-touch')) {
-  map.addLayer({
-    id: 'Waterways-touch',
-    type: 'line',
-    source: 'Waterways',
-    'source-layer': 'waterways',
-    minzoom: 7,
-    layout: { 'line-join': 'round', 'line-cap': 'round' },
-    paint: {
-      // 1.5x the interactive width of the visual layer
-      'line-width': 10,
-      // Totally invisible but still hit-testable
-      'line-opacity': 0,
-      'line-color': '#000000'
-    }
-  }); 
-}
+      // --- Transparent, wider hitbox for touch devices ---
+      if (isTouch && !map.getLayer('Waterways-touch')) {
+        map.addLayer({
+          id: 'Waterways-touch',
+          type: 'line',
+          source: 'Waterways',
+          'source-layer': 'waterways',
+          minzoom: 7,
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: {
+            // 1.5x the interactive width of the visual layer
+            'line-width': 10,
+            // Totally invisible but still hit-testable
+            'line-opacity': 0,
+            'line-color': '#000000'
+          }
+        });
+      }
 
 
 
@@ -2470,47 +2554,47 @@ if (isTouch && !map.getLayer('Waterways-touch')) {
         });
       }
 
- if (!map.getLayer('FG Regions-linebackground')) {
-  map.addLayer({
-    id: 'FG Regions-linebackground',
-    type: 'line',
-    source: 'FG Regions',
-    'source-layer': 'fg_regions',
-    layout: { 'line-join': 'round', 'line-cap': 'round' },
-    paint: {
-      'line-color': '#fff',
-      'line-width': [
-        'interpolate', ['linear'], ['zoom'],
-        5, 3,   
-        10, 4,   // at zoom 10 → 2px
-        14, 8,   // at zoom 14 → 6px
-        18, 12   // at zoom 18 → 12px
-      ],
-      'line-opacity': 1
-    }
-  }, insertBeforeLayer);
-}
+      if (!map.getLayer('FG Regions-linebackground')) {
+        map.addLayer({
+          id: 'FG Regions-linebackground',
+          type: 'line',
+          source: 'FG Regions',
+          'source-layer': 'fg_regions',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: {
+            'line-color': '#fff',
+            'line-width': [
+              'interpolate', ['linear'], ['zoom'],
+              5, 3,
+              10, 4,   // at zoom 10 → 2px
+              14, 8,   // at zoom 14 → 6px
+              18, 12   // at zoom 18 → 12px
+            ],
+            'line-opacity': 1
+          }
+        }, insertBeforeLayer);
+      }
 
-if (!map.getLayer('FG Regions-line')) {
-  map.addLayer({
-    id: 'FG Regions-line',
-    type: 'line',
-    source: 'FG Regions',
-    'source-layer': 'fg_regions',
-    layout: { 'line-join': 'round', 'line-cap': 'round' },
-    paint: {
-      'line-color': '#008678',
-      'line-width': [
-        'interpolate', ['linear'], ['zoom'],
-        5, 1.5,
-        10, 2,   // at zoom 10 → 1px
-        14, 4,   // at zoom 14 → 3px
-        18, 8    // at zoom 18 → 8px
-      ],
-      'line-opacity': 1
-    }
-  }, insertBeforeLayer);
-}
+      if (!map.getLayer('FG Regions-line')) {
+        map.addLayer({
+          id: 'FG Regions-line',
+          type: 'line',
+          source: 'FG Regions',
+          'source-layer': 'fg_regions',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: {
+            'line-color': '#008678',
+            'line-width': [
+              'interpolate', ['linear'], ['zoom'],
+              5, 1.5,
+              10, 2,   // at zoom 10 → 1px
+              14, 4,   // at zoom 14 → 3px
+              18, 8    // at zoom 18 → 8px
+            ],
+            'line-opacity': 1
+          }
+        }, insertBeforeLayer);
+      }
 
 
       if (!sources['Routes']) map.addSource('Routes', { type: 'geojson', data: 'https://data.fishandgameaccessmap.org/secure-geojson/Routes.geojson?token=fish-access-2025' });
@@ -2527,16 +2611,16 @@ if (!map.getLayer('FG Regions-line')) {
       }
 
 
-  
 
 
-     if (!sources['data-points']) {
-  map.addSource('data-points', {
-    type: 'geojson',
-    data: URL_POINTS_GEOJSON,
-    generateId: true
-  });
-}
+
+      if (!sources['data-points']) {
+        map.addSource('data-points', {
+          type: 'geojson',
+          data: URL_POINTS_GEOJSON,
+          generateId: true
+        });
+      }
 
       if (!map.getLayer('data-points-all')) {
         map.addLayer({
@@ -2548,16 +2632,16 @@ if (!map.getLayer('FG Regions-line')) {
             'icon-image': ['concat', ['get', 'point_type'], '-icon'],
             'icon-size': getIconSizeExpr(selectedFeatureId, hoverFeatureId), /* final expr at creation */
             'icon-anchor': ['get', 'anchor'],
-            'icon-allow-overlap': true,     
-            'icon-rotate': ['get', 'bearing'] 
+            'icon-allow-overlap': true,
+            'icon-rotate': ['get', 'bearing']
           }
         });
       }
 
       if (!sources['search']) {
-  map.addSource('search', { type: 'geojson', data: URL_SEARCH_INDEX });
-}
-      
+        map.addSource('search', { type: 'geojson', data: URL_SEARCH_INDEX });
+      }
+
       if (!map.getLayer('search-points-all')) {
         map.addLayer({
           id: 'search-points-all',
@@ -2581,33 +2665,33 @@ if (!map.getLayer('FG Regions-line')) {
       //   }, insertBeforeLayer);
       // }
 
-if (!sources['FG Region Centroids']) {
-  map.addSource('FG Region Centroids', {
-    type: 'geojson',
-    data: 'https://data.fishandgameaccessmap.org/secure-geojson/fg_regions_centroid.geojson?token=fish-access-2025'
-  });
-}
+      if (!sources['FG Region Centroids']) {
+        map.addSource('FG Region Centroids', {
+          type: 'geojson',
+          data: 'https://data.fishandgameaccessmap.org/secure-geojson/fg_regions_centroid.geojson?token=fish-access-2025'
+        });
+      }
 
-if (!map.getLayer('FG Region Labels')) {
-  map.addLayer({
-    id: 'FG Region Labels',
-    type: 'symbol',
-    source: 'FG Region Centroids',
-    maxzoom: 7,
-    layout: {
-      'text-field': ['get', 'region'],
-      'text-font': ['Noto Sans Medium'],
-      'text-size': 12,
-      'text-anchor': 'center',
-      'text-allow-overlap': true
-    },
-    paint: {
-      'text-color': '#008678',
-      'text-halo-color': '#ffffff',
-      'text-halo-width': 2
-    }
-  });
-}
+      if (!map.getLayer('FG Region Labels')) {
+        map.addLayer({
+          id: 'FG Region Labels',
+          type: 'symbol',
+          source: 'FG Region Centroids',
+          maxzoom: 7,
+          layout: {
+            'text-field': ['get', 'region'],
+            'text-font': ['Noto Sans Medium'],
+            'text-size': 12,
+            'text-anchor': 'center',
+            'text-allow-overlap': true
+          },
+          paint: {
+            'text-color': '#008678',
+            'text-halo-color': '#ffffff',
+            'text-halo-width': 2
+          }
+        });
+      }
 
 
       // Wire filters
@@ -2670,14 +2754,14 @@ if (!map.getLayer('FG Region Labels')) {
 
     // Unified click handler to prioritize points over rivers
     map.on('click', (e) => {
-     const riverTapLayers = isTouch
-  ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
-  : ['Waterways-line', 'Waterways-fill'];
+      const riverTapLayers = isTouch
+        ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
+        : ['Waterways-line', 'Waterways-fill'];
 
-const features = map.queryRenderedFeatures(e.point, {
-  layers: ['data-points-all', ...riverTapLayers]
-});
-      
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ['data-points-all', ...riverTapLayers]
+      });
+
       if (features.length === 0) { clearSelection(); card.style.display = 'none'; return; }
       const pointFeature = features.find(f => f.layer.id === 'data-points-all');
       const riverFeature = features.find(f => f.layer.id === 'Waterways-line') || features.find(f => f.layer.id === 'Waterways-fill');
@@ -2799,83 +2883,83 @@ const features = map.queryRenderedFeatures(e.point, {
 
       suggestions.style.display = (riverMatches.length || pointMatches.length) ? 'block' : 'none';
     });
-function selectFeatureFromSearch(f) {
-  const isRiver = typeof f.properties.Water !== 'undefined';
-  const coords = f.geometry.coordinates;
+    function selectFeatureFromSearch(f) {
+      const isRiver = typeof f.properties.Water !== 'undefined';
+      const coords = f.geometry.coordinates;
 
-  clearSelection();
-  // center first so tiles are present
-  map.flyTo({ center: coords, zoom: Math.max(map.getZoom(), 12) });
+      clearSelection();
+      // center first so tiles are present
+      map.flyTo({ center: coords, zoom: Math.max(map.getZoom(), 12) });
 
-  // After the move completes, pull the real feature under the crosshair
-  map.once('moveend', () => {
-    const pt = map.project(coords);
-    // small hitbox around the coordinate
-    const bbox = [
-      { x: pt.x - 10, y: pt.y - 10 },
-      { x: pt.x + 10, y: pt.y + 10 }
-    ];
+      // After the move completes, pull the real feature under the crosshair
+      map.once('moveend', () => {
+        const pt = map.project(coords);
+        // small hitbox around the coordinate
+        const bbox = [
+          { x: pt.x - 10, y: pt.y - 10 },
+          { x: pt.x + 10, y: pt.y + 10 }
+        ];
 
-    let found = null;
-    if (isRiver) {
-    const rivers = map.queryRenderedFeatures([bbox[0], bbox[1]], {
-  layers: (isTouch
-    ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
-    : ['Waterways-line', 'Waterways-fill'])
-});
-      // optional: try to match on names/section to be robust
-      found = rivers.find(r =>
-        (r.properties?.Water === f.properties.Water) &&
-        (isBlankish(f.properties.Section) || r.properties?.Section === f.properties.Section)
-      ) || rivers[0];
+        let found = null;
+        if (isRiver) {
+          const rivers = map.queryRenderedFeatures([bbox[0], bbox[1]], {
+            layers: (isTouch
+              ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
+              : ['Waterways-line', 'Waterways-fill'])
+          });
+          // optional: try to match on names/section to be robust
+          found = rivers.find(r =>
+            (r.properties?.Water === f.properties.Water) &&
+            (isBlankish(f.properties.Section) || r.properties?.Section === f.properties.Section)
+          ) || rivers[0];
 
-      if (found) {
-        selectFeature(found);
-        return;
-      }
+          if (found) {
+            selectFeature(found);
+            return;
+          }
 
-      // Fallback: synthesize a river-like feature so showCard gives the default river image
-      found = {
-        type: 'Feature',
-        geometry: f.geometry,
-        properties: f.properties,
-        layer: { id: 'Waterways-line' }, // <- makes showCard treat as river
-        id: f.id
-      };
-      showCard(found);
-      return;
-    } else {
-      const points = map.queryRenderedFeatures([bbox[0], bbox[1]], {
-        layers: ['data-points-all']
+          // Fallback: synthesize a river-like feature so showCard gives the default river image
+          found = {
+            type: 'Feature',
+            geometry: f.geometry,
+            properties: f.properties,
+            layer: { id: 'Waterways-line' }, // <- makes showCard treat as river
+            id: f.id
+          };
+          showCard(found);
+          return;
+        } else {
+          const points = map.queryRenderedFeatures([bbox[0], bbox[1]], {
+            layers: ['data-points-all']
+          });
+          // Try to match by title/region if present
+          found = points.find(p =>
+            (p.properties?.title && f.properties?.title && p.properties.title === f.properties.title) ||
+            (p.properties?.Region && f.properties?.Region && p.properties.Region === f.properties.Region)
+          ) || points[0];
+
+          if (found) {
+            selectFeature(found);
+            return;
+          }
+
+          // Fallback: synthesize a point-like feature so showCard can pick default point image
+          found = {
+            type: 'Feature',
+            geometry: f.geometry,
+            properties: f.properties,
+            layer: { id: 'data-points-all' }, // <- makes showCard treat as point
+            id: f.id
+          };
+          showCard(found);
+          return;
+        }
       });
-      // Try to match by title/region if present
-      found = points.find(p =>
-        (p.properties?.title && f.properties?.title && p.properties.title === f.properties.title) ||
-        (p.properties?.Region && f.properties?.Region && p.properties.Region === f.properties.Region)
-      ) || points[0];
 
-      if (found) {
-        selectFeature(found);
-        return;
-      }
-
-      // Fallback: synthesize a point-like feature so showCard can pick default point image
-      found = {
-        type: 'Feature',
-        geometry: f.geometry,
-        properties: f.properties,
-        layer: { id: 'data-points-all' }, // <- makes showCard treat as point
-        id: f.id
-      };
-      showCard(found);
-      return;
+      // keep the input tidy & hide list immediately
+      inputEl.value = isRiver ? (f.properties.Water || '') : (f.properties.title || '');
+      suggestions.style.display = 'none';
     }
-  });
-
-  // keep the input tidy & hide list immediately
-  inputEl.value = isRiver ? (f.properties.Water || '') : (f.properties.title || '');
-  suggestions.style.display = 'none';
-}
 
 
     // Initialize filter wiring now that the map object exists
@@ -2884,19 +2968,19 @@ function selectFeatureFromSearch(f) {
     window.__TODAY_UNIX__ = TODAY_UNIX;
 
     // Define NZTM2000 once (after proj4 is loaded)
-proj4.defs("EPSG:2193",
-  "+proj=tmerc +lat_0=0 +lon_0=173 +k=0.9996 " +
-  "+x_0=1600000 +y_0=10000000 +datum=NZGD2000 +units=m +no_defs"
-);
-// Disable the browser context menu over the map canvas
-map.getCanvas().addEventListener("contextmenu", (ev) => ev.preventDefault());
+    proj4.defs("EPSG:2193",
+      "+proj=tmerc +lat_0=0 +lon_0=173 +k=0.9996 " +
+      "+x_0=1600000 +y_0=10000000 +datum=NZGD2000 +units=m +no_defs"
+    );
+    // Disable the browser context menu over the map canvas
+    map.getCanvas().addEventListener("contextmenu", (ev) => ev.preventDefault());
 
-// Right-click menu: Copy coords / Open in WAMS (Herenga ā Nuku)
-map.on("contextmenu", (e) => {
-  const { lat, lng } = e.lngLat.wrap();
+    // Right-click menu: Copy coords / Open in WAMS (Herenga ā Nuku)
+    map.on("contextmenu", (e) => {
+      const { lat, lng } = e.lngLat.wrap();
 
-  // Small card with two action buttons (styled inline for portability)
-const html = `
+      // Small card with two action buttons (styled inline for portability)
+      const html = `
   <div style="
     font: 13px 'Segoe UI', Arial, sans-serif;
     min-width: 160px;
@@ -2923,76 +3007,76 @@ const html = `
 `;
 
 
-  // Remove any existing popups first
-  document.querySelectorAll(".maplibregl-popup").forEach(p => p.remove());
+      // Remove any existing popups first
+      document.querySelectorAll(".maplibregl-popup").forEach(p => p.remove());
 
-  // Create the popup menu at the click location
-  const menu = new maplibregl.Popup({
-    closeButton: true,
-    closeOnClick: true,
-    anchor: "bottom",
-    offset: 8
-  })
-    .setLngLat(e.lngLat)
-    .setHTML(html)
-    .addTo(map);
+      // Create the popup menu at the click location
+      const menu = new maplibregl.Popup({
+        closeButton: true,
+        closeOnClick: true,
+        anchor: "bottom",
+        offset: 8
+      })
+        .setLngLat(e.lngLat)
+        .setHTML(html)
+        .addTo(map);
 
-  const el = menu.getElement();
+      const el = menu.getElement();
 
-  // Slight hover affordance (no external CSS)
-  const styleHover = (btn, on) => {
-    btn.style.background = on ? "#f6f8fa" : "#fff";
-  };
-  const hookHover = (btn) => {
-    btn.addEventListener("mouseenter", () => styleHover(btn, true));
-    btn.addEventListener("mouseleave", () => styleHover(btn, false));
-    btn.addEventListener("focus",     () => styleHover(btn, true));
-    btn.addEventListener("blur",      () => styleHover(btn, false));
-  };
+      // Slight hover affordance (no external CSS)
+      const styleHover = (btn, on) => {
+        btn.style.background = on ? "#f6f8fa" : "#fff";
+      };
+      const hookHover = (btn) => {
+        btn.addEventListener("mouseenter", () => styleHover(btn, true));
+        btn.addEventListener("mouseleave", () => styleHover(btn, false));
+        btn.addEventListener("focus", () => styleHover(btn, true));
+        btn.addEventListener("blur", () => styleHover(btn, false));
+      };
 
-  const btnCopy = el.querySelector("#copyCoords");
-  const btnWams = el.querySelector("#openWAMS");
-  hookHover(btnCopy);
-  hookHover(btnWams);
+      const btnCopy = el.querySelector("#copyCoords");
+      const btnWams = el.querySelector("#openWAMS");
+      hookHover(btnCopy);
+      hookHover(btnWams);
 
-  // ACTION: Copy coords as "lat<TAB>lon" (no confirmation popup)
-  btnCopy.addEventListener("click", async (ev) => {
-    ev.preventDefault();
-    try {
-      await navigator.clipboard.writeText(`${lat.toFixed(6)}\t${lng.toFixed(6)}`);
-    } catch (err) {
-      // Fallback: create a temporary text area if clipboard API fails
-      const ta = document.createElement("textarea");
-      ta.value = `${lat.toFixed(6)}\t${lng.toFixed(6)}`;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      ta.remove();
-    }
-    // Close the menu immediately
-    menu.remove();
-  });
+      // ACTION: Copy coords as "lat<TAB>lon" (no confirmation popup)
+      btnCopy.addEventListener("click", async (ev) => {
+        ev.preventDefault();
+        try {
+          await navigator.clipboard.writeText(`${lat.toFixed(6)}\t${lng.toFixed(6)}`);
+        } catch (err) {
+          // Fallback: create a temporary text area if clipboard API fails
+          const ta = document.createElement("textarea");
+          ta.value = `${lat.toFixed(6)}\t${lng.toFixed(6)}`;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+        }
+        // Close the menu immediately
+        menu.remove();
+      });
 
-  // ACTION: Open Herenga ā Nuku viewer centered at this point (EPSG:2193)
-  btnWams.addEventListener("click", (ev) => {
-    ev.preventDefault();
+      // ACTION: Open Herenga ā Nuku viewer centered at this point (EPSG:2193)
+      btnWams.addEventListener("click", (ev) => {
+        ev.preventDefault();
 
-    // 4326 (lng,lat) → 2193 (E,N)
-    const [E, N] = proj4("EPSG:4326", "EPSG:2193", [lng, lat]);
-    const Ee = E.toFixed(4);
-    const Nn = N.toFixed(4);
-    // Use current map zoom as level (clamped to sensible range)
-    const level = Math.max(0, Math.min(20, Math.round(map.getZoom())));
+        // 4326 (lng,lat) → 2193 (E,N)
+        const [E, N] = proj4("EPSG:4326", "EPSG:2193", [lng, lat]);
+        const Ee = E.toFixed(4);
+        const Nn = N.toFixed(4);
+        // Use current map zoom as level (clamped to sensible range)
+        const level = Math.max(0, Math.min(20, Math.round(map.getZoom())));
 
-    const base  = "https://maps.herengaanuku.govt.nz/Viewer/";
-    const mapId = "9cd99517a0db4d18a894c3839df4d3a3"; // your updated map
-    const url   = `${base}?map=${mapId}&center=${Ee},${Nn},2193&level=${level}`;
+        const base = "https://maps.herengaanuku.govt.nz/Viewer/";
+        const mapId = "9cd99517a0db4d18a894c3839df4d3a3"; // your updated map
+        const url = `${base}?map=${mapId}&center=${Ee},${Nn},2193&level=${level}`;
 
-    window.open(url, "_blank", "noopener");
-    // Close the menu immediately
-    menu.remove();
-  });
-});
+        window.open(url, "_blank", "noopener");
+        // Close the menu immediately
+        menu.remove();
+      });
+    });
 
 
   </script>
