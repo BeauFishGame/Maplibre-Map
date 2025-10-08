@@ -1040,7 +1040,6 @@
           </div>
 
         </div><!-- /filters-body -->
-<button id="enableHeading" style="position:absolute;z-index:1;top:8px;left:8px">Enable heading</button>
 
         <script>
           // Expand/collapse UI (no map dependency)
@@ -1410,19 +1409,7 @@
       ...initialCamera
     });
 
-
-document.getElementById('enableHeading').addEventListener('click', async () => {
-  try {
-    if (typeof DeviceOrientationEvent !== 'undefined' &&
-        typeof DeviceOrientationEvent.requestPermission === 'function') {
-      const res = await DeviceOrientationEvent.requestPermission();
-      console.log('DeviceOrientation permission:', res);
-    }
-  } catch (e) { console.warn(e); }
-});
-
-    
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }));
+    map.addControl(new maplibregl.NavigationControl({ showCompass: true }));
     map.addControl(new maplibregl.GeolocateControl({
       positionOptions: { enableHighAccuracy: true },
       trackUserLocation: true,
