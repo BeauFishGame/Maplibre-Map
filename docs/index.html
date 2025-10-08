@@ -1409,7 +1409,7 @@
       ...initialCamera
     });
 
-    map.addControl(new maplibregl.NavigationControl({ showCompass: true }));
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }));
     map.addControl(new maplibregl.GeolocateControl({
       positionOptions: { enableHighAccuracy: true },
       trackUserLocation: true,
