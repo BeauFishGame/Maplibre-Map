@@ -2447,20 +2447,11 @@ canvas._chartInstance = new Chart(ctx, {
   );
 
   if (flowFeature) {
-    const [lng, lat] = flowFeature.geometry.coordinates;
+  // Just open the side panel card, don't move the map
+  showFlowCard(flowFeature);
+  return; // IMPORTANT: don't fall through to clearSelection()
+}
 
-    // centre view with left padding for side panel
-    const padLeft = 420;
-    map.easeTo({
-      center: [lng, lat],
-      zoom: Math.max(map.getZoom(), 10),
-      duration: 800,
-      padding: { top: 80, right: 10, bottom: 10, left: padLeft }
-    });
-
-    showFlowCard(flowFeature);
-    return; // IMPORTANT: don't fall through to clearSelection()
-  }
 
   // 2) Points
   const pointFeature = features.find(f => f.layer.id === 'data-points-all');
