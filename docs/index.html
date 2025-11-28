@@ -2170,12 +2170,12 @@ canvas._chartInstance = new Chart(ctx, {
           id: 'flow-dev-flow-circles',
           type: 'circle',
           source: 'flow-dev',
-          minzoom: 6,
+          minzoom: 7,
           filter: ['==', ['get', 'parameter'], 'Flow'],
           paint: {
             'circle-radius': [
               'interpolate', ['linear'], ['zoom'],
-              6, 0.5,
+              7, 0.01,
               11, 5,
               14, 10
             ],
@@ -2202,12 +2202,12 @@ canvas._chartInstance = new Chart(ctx, {
           id: 'flow-dev-wt-circles',
           type: 'circle',
           source: 'flow-dev',
-          minzoom: 6,
+          minzoom: 7,
           filter: ['==', ['get', 'parameter'], 'Temperature'],
           paint: {
             'circle-radius': [
               'interpolate', ['linear'], ['zoom'],
-              6, 0.5,
+              7, 0.01,
               11, 5,
               14, 10
             ],
