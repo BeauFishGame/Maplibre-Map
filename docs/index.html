@@ -13,622 +13,10 @@
   <script async src="https://stats.fishandgameaccessmap.org/script.js"
     data-website-id="727d8b53-6b74-4eef-8258-daf48932ff65"></script>
 
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-
-    #map {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 100%;
-    }
-
-    .map-overlay {
-      display: none;
-      font: 12px/20px Arial, sans-serif;
-      padding: 10px;
-      position: absolute;
-      right: 0;
-      top: 0;
-      width: 230px;
-      overflow: hidden;
-      white-space: normal;
-      transition: opacity 0.3s ease;
-    }
-
-    .map-overlay-inner {
-      position: fixed;
-      top: 80px;
-      /* distance from the top */
-      left: 10px;
-      width: 400px;
-      height: calc(100vh - 90px);
-      /* always stretch to bottom */
-      padding: 15px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, .5);
-      z-index: 999;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .panel-scroll {
-      padding-top: 30px;
-      flex: 1;
-      overflow-y: auto;
-      min-height: 0;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .map-overlay-inner hr {
-      margin: 5px 0;
-      border: none;
-      border-top: 2px solid #ccc;
-    }
-
-    #zoom-level {
-      position: absolute;
-      bottom: 10px;
-      left: 1000px;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 6px 10px;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      border-radius: 4px;
-      z-index: 1;
-      user-select: none;
-      pointer-events: none;
-    }
-
-    .card-title {
-      font-family: Arial, sans-serif;
-      font-size: 25px;
-      font-weight: bold;
-      color: #2a2a2a;
-    }
-
-    .card-list {
-      list-style-type: none;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      font-size: 15px;
-      padding-left: 0;
-      margin: 0;
-    }
-
-    .subtitle-main {
-      font-size: 1.3em;
-      font-weight: bold;
-      color: #333;
-      margin-top: 4px;
-    }
-
-    .directions-inline-image {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      opacity: 0.85;
-      transition: transform 0.2s, opacity 0.2s;
-    }
-
-    .directions-inline-image:hover {
-      transform: scale(1.1);
-      opacity: 1;
-    }
-
-    .subtitle-region {
-      font-size: 1.em;
-      font-style: italic;
-      color: #666;
-      margin-bottom: 4px;
-    }
-
-
-    #filter-toggle-btn:hover {
-      background-color: #f0f0f0;
-    }
-
-    #actions button:active {
-      transform: translateY(1px);
-    }
-
-
-    .close-button {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      background: transparent;
-      border: none;
-      font-size: 24px;
-      color: #333;
-      cursor: pointer;
-      z-index: 10000;
-    }
-
-    #top-bar {
-      position: relative;
-      height: 70px;
-      background-color: rgba(7, 7, 7, 1);
-      display: flex;
-      align-items: center;
-      padding: 0 20px;
-      z-index: 10;
-    }
-
-    #top-bar .logo {
-      height: 70px;
-      z-index: 11;
-    }
-
-
-
-    #search-container input[type="text"] {
-      width: 100%;
-      padding: 10px 14px;
-      font-size: 14px;
-      border: none;
-      border-radius: 20px;
-      background-color: rgba(255, 255, 255, 0.2);
-      color: #e7e2e2;
-      outline: none;
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    #search-container input[type="text"]:focus {
-      background-color: rgba(255, 255, 255, 0.3);
-      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
-    }
-
-    #suggestions {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-      background-color: rgba(255, 255, 255, 0.95);
-      border-radius: 0 0 20px 20px;
-      overflow: hidden;
-      max-height: 300px;
-      overflow-y: auto;
-      display: none;
-      z-index: 11;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-      border: none;
-      font-family: Arial, sans-serif;
-    }
-
-    .suggestion {
-      padding: 8px 10px;
-      font-weight: 200;
-      cursor: pointer;
-      border-bottom: 1px solid #f0f0f0;
-    }
-
-    .suggestion:hover {
-      background: #f0f0f0;
-    }
-
-    .suggestion-header {
-      font-weight: bold;
-      font-size: 0.85rem;
-      padding: 8px 10px;
-      background-color: #f9f9f9;
-      color: #444;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-top: 1px solid #ddd;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .river-header {
-      border-left: 4px solid #0072B2;
-    }
-
-    .point-header {
-      border-left: 4px solid #D55E00;
-    }
-
-    .section {
-      font-size: 80%;
-    }
-
-    .region {
-      font-style: italic;
-      font-size: 75%;
-      color: #888;
-    }
-
-    .maplibregl-ctrl-top-right {
-      top: 70px;
-    }
-
-
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 9999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.85);
-    }
-
-    .modal.show {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-content {
-      max-width: 80%;
-      max-height: 80%;
-      border-radius: 6px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    }
-
-    .close-modal {
-      position: absolute;
-      top: 30px;
-      right: 50px;
-      color: white;
-      font-size: 40px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .basemap-btn {
-      display: block;
-      width: 100%;
-      margin-bottom: 8px;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      text-align: left;
-      background-color: #e9edf3;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    .basemap-btn:hover {
-      background-color: #d1d5db;
-    }
-
-    .basemap-btn.active {
-      background-color: #10b981;
-      /* green highlight */
-      color: white;
-      font-weight: bold;
-    }
-
-
-    #actions button {
-      height: 70%;
-      /* 70% of top bar height */
-      aspect-ratio: 1 / 1;
-      /* keep square */
-      border-radius: 20%;
-      /* proportional rounding */
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #fff;
-      border: none;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-    }
-
-    /* Desktop (optional center) */
-    #search-container {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 20vw;
-      min-width: 200px;
-      z-index: 11;
-    }
-
-    /* Mobile */
-    @media (max-width: 768px) {
-      #search-container {
-        position: static;
-        /* kill absolute centering */
-        left: auto;
-        transform: none;
-        flex: 1 1 auto;
-        /* stretch between logo and actions */
-        min-width: 0;
-        max-width: none;
-        margin-right: 30px;
-        /* pick ONE value you want */
-      }
-    }
-
-
-    @media (max-width: 768px) {
-      #top-bar {
-        height: 56px;
-        padding: 0 10px;
-      }
-
-      #top-bar .logo {
-        display: none;
-      }
-
-      /* your request */
-      #search-container {
-        flex: 1 1 auto;
-      }
-
-      /* search gets the space */
-
-      #actions button {
-        width: 44px;
-        height: 44px;
-        /* bigger tap targets on phones */
-        border-radius: 10px;
-      }
-
-      #actions button img {
-        width: 22px;
-        height: 22px;
-      }
-
-      /* suggestions list stays attached to the input but won’t run under buttons */
-      #suggestions {
-        max-height: 45vh;
-      }
-
-      /* MapLibre controls away from the bar */
-      .maplibregl-ctrl-top-right {
-        top: 8px;
-      }
-    }
-
-    @media (max-width: 768px) {
-
-      /* Move map controls to bottom left on mobile */
-      .maplibregl-ctrl-top-right {
-        top: auto !important;
-        /* cancel top positioning */
-        right: auto !important;
-        /* cancel right positioning */
-        bottom: 10px;
-        /* set distance from bottom */
-        left: 10px;
-        /* set distance from left */
-        flex-direction: column;
-        /* keep stacked vertically */
-      }
-    }
-
-    /* Bottom sheet behavior on small screens */
-    @media (max-width: 768px) {
-      .map-overlay-inner {
-        position: fixed;
-        top: auto;
-        bottom: 0;
-        left: 0;
-        width: 100vw;
-        height: 40vh;
-        /* bottom sheet height */
-        border-radius: 14px 14px 0 0;
-        padding-bottom: calc(16px + env(safe-area-inset-bottom));
-      }
-
-      .panel-scroll {
-        padding-top: 36px;
-      }
-
-      /* clear the close button */
-      .close-button {
-        top: 8px;
-        right: 12px;
-        font-size: 28px;
-      }
-    }
-
-
-    @media (max-width: 768px) {
-
-      #filter-toggle-btn,
-      #basemap-toggle-btn {
-        padding: 12px;
-        border-radius: 10px;
-      }
-
-      #filter-toggle-btn img,
-      #basemap-toggle-btn img {
-        width: 24px;
-        height: 24px;
-      }
-
-    }
-
-
-    @media (max-width: 768px) {
-      .maplibregl-ctrl-bottom-right {
-        margin: 0 10px calc(10px + env(safe-area-inset-bottom)) 0;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .map-overlay-inner {
-        box-shadow: 0 6px 16px rgba(0, 0, 0, .25);
-      }
-
-      .source-card {
-        border-radius: 8px;
-      }
-
-      .basemap-btn {
-        padding: 12px;
-      }
-    }
-
-    /* Actions area inside the top bar */
-    #actions {
-      margin-left: auto;
-      /* pushes actions to the right */
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    #actions #filter-toggle-btn,
-    #actions #basemap-toggle-btn {
-      position: static;
-      /* cancel old absolute positioning */
-      right: auto;
-      top: auto;
-      display: grid;
-      place-items: center;
-      width: 40px;
-      height: 40px;
-      padding: 0;
-      background: #fff;
-      border: none;
-      border-radius: 8px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-    }
-
-    #actions #filter-toggle-btn img,
-    #actions #basemap-toggle-btn img {
-      width: 20px;
-      height: 20px;
-      display: block;
-    }
-
-    /* Mobile scaling */
-    @media (max-width: 768px) {
-
-      #actions #filter-toggle-btn,
-      #actions #basemap-toggle-btn {
-        width: 44px;
-        height: 44px;
-        border-radius: 10px;
-      }
-
-      #actions #filter-toggle-btn img,
-      #actions #basemap-toggle-btn img {
-        width: 22px;
-        height: 22px;
-      }
-    }
-
-
-
-    @media (max-width: 768px) {
-      #top-bar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        /* nice breathing room */
-      }
-
-
-
-      #search-container input[type="text"] {
-        width: 100%;
-        font-size: 16px;
-        /* avoid iOS zoom */
-      }
-
-      /* The action buttons live inside #actions now; keep them static */
-      #actions #filter-toggle-btn,
-      #actions #basemap-toggle-btn {
-        position: static;
-        /* ensure NOT absolute on mobile */
-      }
-
-
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 9999;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.85);
-      }
-
-      .modal.show {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .modal-content {
-        max-width: 80%;
-        max-height: 80%;
-        border-radius: 6px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, .5);
-      }
-
-      .modal-nav {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        width: clamp(44px, 6vw, 64px);
-        height: clamp(44px, 6vw, 64px);
-        border: none;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.18);
-        color: #fff;
-        font-size: clamp(24px, 4vw, 36px);
-        line-height: 1;
-        display: grid;
-        place-items: center;
-        cursor: pointer;
-        backdrop-filter: blur(2px);
-      }
-
-      .modal-nav:hover {
-        background: rgba(255, 255, 255, 0.28);
-      }
-
-      .modal-nav.prev {
-        left: min(24px, 4vw);
-      }
-
-      .modal-nav.next {
-        right: min(24px, 4vw);
-      }
-
-      .close-modal {
-        position: absolute;
-        top: 30px;
-        right: 50px;
-        color: #fff;
-        font-size: 40px;
-        font-weight: bold;
-        cursor: pointer;
-      }
-
-      @media (max-width: 768px) {
-        .modal-content {
-          max-width: 92%;
-          max-height: 82%;
-        }
-
-        .modal-nav.prev {
-          left: 12px;
-        }
-
-        .modal-nav.next {
-          right: 12px;
-        }
-      }
-
-    }
-  </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
+  <link rel="stylesheet" href="css/map.css">
 </head>
 
 <body>
@@ -674,210 +62,6 @@
 
       <div class="panel-scroll">
 
-        <style>
-          #combined-filters,
-          #combined-filters * {
-            font-family: "Arial", sans-serif;
-          }
-
-          .filters-body {
-            padding: 6px 0 0;
-          }
-
-          .source-card {
-            background: #f6f7f9;
-            border: 1px solid #e2e5ea;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            overflow: hidden
-          }
-
-          .source-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            padding: 10px 12px;
-            background: #e9edf3;
-            cursor: pointer;
-            font-family: "Arial", sans-serif;
-          }
-
-          .source-name {
-            font-weight: 700;
-            font-size: 13px;
-            color: #1f2937
-          }
-
-          .source-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px
-          }
-
-          .btn {
-            appearance: none;
-            border: 0;
-            border-radius: 8px;
-            background: #374151;
-            color: #fff;
-            padding: 6px 10px;
-            cursor: pointer;
-            font-size: 12px
-          }
-
-          .btn[aria-pressed="true"] {
-            background: #10b981
-          }
-
-          .btn.small {
-            padding: 4px 8px;
-            font-size: 11px
-          }
-
-          .source-body {
-            display: none;
-            padding: 10px 12px;
-            background: #fff;
-            border-top: 1px solid #e2e5ea
-          }
-
-          .group {
-            margin-bottom: 12px
-          }
-
-          .group-title {
-            font-size: 12px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: #374151
-          }
-
-          .disclaimer {
-  font-style: italic;
-  font-weight: 300; /* lighter weight */
-  color: #555;      /* optional: softer gray tone */
-}
-
-          .option {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 4px 0;
-            font-size: 12px
-          }
-
-          .option input {
-            cursor: pointer
-          }
-
-          .hint {
-            font-size: 11px;
-            opacity: .8
-          }
-
-          /* No sticky — just a normal block under the text */
-          .regs-cta {
-            margin-top: 16px;
-            text-align: center;
-          }
-
-          /* Keep your button styling */
-          .regs-btn {
-            display: inline-block;
-            text-decoration: none;
-            background: #008678;
-            color: #fff;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-          }
-
-          .licence-btn {
-            display: inline-block;
-            text-decoration: none;
-            background: #ED6429;
-            color: #fff;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-          }
-
-
-          /* Showcard image */
-          .card-image-wrap {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16/9;
-            /* keeps a tidy frame */
-            border-radius: 8px;
-            overflow: hidden;
-            background: #f2f2f2;
-            /* nice fallback while loading */
-            margin-bottom: 10px;
-          }
-
-          .card-image-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* no distortion */
-            object-position: center;
-            display: block;
-          }
-
-          @media (max-width: 768px) {
-            .card-image-wrap {
-              aspect-ratio: 16/4.5;
-              /* new mobile ratio: 10 long × 4 high */
-            }
-
-            .card-image-wrap img {
-              object-fit: cover;
-              /* still fills container */
-              object-position: 50% 50%;
-              /* centered vertically */
-            }
-          }
-
-          /* In-card carousel arrows */
-          .carousel-button {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 36px;
-            height: 36px;
-            border-radius: 999px;
-            border: none;
-            background: rgba(0, 0, 0, .35);
-            color: #fff;
-            font-size: 20px;
-            line-height: 1;
-            display: grid;
-            place-items: center;
-            cursor: pointer;
-          }
-
-          .carousel-button:hover {
-            background: rgba(0, 0, 0, .5);
-          }
-
-          .carousel-button.prev {
-            left: 8px;
-          }
-
-          .carousel-button.next {
-            right: 8px;
-          }
-
-          /* optional: small index line under the image (remove if not needed) */
-          .carousel-meta {
-            margin-top: 6px;
-            font-size: 12px;
-            color: #666;
-            text-align: center;
-          }
-        </style>
 
         <div id="filters-body" class="filters-body">
 
@@ -1357,1729 +541,2218 @@
   </div>
 
   <div class="map-overlay" id="properties"></div>
+<script>
+  // --- decide initial view from URL (run FIRST) ---
+  const url = new URL(window.location.href);
+  const regionParam = url.searchParams.get('region');
+  const latParam = parseFloat(url.searchParams.get('lat'));
+  const lngParam = parseFloat(url.searchParams.get('lng'));
+  const zParam = parseFloat(url.searchParams.get('z'));
+  const bboxParam = (url.searchParams.get('bbox') || '').trim();
 
-  <script>
+  const REGION_VIEWS = {
+    1: { center: [174.15, -35.70], zoom: 6.9 }, 2: { center: [175.182251, -37.998588], zoom: 6.9 },
+    3: { center: [177.127635, -38.307814], zoom: 6.9 }, 4: { center: [174.788398, -39.416080], zoom: 6.9 },
+    5: { center: [176.566401, -39.552397], zoom: 6.9 }, 6: { center: [175.718208, -40.534386], zoom: 6.9 },
+    7: { center: [173.069873, -41.681397], zoom: 6.9 }, 8: { center: [172.301859, -43.106414], zoom: 6.9 },
+    9: { center: [170.728991, -43.047237], zoom: 6.9 }, 10: { center: [170.745253, -44.232766], zoom: 6.9 },
+    11: { center: [169.422244, -45.454679], zoom: 6.9 }, 12: { center: [167.969988, -45.709747], zoom: 6.9 },
+    13: { center: [175.80, -38.80], zoom: 6.9 }
+  };
 
+  let initialCamera = { center: [173.792725, -40.784701], zoom: 5.3 }; // default
 
-    // --- decide initial view from URL (run FIRST) ---
-    const url = new URL(window.location.href);
-    const regionParam = url.searchParams.get('region');
-    const latParam = parseFloat(url.searchParams.get('lat'));
-    const lngParam = parseFloat(url.searchParams.get('lng'));
-    const zParam = parseFloat(url.searchParams.get('z'));
-    const bboxParam = (url.searchParams.get('bbox') || '').trim();
+  if (bboxParam) {
+    const parts = bboxParam.split(',').map(Number);
+    if (parts.length === 4 && parts.every(Number.isFinite)) {
+      initialCamera = {
+        bounds: [[parts[0], parts[1]], [parts[2], parts[3]]],
+        fitBoundsOptions: { padding: { top: 80, right: 10, bottom: 10, left: 10 } }
+      };
+    }
+  } else if (Number.isFinite(latParam) && Number.isFinite(lngParam)) {
+    initialCamera = { center: [lngParam, latParam], zoom: Number.isFinite(zParam) ? zParam : 10 };
+  } else if (regionParam && REGION_VIEWS[+regionParam]) {
+    initialCamera = REGION_VIEWS[+regionParam];
+  }
 
-    const REGION_VIEWS = {
-      1: { center: [174.15, -35.70], zoom: 6.9 }, 2: { center: [175.182251, -37.998588], zoom: 6.9 },
-      3: { center: [177.127635, -38.307814], zoom: 6.9 }, 4: { center: [174.788398, -39.416080], zoom: 6.9 },
-      5: { center: [176.566401, -39.552397], zoom: 6.9 }, 6: { center: [175.718208, -40.534386], zoom: 6.9 },
-      7: { center: [173.069873, -41.681397], zoom: 6.9 }, 8: { center: [172.301859, -43.106414], zoom: 6.9 },
-      9: { center: [170.728991, -43.047237], zoom: 6.9 }, 10: { center: [170.745253, -44.232766], zoom: 6.9 },
-      11: { center: [169.422244, -45.454679], zoom: 6.9 }, 12: { center: [167.969988, -45.709747], zoom: 6.9 },
-      13: { center: [175.80, -38.80], zoom: 6.9 }
+  const styleURL = 'https://basemaps.linz.govt.nz/v1/styles/topo-raster.json?api=d01hep5551e30kxb7w85hck49tp';
+  const TODAY_UNIX = Math.floor(Date.now() / 1000);
+
+  const map = new maplibregl.Map({
+    container: 'map',
+    style: styleURL,
+    center: [173.792725, -40.784701],
+    minZoom: 5,
+    ...initialCamera
+  });
+
+  map.addControl(new maplibregl.NavigationControl({ showCompass: true }));
+  map.addControl(new maplibregl.GeolocateControl({
+    positionOptions: { enableHighAccuracy: true },
+    trackUserLocation: true,
+    showUserHeading: true
+  }));
+  map.dragRotate.disable();
+  map.touchZoomRotate.disableRotation();
+
+  // ---- Image modal swipe (unchanged) ----
+  (function addModalSwipe() {
+    let startX = 0, startY = 0, tracking = false;
+
+    const modal = document.getElementById('imageModal');
+    const img = document.getElementById('modalImage');
+
+    function onStart(e) {
+      const t = e.touches?.[0];
+      if (!t) return;
+      startX = t.clientX; startY = t.clientY; tracking = true;
+    }
+    function onEnd(e) {
+      if (!tracking) return;
+      const t = e.changedTouches?.[0];
+      if (!t) return;
+      const dx = t.clientX - startX;
+      const dy = t.clientY - startY;
+      tracking = false;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0) modalNext(); else modalPrev();
+      }
+    }
+
+    img.addEventListener('touchstart', onStart, { passive: true });
+    img.addEventListener('touchend', onEnd, { passive: true });
+  })();
+
+  // ---- Image card helpers (unchanged) ----
+  function setCardImage(index) {
+    const photos = window.__cardPhotos || [];
+    if (!photos.length) return;
+    const n = ((index % photos.length) + photos.length) % photos.length;
+    window.__cardPhotoIndex = n;
+
+    const main = document.getElementById('cardMainImage');
+    if (main) {
+      main.src = photos[n];
+      main.onclick = () => openImageModal(n);
+    }
+
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    if (modal?.classList.contains('show') && modalImg) {
+      modalImg.src = photos[n];
+    }
+
+    const meta = document.querySelector('.carousel-meta');
+    if (meta) {
+      meta.textContent = `${n + 1} / ${photos.length}`;
+    }
+  }
+
+  function openImageModal(arg) {
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("modalImage");
+
+    let idx = window.__cardPhotoIndex || 0;
+
+    if (typeof arg === 'number' && Number.isFinite(arg)) {
+      idx = arg;
+    } else if (typeof arg === 'string' && window.__cardPhotos?.length) {
+      const found = window.__cardPhotos.indexOf(arg);
+      if (found >= 0) idx = found;
+    }
+
+    setCardImage(idx);
+    modalImg.src = window.__cardPhotos[idx];
+
+    modal.classList.add("show");
+    updateModalNavVisibility();
+    modal.onclick = (ev) => { if (ev.target === modal) closeModal(); };
+    window.addEventListener('keydown', handleModalKeys);
+  }
+
+  function updateModalNavVisibility() {
+    const count = (window.__cardPhotos || []).length;
+    const prevBtn = document.querySelector('#imageModal .modal-nav.prev');
+    const nextBtn = document.querySelector('#imageModal .modal-nav.next');
+    const show = count > 1;
+    if (prevBtn) prevBtn.style.display = show ? '' : 'none';
+    if (nextBtn) nextBtn.style.display = show ? '' : 'none';
+  }
+
+  function closeModal() {
+    const modal = document.getElementById("imageModal");
+    modal.classList.remove("show");
+    modal.onclick = null;
+    window.removeEventListener('keydown', handleModalKeys);
+  }
+
+  function handleModalKeys(e) {
+    const count = (window.__cardPhotos || []).length;
+    if (e.key === 'Escape') { closeModal(); return; }
+    if (count < 2) return;
+    if (e.key === 'ArrowRight') { modalNext(e); }
+    else if (e.key === 'ArrowLeft') { modalPrev(e); }
+  }
+
+  function modalNext(ev) {
+    if (ev) ev.stopPropagation();
+    const photos = window.__cardPhotos || [];
+    if (photos.length < 2) return;
+    setCardImage((window.__cardPhotoIndex || 0) + 1);
+    const modalImg = document.getElementById("modalImage");
+    if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
+  }
+  function modalPrev(ev) {
+    if (ev) ev.stopPropagation();
+    const photos = window.__cardPhotos || [];
+    if (photos.length < 2) return;
+    setCardImage((window.__cardPhotoIndex || 0) - 1);
+    const modalImg = document.getElementById("modalImage");
+    if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
+  }
+
+  // ---- Panel logic / openPanel / toggle filters ----
+  let activePanel = null;
+  document.addEventListener('click', function (event) {
+    const filtersEl = document.getElementById('combined-filters');
+    const filtersBtn = document.getElementById('filter-toggle-btn');
+    if (filtersEl.style.display === 'block') {
+      if (!filtersEl.contains(event.target) && !filtersBtn.contains(event.target)) {
+        openPanel(null);
+      }
+    }
+  });
+
+  let selectedPoint = null;
+  let selectedRiver = null;
+  let selectedRiverId = null;
+
+  function updateSelectedRiverLayers() {
+    const filterExpr = (selectedRiverId == null)
+      ? ['==', ['id'], -1]
+      : ['==', ['id'], selectedRiverId];
+
+    if (map.getLayer('Waterways-selected-halo')) {
+      map.setFilter('Waterways-selected-halo', filterExpr);
+    }
+  }
+
+  function openPanel(which) {
+    const cardEl = document.getElementById('properties');
+    const filtersEl = document.getElementById('combined-filters');
+    const basemapsEl = document.getElementById('combined-basemaps');
+
+    cardEl.style.display = 'none';
+    filtersEl.style.display = 'none';
+    basemapsEl.style.display = 'none';
+    activePanel = null;
+
+    if (which === 'card') {
+      cardEl.style.display = 'block';
+      activePanel = 'card';
+    } else if (which === 'filters') {
+      filtersEl.style.display = 'block';
+      activePanel = 'filters';
+    } else if (which === 'basemaps') {
+      basemapsEl.style.display = 'block';
+      activePanel = 'basemaps';
+    }
+  }
+
+  function toggleFilters() {
+    if (activePanel === 'filters') {
+      openPanel(null);
+    } else {
+      openPanel('filters');
+    }
+  }
+
+  function toggleBasemaps() {
+    if (activePanel === 'basemaps') {
+      openPanel(null);
+    } else {
+      openPanel('basemaps');
+    }
+  }
+
+  function isBlankish(v) {
+    if (v === null || v === undefined) return true;
+    const s = String(v).trim();
+    if (!s) return true;
+    return /^(na|n\/a|null|undefined|none)$/i.test(s);
+  }
+  function safeGet(obj, key) {
+    const v = obj?.[key];
+    return isBlankish(v) ? null : v;
+  }
+
+ 
+
+  function getRegionRegUrlFromProps(props) {
+    const raw =
+      props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
+
+    if (isBlankish(raw)) return null;
+
+    const rc = Number.parseInt(String(raw).trim(), 10);
+    if (!Number.isInteger(rc) || rc < 1 || rc > 13) return null;
+
+    return REGION_REG_URLS[rc] || null;
+  }
+
+  // ===== Filters wiring (unchanged from your version) =====
+  window.setupAWFilters = function (map) {
+    if (window.__filtersWired) return;
+    window.__filtersWired = true;
+
+    const LAYERS = {
+      waterways: ['Waterways-line', 'Waterways-fill'],
+      points: ['data-points-all'],
+      publicAccess: ['PublicAccessAreas-fill'],
+      regions: ['FG Regions-line', 'FG Regions-linebackground', 'FG Region Labels']
     };
 
-    let initialCamera = { center: [173.792725, -40.784701], zoom: 5.3 }; // default
+    const PROPS = {
+      waterways: {
+        fly: 'fly',
+        spin: 'spin',
+        bait: 'bait',
+        closed: 'permanently_closed',
+        open_start: 'open_date_unix',
+        open_end: 'close_date_unix',
+        type: 'water_type',
+        fishery: null,
+        species: null
+      },
+      points: { type: 'point_type' }
+    };
 
-    if (bboxParam) {
-      const parts = bboxParam.split(',').map(Number);
-      if (parts.length === 4 && parts.every(Number.isFinite)) {
-        initialCamera = {
-          bounds: [[parts[0], parts[1]], [parts[2], parts[3]]],
-          fitBoundsOptions: { padding: { top: 80, right: 10, bottom: 10, left: 10 } } // instant at init
-        };
-      }
-    } else if (Number.isFinite(latParam) && Number.isFinite(lngParam)) {
-      initialCamera = { center: [lngParam, latParam], zoom: Number.isFinite(zParam) ? zParam : 10 };
-    } else if (regionParam && REGION_VIEWS[+regionParam]) {
-      initialCamera = REGION_VIEWS[+regionParam];
-    }
+    const FISHERY_FIELDS = {
+      backcountry: 'backcountry',
+      sea_run_salmon: 'searun_salmon_fishery',
+      designated: 'designated_water',
+      controlled: 'controlled_fishery',
+      junior: 'junior_fishery',
+      stocked: 'stocked_put_take_fishery',
+      coarse: 'coarse_fishery'
+    };
 
+    const filtersRoot = document.getElementById('filters-body');
 
+    const getRadio = (group) => {
+      const el = filtersRoot.querySelector(`.group[data-group="${group}"] input[type="radio"]:checked`);
+      return el ? el.value : null;
+    };
 
-    const styleURL = 'https://basemaps.linz.govt.nz/v1/styles/topo-raster.json?api=d01hep5551e30kxb7w85hck49tp';
-    const TODAY_UNIX = Math.floor(Date.now() / 1000); // cache once per load 
-    //  1760266811 -  Oct 12 2025  1787842134 
-    //const TODAY_UNIX = 1760266811
-    const map = new maplibregl.Map({
-      container: 'map',
-      style: styleURL,
-      center: [173.792725, -40.784701],
-      minZoom: 5,
-      ...initialCamera
-    });
+    const getChecks = (group) => {
+      const groupEl = filtersRoot.querySelector(`.group[data-group="${group}"]`);
+      if (!groupEl) return null;
 
-    map.addControl(new maplibregl.NavigationControl({ showCompass: true }));
-    map.addControl(new maplibregl.GeolocateControl({
-      positionOptions: { enableHighAccuracy: true },
-      trackUserLocation: true,
-      showUserHeading: true
-    }));
-    map.dragRotate.disable();
-    map.touchZoomRotate.disableRotation();
+      const allBox = groupEl.querySelector('input[data-role="all"]');
+      const boxes = [...groupEl.querySelectorAll('input[type="checkbox"]:not([data-role="all"])')];
 
-    (function addModalSwipe() {
-      let startX = 0, startY = 0, tracking = false;
-
-      const modal = document.getElementById('imageModal');
-      const img = document.getElementById('modalImage');
-
-      function onStart(e) {
-        const t = e.touches?.[0];
-        if (!t) return;
-        startX = t.clientX; startY = t.clientY; tracking = true;
-      }
-      function onEnd(e) {
-        if (!tracking) return;
-        const t = e.changedTouches?.[0];
-        if (!t) return;
-        const dx = t.clientX - startX;
-        const dy = t.clientY - startY;
-        tracking = false;
-        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
-          if (dx < 0) modalNext(); else modalPrev();
-        }
-      }
-
-      img.addEventListener('touchstart', onStart, { passive: true });
-      img.addEventListener('touchend', onEnd, { passive: true });
-    })();
-
-    function setCardImage(index) {
-      const photos = window.__cardPhotos || [];
-      if (!photos.length) return;
-      const n = ((index % photos.length) + photos.length) % photos.length;
-      window.__cardPhotoIndex = n;
-
-      const main = document.getElementById('cardMainImage');
-      if (main) {
-        main.src = photos[n];
-        main.onclick = () => openImageModal(n);
-      }
-
-      const modal = document.getElementById('imageModal');
-      const modalImg = document.getElementById('modalImage');
-      if (modal?.classList.contains('show') && modalImg) {
-        modalImg.src = photos[n];
-      }
-
-      const meta = document.querySelector('.carousel-meta');
-      if (meta) {
-        meta.textContent = `${n + 1} / ${photos.length}`;
-      }
-    }
-
-
-    function openImageModal(arg) {
-      const modal = document.getElementById("imageModal");
-      const modalImg = document.getElementById("modalImage");
-
-      // decide which image index to show
-      let idx = window.__cardPhotoIndex || 0;
-
-      if (typeof arg === 'number' && Number.isFinite(arg)) {
-        idx = arg;
-      } else if (typeof arg === 'string' && window.__cardPhotos?.length) {
-        const found = window.__cardPhotos.indexOf(arg);
-        if (found >= 0) idx = found;
-      }
-
-      // sync both the card + modal to the chosen index
-      setCardImage(idx);
-      modalImg.src = window.__cardPhotos[idx];
-
-      // show modal
-      modal.classList.add("show");
-      updateModalNavVisibility();
-      // clicking the dark backdrop closes; clicks on content/controls should not
-      modal.onclick = (ev) => {
-        if (ev.target === modal) closeModal();
-      };
-
-      // keyboard navigation while modal is open
-      window.addEventListener('keydown', handleModalKeys);
-    }
-
-    function updateModalNavVisibility() {
-      const count = (window.__cardPhotos || []).length;
-      const prevBtn = document.querySelector('#imageModal .modal-nav.prev');
-      const nextBtn = document.querySelector('#imageModal .modal-nav.next');
-      const show = count > 1;
-      if (prevBtn) prevBtn.style.display = show ? '' : 'none';
-      if (nextBtn) nextBtn.style.display = show ? '' : 'none';
-    }
-
-    function closeModal() {
-      const modal = document.getElementById("imageModal");
-      modal.classList.remove("show");
-      modal.onclick = null;
-      window.removeEventListener('keydown', handleModalKeys);
-    }
-
-    function handleModalKeys(e) {
-      const count = (window.__cardPhotos || []).length;
-      if (e.key === 'Escape') { closeModal(); return; }
-      if (count < 2) return;           // nothing to cycle
-      if (e.key === 'ArrowRight') { modalNext(e); }
-      else if (e.key === 'ArrowLeft') { modalPrev(e); }
-    }
-
-    // in-modal nav buttons (reuse carousel state)
-    function modalNext(ev) {
-      if (ev) ev.stopPropagation();
-      const photos = window.__cardPhotos || [];
-      if (photos.length < 2) return;   // no-op if only 1
-      setCardImage((window.__cardPhotoIndex || 0) + 1);
-      const modalImg = document.getElementById("modalImage");
-      if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
-    }
-    function modalPrev(ev) {
-      if (ev) ev.stopPropagation();
-      const photos = window.__cardPhotos || [];
-      if (photos.length < 2) return;   // no-op if only 1
-      setCardImage((window.__cardPhotoIndex || 0) - 1);
-      const modalImg = document.getElementById("modalImage");
-      if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
-    }
-
-    // Panel logic
-    let activePanel = null;
-    document.addEventListener('click', function (event) {
-      const filtersEl = document.getElementById('combined-filters');
-      const filtersBtn = document.getElementById('filter-toggle-btn');
-      if (filtersEl.style.display === 'block') {
-        if (!filtersEl.contains(event.target) && !filtersBtn.contains(event.target)) {
-          openPanel(null);
-        }
-      }
-    });
-
-    // Selection state used by selectFeature/unselectFeatures
-    let selectedPoint = null;
-    let selectedRiver = null;
-    let selectedRiverId = null;
-
-    // Keep the selected river halo layer in sync (or hidden when none)
-    function updateSelectedRiverLayers() {
-      const filterExpr = (selectedRiverId == null)
-        ? ['==', ['id'], -1]                // hide halo
-        : ['==', ['id'], selectedRiverId];  // show only the selected one
-
-      if (map.getLayer('Waterways-selected-halo')) {
-        map.setFilter('Waterways-selected-halo', filterExpr);
-      }
-    }
-    function openPanel(which) {
-      const cardEl = document.getElementById('properties');
-      const filtersEl = document.getElementById('combined-filters');
-      const basemapsEl = document.getElementById('combined-basemaps');
-
-      // Hide all first
-      cardEl.style.display = 'none';
-      filtersEl.style.display = 'none';
-      basemapsEl.style.display = 'none';
-      activePanel = null;
-
-      if (which === 'card') {
-        cardEl.style.display = 'block';
-        activePanel = 'card';
-      } else if (which === 'filters') {
-        filtersEl.style.display = 'block';
-        activePanel = 'filters';
-      } else if (which === 'basemaps') {
-        basemapsEl.style.display = 'block';
-        activePanel = 'basemaps';
-      }
-    }
-
-
-    function toggleFilters(event) {
-      if (activePanel === 'filters') {
-        openPanel(null);
-      } else {
-        openPanel('filters');
-      }
-    }
-
-    function toggleBasemaps(event) {
-      if (activePanel === 'basemaps') {
-        openPanel(null);
-      } else {
-        openPanel('basemaps');
-      }
-    }
-
-    function splitList(raw) {
-      if (isBlankish(raw)) return [];
-      return String(raw)
-        .split(/[;,\|\n]+/g)
-        .map(s => s.trim())
-        .filter(Boolean);
-    }
-
-    // Build [{href, text}] from props.more_info_url(+name). Also accepts JSON arrays.
-    function parseMultiLinks(props) {
-      const urlsRaw = safeGet(props, 'more_info_url') ?? safeGet(props, 'moreinfo_url') ?? safeGet(props, 'MoreInfoURL');
-      const namesRaw = safeGet(props, 'more_info_name') ?? safeGet(props, 'moreinfo_name') ?? safeGet(props, 'MoreInfoName');
-
-      // if someone stored JSON arrays, accept those too
-      const toArray = (v) => {
-        if (Array.isArray(v)) return v;
-        const s = (v ?? '').toString().trim();
-        if (!s) return [];
-        if (s.startsWith('[') && s.endsWith(']')) {
-          try {
-            const arr = JSON.parse(s);
-            return Array.isArray(arr) ? arr : splitList(s);
-          } catch { return splitList(s); }
-        }
-        return splitList(s);
-      };
-
-      const urlList = toArray(urlsRaw);
-      const nameList = toArray(namesRaw);
+      if ((allBox && allBox.checked) || boxes.length === 0) return null;
 
       const out = [];
-      for (let i = 0; i < urlList.length; i++) {
-        const href = normalizeUrl(urlList[i]);
-        if (!href) continue;
-        // pick name if available, else hostname
-        let text = nameList[i] && !isBlankish(nameList[i])
-          ? nameList[i]
-          : (() => {
-            try { return new URL(href).hostname.replace(/^www\./, ''); }
-            catch { return href; }
-          })();
-        out.push({ href, text });
+      for (const b of boxes) {
+        if (!b.checked) continue;
+
+        const dv = b.dataset.values;
+        if (dv) {
+          try {
+            out.push(...JSON.parse(dv));
+          } catch {
+            out.push(...dv.split(',').map(s => s.trim()).filter(Boolean));
+          }
+        } else if (b.value) {
+          out.push(b.value);
+        }
       }
-      return out;
+
+      if (out.length === 0) return [];
+      return [...new Set(out)];
+    };
+
+    const setVisibility = (ids, visible) => {
+      ids.forEach(id => {
+        if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+      });
+    };
+
+    document.querySelectorAll('#filters-body .toggle-visible').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const pressed = e.target.getAttribute('aria-pressed') === 'true';
+        const src = e.target.dataset.source;
+        e.target.setAttribute('aria-pressed', String(!pressed));
+        e.target.textContent = pressed ? 'Hidden' : 'Shown';
+        setVisibility(LAYERS[src] || [], !pressed);
+      });
+    });
+
+    const lastFilters = Object.create(null);
+
+    function safeSetFilter(layerId, expr) {
+      const json = JSON.stringify(expr);
+      if (lastFilters[layerId] === json) return;
+      lastFilters[layerId] = json;
+      if (map.getLayer(layerId)) map.setFilter(layerId, expr);
     }
 
-    // Render a list of links as <ul>...</ul>
-    function renderMultiLinks(props, label = 'More Info') {
-      const links = parseMultiLinks(props);
-      if (!links.length) return ''; // nothing to show
+    function applyWaterwayFilters() {
+      const m = getRadio('w-method');
+      const openMode = getRadio('w-open');
+      const wtype = getRadio('w-type');
+      const fishery = getRadio('w-fishery');
+      const species = getChecks('w-species');
 
-      if (links.length === 1) {
-        const { href, text } = links[0];
-        return `<li><b>${label}</b>: <a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`;
+      const p = PROPS.waterways;
+      const clauses = [];
+
+      if (m && m !== '__ALL__') {
+        if (m === 'fly_only') {
+          clauses.push(['all',
+            ['==', ['get', p.fly], 1],
+            ['==', ['get', p.spin], 0],
+            ['==', ['get', p.bait], 0],
+            ['==', ['get', p.closed], 0]
+          ]);
+        } else if (['fly', 'spin', 'bait'].includes(m)) {
+          clauses.push(['==', ['get', p[m]], 1]);
+        }
       }
 
-      const items = links.map(({ href, text }) =>
-        `<li style="margin:2px 0;"><a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`
-      ).join('');
+      if (wtype && wtype !== '__ALL__' && p.type) {
+        clauses.push(['==', ['get', p.type], wtype]);
+      }
 
-      return `<li><b>${label}</b>:
+      if (fishery && fishery !== '__ALL__') {
+        const field = FISHERY_FIELDS[fishery];
+        if (field) {
+          clauses.push(['==', ['to-number', ['get', field]], 1]);
+        } else {
+          clauses.push(['==', ['literal', 1], 2]);
+        }
+      }
+
+      if (species && species.length && p.species) {
+        clauses.push(['in', ['get', p.species], ['literal', species]]);
+      }
+
+      if (openMode === 'filter_today') {
+        const today = window.__TODAY_UNIX__;
+        clauses.push(['all',
+          ['<=', ['get', p.open_start], today],
+          ['>=', ['get', p.open_end], today]
+        ]);
+      }
+
+      const finalExpr = clauses.length ? ['all', ...clauses] : true;
+      (LAYERS.waterways || []).forEach(id => safeSetFilter(id, finalExpr));
+    }
+
+    function applyPointFilters() {
+      const selected = getChecks('p-type');
+      let expr = true;
+      if (selected === null) {
+        expr = true;
+      } else if (selected.length === 0) {
+        expr = ['==', ['get', 'point_type'], '__NONE__'];
+      } else {
+        expr = ['in', ['get', PROPS.points.type], ['literal', selected]];
+      }
+      (LAYERS.points || []).forEach(id => safeSetFilter(id, expr));
+    }
+
+    let filterTimer = null;
+    function scheduleApply(fn) {
+      if (filterTimer) cancelAnimationFrame(filterTimer);
+      let t;
+      filterTimer = requestAnimationFrame(() => {
+        clearTimeout(t);
+        t = setTimeout(() => fn(), 120);
+      });
+    }
+
+    filtersRoot.addEventListener('change', (e) => {
+      const container = e.target.closest('.source-card');
+      if (!container) return;
+      const src = container.dataset.source;
+      scheduleApply(() => {
+        if (src === 'waterways') applyWaterwayFilters();
+        if (src === 'points') applyPointFilters();
+      });
+    });
+
+    function applyAllIfReady() {
+      if (map.getLayer('Waterways-line') && map.getLayer('data-points-all')) {
+        applyWaterwayFilters();
+        applyPointFilters();
+      }
+    }
+    map.on('idle', applyAllIfReady);
+  };
+
+  // ===== Normalise URLs, photos, etc. (unchanged) =====
+  function splitList(raw) {
+    if (isBlankish(raw)) return [];
+    return String(raw)
+      .split(/[;,\|\n]+/g)
+      .map(s => s.trim())
+      .filter(Boolean);
+  }
+
+  function normalizeUrl(raw) {
+    if (!raw) return null;
+    let u = String(raw).trim();
+    if (!u) return null;
+
+    const lower = u.toLowerCase();
+    if (lower.startsWith('javascript:')) return null;
+    if (lower.startsWith('data:image/')) return u;
+
+    if (
+      u.startsWith('/') ||
+      u.startsWith('./') ||
+      u.startsWith('../') ||
+      !/^[a-z]+:\/\//i.test(u)
+    ) {
+      return u;
+    }
+
+    try {
+      const url = new URL(u);
+      if (!/^https?:$/.test(url.protocol)) return null;
+      return url.href;
+    } catch {
+      try {
+        const url2 = new URL('https://' + u);
+        if (!/^https?:$/.test(url2.protocol)) return null;
+        return url2.href;
+      } catch {
+        return null;
+      }
+    }
+  }
+
+  function parseMultiLinks(props) {
+    const urlsRaw = safeGet(props, 'more_info_url') ?? safeGet(props, 'moreinfo_url') ?? safeGet(props, 'MoreInfoURL');
+    const namesRaw = safeGet(props, 'more_info_name') ?? safeGet(props, 'moreinfo_name') ?? safeGet(props, 'MoreInfoName');
+
+    const toArray = (v) => {
+      if (Array.isArray(v)) return v;
+      const s = (v ?? '').toString().trim();
+      if (!s) return [];
+      if (s.startsWith('[') && s.endsWith(']')) {
+        try {
+          const arr = JSON.parse(s);
+          return Array.isArray(arr) ? arr : splitList(s);
+        } catch { return splitList(s); }
+      }
+      return splitList(s);
+    };
+
+    const urlList = toArray(urlsRaw);
+    const nameList = toArray(namesRaw);
+
+    const out = [];
+    for (let i = 0; i < urlList.length; i++) {
+      const href = normalizeUrl(urlList[i]);
+      if (!href) continue;
+      let text = nameList[i] && !isBlankish(nameList[i])
+        ? nameList[i]
+        : (() => {
+          try { return new URL(href).hostname.replace(/^www\./, ''); }
+          catch { return href; }
+        })();
+      out.push({ href, text });
+    }
+    return out;
+  }
+
+  function renderMultiLinks(props, label = 'More Info') {
+    const links = parseMultiLinks(props);
+    if (!links.length) return '';
+
+    if (links.length === 1) {
+      const { href, text } = links[0];
+      return `<li><b>${label}</b>: <a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`;
+    }
+
+    const items = links.map(({ href, text }) =>
+      `<li style="margin:2px 0;"><a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`
+    ).join('');
+
+    return `<li><b>${label}</b>:
             <ul style="margin:4px 0 0 18px; padding:0;">${items}</ul>
           </li>`;
-    }
+  }
 
+  window.__cardPhotos = [];
+  window.__cardPhotoIndex = 0;
 
+  function collectPhotoUrls(props) {
+    const candidates = [
+      props.image, props.images, props.photo, props.photos,
+      props.image1, props.image2, props.image3, props.image4,
+      props.Image1, props.Image2, props.Image3, props.Image4,
+      props.img1, props.img2, props.img3, props.img4
+    ];
 
-    function normalizeUrl(raw) {
-      if (!raw) return null;
-      let u = String(raw).trim();
-      if (!u) return null;
-
-      const lower = u.toLowerCase();
-      // block dangerous protocols
-      if (lower.startsWith('javascript:')) return null;
-
-      // If it’s a data URL for an <img>, allow it (you previously blocked all data:)
-      // If you truly don't want data URLs, remove this allowance.
-      if (lower.startsWith('data:image/')) return u;
-
-      // Allow relative paths as-is:
-      // - starts with /, ./, ../
-      // - or no scheme/host and looks like a path or filename (contains a slash or a dot)
-      if (
-        u.startsWith('/') ||
-        u.startsWith('./') ||
-        u.startsWith('../') ||
-        !/^[a-z]+:\/\//i.test(u)
-      ) {
-        return u; // treat as same-origin relative path
-      }
-
-      // Otherwise must be http/https
-      try {
-        const url = new URL(u);
-        if (!/^https?:$/.test(url.protocol)) return null;
-        return url.href;
-      } catch {
-        // Maybe bare domain without scheme → add https
-        try {
-          const url2 = new URL('https://' + u);
-          if (!/^https?:$/.test(url2.protocol)) return null;
-          return url2.href;
-        } catch {
-          return null;
-        }
-      }
-    }
-    window.__cardPhotos = [];
-    window.__cardPhotoIndex = 0;
-
-    function collectPhotoUrls(props) {
-      // Look for multiple common field names/casings
-      const candidates = [
-        props.image, props.images, props.photo, props.photos, // generic
-        props.image1, props.image2, props.image3, props.image4, // lower
-        props.Image1, props.Image2, props.Image3, props.Image4, // TitleCase
-        props.img1, props.img2, props.img3, props.img4
-      ];
-
-      // Also handle comma-separated strings in any of those fields
-      const out = [];
-      for (const c of candidates) {
-        if (!c) continue;
-        if (Array.isArray(c)) {
-          out.push(...c);
+    const out = [];
+    for (const c of candidates) {
+      if (!c) continue;
+      if (Array.isArray(c)) {
+        out.push(...c);
+      } else {
+        const s = String(c).trim();
+        if (!s) continue;
+        if (s.includes(',')) {
+          out.push(...s.split(',').map(x => x.trim()).filter(Boolean));
         } else {
-          const s = String(c).trim();
-          if (!s) continue;
-          // split on comma if it looks like a list; otherwise single value
-          if (s.includes(','))
-            out.push(...s.split(',').map(x => x.trim()).filter(Boolean));
-          else
-            out.push(s);
+          out.push(s);
         }
       }
-
-      // Dedup + sanitize
-      const cleaned = [];
-      const seen = new Set();
-      for (const v of out) {
-        const n = normalizeUrl(v);
-        if (!n) continue;
-        if (!seen.has(n)) { seen.add(n); cleaned.push(n); }
-      }
-      return cleaned;
     }
 
-
-
-    function nextImage() {
-      setCardImage(window.__cardPhotoIndex + 1);
+    const cleaned = [];
+    const seen = new Set();
+    for (const v of out) {
+      const n = normalizeUrl(v);
+      if (!n) continue;
+      if (!seen.has(n)) { seen.add(n); cleaned.push(n); }
     }
-    function prevImage() {
-      setCardImage(window.__cardPhotoIndex - 1);
-    }
+    return cleaned;
+  }
 
-    const card = document.getElementById('properties');
+  function nextImage() {
+    setCardImage(window.__cardPhotoIndex + 1);
+  }
+  function prevImage() {
+    setCardImage(window.__cardPhotoIndex - 1);
+  }
+
+  const card = document.getElementById('properties');
+
+  const DOC_REGION_CODE = 13;
+
+  const riverDefaultImage = {
+    FG: 'images/Slide12.PNG',
+    DOC: 'images/Slide13.PNG'
+  };
+
+    const flowTypeDefaultImages = {
+    Flow: 'images/Slide18.PNG',        // river flow
+    Temperature: 'images/Slide19.PNG', // river temp
+  };
 
 
-    const DOC_REGION_CODE = 13;
+  function getRiverDefaultImage(props) {
+    const raw =
+      props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
+    const rc = Number.parseInt(String(raw ?? '').trim(), 10);
+    return rc === DOC_REGION_CODE ? riverDefaultImage.DOC : riverDefaultImage.FG;
+  }
 
-    const riverDefaultImage = {
-      FG: 'images/Slide12.PNG', // Fish & Game-managed
-      DOC: 'images/Slide13.PNG'  // Taupō Trout Fishery (DOC)
-    };
-
-    function getRiverDefaultImage(props) {
-      const raw =
-        props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
-      const rc = Number.parseInt(String(raw ?? '').trim(), 10);
-      return rc === DOC_REGION_CODE ? riverDefaultImage.DOC : riverDefaultImage.FG;
-    }
-
-    ['images/Slide12.PNG', 'images/Slide13.PNG'].forEach(src => {
+  ['images/Slide12.PNG', 'images/Slide13.PNG', 'images/Slide18.PNG', 'images/Slide19.PNG']
+    .forEach(src => {
       const im = new Image();
       im.src = src;
     });
 
-    const pointTypeDefaultImages = {
-      'AccessPoint': 'images/Slide1.PNG',
-      'TrampingAccess': 'images/Slide2.PNG',
-      '4x4Access': 'images/Slide3.PNG',
-      'BoatRamp': 'images/Slide4.PNG',
-      'Trolling': 'images/Slide5.PNG',
-      'Toilet': 'images/Slide6.PNG',
-      'Jigging': 'images/Slide7.PNG',
-      'Hotspot': 'images/Slide8.PNG',
-      'Warning': 'images/Slide9.PNG',
-      'Hut': 'images/Slide10.PNG',
-      'Campsite': 'images/Slide11.PNG',
-      'LandmarkPole': 'images/Slide14.PNG',
-      'Parking': 'images/Slide15.PNG',
-      'Shop': 'images/Slide16.PNG',
-      'Lodge': 'images/Slide17.PNG',
-    };
+  const pointTypeDefaultImages = {
+    'AccessPoint': 'images/Slide1.PNG',
+    'TrampingAccess': 'images/Slide2.PNG',
+    '4x4Access': 'images/Slide3.PNG',
+    'BoatRamp': 'images/Slide4.PNG',
+    'Trolling': 'images/Slide5.PNG',
+    'Toilet': 'images/Slide6.PNG',
+    'Jigging': 'images/Slide7.PNG',
+    'Hotspot': 'images/Slide8.PNG',
+    'Warning': 'images/Slide9.PNG',
+    'Hut': 'images/Slide10.PNG',
+    'Campsite': 'images/Slide11.PNG',
+    'LandmarkPole': 'images/Slide14.PNG',
+    'Parking': 'images/Slide15.PNG',
+    'Shop': 'images/Slide16.PNG',
+    'Lodge': 'images/Slide17.PNG',
+  };
 
-    const showCard = (feature) => {
-      const props = feature.properties;
-      const displayFields = {
-        methods: 'Method',
-        open_season: 'Open',
-        daily_bag_limit: 'Daily bag limit',
-        size_limit: 'Size limit',
-        hours_of_fishing: 'Hours of fishing',
-        description: "Description",
-        additional_requirements: "Additional Requirements",
-        more_info_url: "More Info",
-        bearing: "Bearing",
-        //id_code: "ID Code",
-      };
+  // ===== NEW: Flow (and WT) side-panel card =====
+  function showFlowCard(feature) {
+    const props = feature.properties || {};
 
-      // ---- pick a default image based on feature type ----
-      let typeImage = null;
-      const looksLikeRiver =
-        !!(props.Water || props.water_type || props.open_date_unix || props.close_date_unix);
-      const looksLikePoint =
-        !!(props.point_type || feature.geometry?.type === 'Point');
+    const site         = props.site_name ;
+    const station_name = props.station_name ;
+    const param        = props.parameter || 'Value';   // "Flow" or "Temperature"
+    const rawVal       = props.latest_value;
+    const whenRaw      = props.latest_datetime;
+    const unitProp     = props.unit;
 
-      if (feature.layer && feature.layer.id === 'data-points-all') {
-        if (props.point_type && props.point_type.toLowerCase() !== 'na') {
-          typeImage = pointTypeDefaultImages[props.point_type] || null;
-        }
-      } else if (
-        (feature.layer && (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill')) ||
-        (looksLikeRiver && !looksLikePoint)
-      ) {
-        typeImage = getRiverDefaultImage(props); // <-- pick a single image path
-      }
+    // NEW: pick default image based on Flow vs Temperature
+    const defaultImage = flowTypeDefaultImages[param] || null;
+    window.__cardPhotos = defaultImage ? [defaultImage] : [];
+    window.__cardPhotoIndex = 0;
 
+    const unit = unitProp ||
+      (param === 'Flow'
+        ? 'm³/s'
+        : param === 'Temperature'
+          ? '°C'
+          : '');
 
-      const extraPhotos = collectPhotoUrls(props);
-      const photoList = (typeImage ? [typeImage] : []).concat(extraPhotos);
+    const numVal = (typeof rawVal === 'number')
+      ? rawVal
+      : (rawVal !== null && rawVal !== undefined && rawVal !== ''
+          ? Number(rawVal)
+          : NaN);
 
-      // Keep global state for the carousel
-      window.__cardPhotos = photoList;
-      window.__cardPhotoIndex = 0;
+    const isNumeric    = Number.isFinite(numVal);
+    const valFormatted = isNumeric ? numVal.toFixed(1) : (rawVal ?? 'NA');
 
+    let summaryText = 'Latest value not available';
+    if (whenRaw) {
+      try {
+        const d = new Date(whenRaw);
 
-      let content = `
-<div class="map-overlay-inner">
-  <div class="map-overlay-drag-handle"></div>
-<button class="close-button" onclick="closeCard()">&times;</button>
+        const timeText = d.toLocaleString("en-NZ", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+          timeZone: "Pacific/Auckland"
+        }).replace(":00", "").toLowerCase();
 
-  <div class="panel-scroll">
-`;
-
-      if (photoList.length > 0) {
-        content += `
-    <div class="card-image-wrap">
-      <img id="cardMainImage" src="${photoList[0]}" alt="Location Photo" onclick="openImageModal()" />
-      ${photoList.length > 1 ? `
-        <button class="carousel-button prev" onclick="prevImage()" aria-label="Previous image">❮</button>
-        <button class="carousel-button next" onclick="nextImage()" aria-label="Next image">❯</button>
-      ` : ``}
-    </div>
-    ${photoList.length > 1 ? `<div class="carousel-meta">${1} / ${photoList.length}</div>` : ``}
-  `;
-      }
-
-
-      content += `
-  <code class="card-title">${props.Water || props.name || props.title || 'No Title'}</code>
-`;
-      if (props.subtitle || (typeof props.Section === 'string' && props.Section.trim() !== '')) {
-        const subtitleText = props.subtitle || props.Section;
-        content += `<div class="card-subtitle subtitle-main">${subtitleText}`;
-
-        if (feature.geometry?.type === 'Point' && Array.isArray(feature.geometry.coordinates)) {
-          const [lng, lat] = feature.geometry.coordinates;
-          const googleMapsLink = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-          content += `<br>  
-       <a href="${googleMapsLink}" target="_blank" title="Get Directions in Google Maps" style="font-weight: normal; text-decoration: none; color: blue; font-size: 0.9em">
-  (Get Directions in Google Maps)
-</a>
-          `;
-        }
-        content += `</div>`;
-      }
-
-      if (props.region || props.Region) {
-        const regionName = props.Region || props.region;
-        const label = (props.RegionCode == 13) ? "Fishing District" : "Fish & Game Region 2025/2026";
-        content += `<div class="card-subtitle subtitle-region">${regionName} ${label}</div>`;
-      }
-
-
-
-      content += `<hr><ul class="card-list">`;
-
-
-
-      for (const [key, label] of Object.entries(displayFields)) {
-        const raw = props[key];
-        if (isBlankish(raw)) continue;
-
-        if (key === 'more_info_url') {
-          // NEW: supports multiple URLs + names
-          content += renderMultiLinks(props, label);
-        } else {
-          content += `<li><b>${label}</b>: ${raw}</li>`;
-        }
-      }
-
-
-      // --- Region regulations button/link (only if RegionCode is valid) ---
-      // NOTE: keep this INSIDE .panel-scroll so it sticks to the bottom of the scroller
-      content += `</ul>`; // close the list first
-
-      const regsHref = getRegionRegUrlFromProps(props);
-      if (regsHref) {
-        content += `
-    <div class="regs-cta">
-      <a href="${regsHref}" target="_blank" rel="noopener noreferrer" class="regs-btn">
-        Download Full Regional Regulations
-      </a>
-    </div>
-  `;
-      }
-
-      // content += `
-      //     <div class="regs-cta">
-      //       <a href="https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/fishing-licences-and-regulations/general-fishing-licence-info/" target="_blank" rel="noopener noreferrer" class="licence-btn">
-      //         Purchase a 2025/2026 Fish & Game Licence
-      //       </a>
-      //     </div>
-      //   `;
-
-      // close the scroller + card shell ONCE
-      content += `</div></div>`;  // </div> .panel-scroll, </div> .map-overlay-inner
-
-      // write once, open once
-      card.innerHTML = content;
-      if (photoList.length) setCardImage(0);
-
-      openPanel('card');
-    }
-
-
-    const customImages = [
-      { name: 'AccessPoint-icon', url: 'images/FGAccess.png' },
-      { name: 'TrampingAccess-icon', url: 'images/WalkingAccess.png' },
-      { name: '4x4Access-icon', url: 'images/4x4Access.png' },
-
-      { name: 'BoatRamp-icon', url: 'images/BoatRamp.png' },
-
-      { name: 'Toilet-icon', url: 'images/Toilet.png' },
-
-      { name: 'Warning-icon', url: 'images/Warning.png' },
-
-      { name: 'Parking-icon', url: 'images/Parking.png' },
-      { name: 'LandmarkPole-icon', url: 'images/LandmarkPole.png' },
-
-      { name: 'Shop-icon', url: 'images/Store.png' },
-      { name: 'Lodge-icon', url: 'images/Lodge.png' },
-
-
-      { name: 'RegBoundary-icon', url: 'images/RegBoundary.png' },
-      { name: 'BuyDW-icon', url: 'images/BuyDW.png' },
-      { name: 'Hotspot-icon', url: 'images/Hotspot.png' },
-      { name: 'Trolling-icon', url: 'images/Trolling.png' },
-      { name: 'Jigging-icon', url: 'images/Jigging.png' },
-
-      { name: 'Hut-icon', url: 'images/DOC Hut.png' },
-      { name: 'Campsite-icon', url: 'images/DOC Camp.png' },
-
-
-      { name: 'BeatYR-icon', url: 'images/BeatYR.png' },
-      { name: 'BeatBY-icon', url: 'images/BeatBY.png' },
-      { name: 'BeatBR-icon', url: 'images/BeatBR.png' },
-      { name: 'BeatR-icon', url: 'images/BeatR.png' },
-      { name: 'BeatB-icon', url: 'images/BeatB.png' },
-      { name: 'BeatY-icon', url: 'images/BeatY.png' },
-    ];
-
-    function loadCustomImages(map, callback) {
-      let imagesLoaded = 0;
-      customImages.forEach(({ name, url }) => {
-        map.loadImage(url, (error, image) => {
-          if (error) { console.error(`Error loading image "${name}" from ${url}:`, error); return; }
-          if (!map.hasImage(name)) { map.addImage(name, image); }
-          imagesLoaded++;
-          if (imagesLoaded === customImages.length && typeof callback === 'function') callback();
+        const dateText = d.toLocaleDateString("en-NZ", {
+          day: "numeric",
+          month: "short",
+          timeZone: "Pacific/Auckland"
         });
+
+        summaryText = `${param} is ${valFormatted} ${unit || ''} as of ${timeText} ${dateText}`;
+      } catch {
+        summaryText = `${param} is ${valFormatted} ${unit || ''} (time: ${whenRaw})`;
+      }
+    }
+
+    let times = [];
+    let values = [];
+    try {
+      if (props.times_json)  times  = JSON.parse(props.times_json);
+      if (props.values_json) values = JSON.parse(props.values_json);
+    } catch (err) {
+      console.error('Error parsing times_json / values_json', err);
+    }
+
+    if (times.length !== values.length) {
+      const n = Math.min(times.length, values.length);
+      times  = times.slice(0, n);
+      values = values.slice(0, n);
+    }
+
+    const lineColor = param === 'Flow' ? '#3498db' : '#e67e22';
+    
+    const sourceURL = props.source_url || null;
+
+    const cardHtml = `
+      <div class="map-overlay-inner">
+        <button class="close-button" onclick="closeCard()">&times;</button>
+        <div class="panel-scroll">
+          ${defaultImage ? `
+          <div class="card-image-wrap">
+            <img id="cardMainImage"
+                 src="${defaultImage}"
+                 alt="River ${param.toLowerCase()} default image"
+                 onclick="openImageModal()" />
+          </div>
+          ` : ``}
+          <code class="card-title">${site}</code>
+
+ <div class="card-subtitle subtitle-main">
+  ${
+    !isBlankish(station_name)
+      ? `${station_name}${sourceURL ? ' | ' : ''}`
+      : ''
+  }
+  ${
+    sourceURL
+      ? `<a href="${sourceURL}" target="_blank" rel="noopener" class="subtitle-link">Source</a>`
+      : ''
+  }
+</div>
+          <hr>
+          <ul class="card-list">
+            <li>
+                ${summaryText.replace(`${param} is `, '')}</li>
+          </ul>
+          <h4 style="margin-top:10px; margin-bottom:4px;">Recent time series</h4>
+          <div style="width:100%; max-width:360px; height:210px;">
+            <canvas id="flowDevChartCanvas" width="360" height="210"></canvas>
+          </div>
+        </div>
+      </div>
+    `;
+
+
+    card.innerHTML = cardHtml;
+    openPanel('card');
+const canvas = document.getElementById('flowDevChartCanvas');
+if (!canvas) return;
+const ctx = canvas.getContext('2d');
+
+if (canvas._chartInstance) {
+  canvas._chartInstance.destroy();
+}
+
+const timeObjs = times.map(t => new Date(t));
+
+/**
+ * Plugin: draw a red threshold line + shaded area above 20°C
+ * and a warning message when param === "Temperature".
+ */
+const tempThresholdPlugin = {
+  id: 'tempThreshold',
+  afterDraw(chart) {
+    // Only run if this is a temperature chart
+    if (param !== 'Temperature') return;
+
+    const { ctx, chartArea, scales } = chart;
+    const yScale = scales.y;
+    if (!yScale) return;
+
+    const threshold = 20; // 20°C
+    const yPixel = yScale.getPixelForValue(threshold);
+
+    // If threshold is outside the visible range, skip
+    if (yPixel < chartArea.top || yPixel > chartArea.bottom) return;
+
+    ctx.save();
+
+    const { left, right, top } = chartArea;
+    const width = right - left;
+
+    // --- 1) Shaded area ABOVE the 20°C line ---
+    ctx.fillStyle = 'rgba(220, 53, 69, 0.08)'; // faint red
+    ctx.fillRect(left, top, width, yPixel - top);
+
+    // --- 2) Red dashed threshold line at 20°C ---
+    ctx.strokeStyle = 'rgba(220, 53, 69, 0.9)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(left, yPixel);
+    ctx.lineTo(right, yPixel);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // --- 3) Warning text ---
+    const text =
+      'Trout released above 20°C have much lower survival – consider fishing another time';
+    ctx.fillStyle = 'rgba(139, 0, 0, 0.95)';
+    ctx.font = '10px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+
+    const textX = (left + right) / 2;
+    const textY = top + 4;
+    const maxWidth = width - 10;
+
+    ctx.fillText(text, textX, textY, maxWidth);
+
+    ctx.restore();
+  }
+};
+
+// Only attach plugin when needed
+const plugins = [];
+if (param === 'Temperature') {
+  plugins.push(tempThresholdPlugin);
+}
+
+canvas._chartInstance = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: timeObjs,
+    datasets: [{
+      label: `${param} (${unit || ''})`,
+      data: values,
+      borderColor: lineColor,
+      backgroundColor: lineColor,
+      tension: 0.2,
+      pointRadius: 0,
+      borderWidth: 1.5
+    }]
+  },
+  options: {
+    responsive: false,
+    interaction: {
+      mode: 'index',
+      intersect: false
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+        displayColors: false,
+        callbacks: {
+          label: (ctx) => {
+            const d = new Date(ctx.parsed.x);
+            const v = ctx.parsed.y;
+
+            const timeText = d.toLocaleString("en-NZ", {
+              timeZone: "Pacific/Auckland",
+              hour: "numeric",
+              hour12: true
+            }).replace(":00", "").toLowerCase();
+
+            const dateText = d.toLocaleDateString("en-NZ", {
+              timeZone: "Pacific/Auckland",
+              day: "numeric",
+              month: "short"
+            });
+
+            const valueText = v.toFixed(1);
+            return `${valueText} ${unit || ''} at ${timeText} ${dateText}`;
+          },
+          title: () => ''
+        }
+      }
+    },
+    scales: {
+      x: {
+        type: 'time',
+        time: {
+          unit: 'day',
+          stepSize: 1,
+          displayFormats: { day: 'd MMM' }
+        },
+        ticks: { maxRotation: 45 }
+      },
+      y: {
+        title: {
+          display: true,
+          text: `${param} (${unit || ''})`,
+          font: { size: 11 }
+        },
+        ticks: { maxTicksLimit: 5 }
+      }
+    },
+    elements: {
+      line: { stepped: false }
+    }
+  },
+  plugins // 👈 add our threshold plugin (only for Temperature)
+});
+
+  }
+
+  // ===== Existing showCard for waterways/points (unchanged) =====
+  const showCard = (feature) => {
+    const props = feature.properties;
+    const displayFields = {
+      methods: 'Method',
+      open_season: 'Open',
+      daily_bag_limit: 'Daily bag limit',
+      size_limit: 'Size limit',
+      hours_of_fishing: 'Hours of fishing',
+      description: "Description",
+      additional_requirements: "Additional Requirements",
+      more_info_url: "More Info",
+      bearing: "Bearing",
+    };
+
+    let typeImage = null;
+    const looksLikeRiver =
+      !!(props.Water || props.water_type || props.open_date_unix || props.close_date_unix);
+    const looksLikePoint =
+      !!(props.point_type || feature.geometry?.type === 'Point');
+
+    if (feature.layer && feature.layer.id === 'data-points-all') {
+      if (props.point_type && props.point_type.toLowerCase() !== 'na') {
+        typeImage = pointTypeDefaultImages[props.point_type] || null;
+      }
+    } else if (
+      (feature.layer && (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill')) ||
+      (looksLikeRiver && !looksLikePoint)
+    ) {
+      typeImage = getRiverDefaultImage(props);
+    }
+
+    const extraPhotos = collectPhotoUrls(props);
+    const photoList = (typeImage ? [typeImage] : []).concat(extraPhotos);
+
+    window.__cardPhotos = photoList;
+    window.__cardPhotoIndex = 0;
+
+    let content = `
+      <div class="map-overlay-inner">
+        <div class="map-overlay-drag-handle"></div>
+        <button class="close-button" onclick="closeCard()">&times;</button>
+        <div class="panel-scroll">
+    `;
+
+    if (photoList.length > 0) {
+      content += `
+        <div class="card-image-wrap">
+          <img id="cardMainImage" src="${photoList[0]}" alt="Location Photo" onclick="openImageModal()" />
+          ${photoList.length > 1 ? `
+            <button class="carousel-button prev" onclick="prevImage()" aria-label="Previous image">❮</button>
+            <button class="carousel-button next" onclick="nextImage()" aria-label="Next image">❯</button>
+          ` : ``}
+        </div>
+        ${photoList.length > 1 ? `<div class="carousel-meta">${1} / ${photoList.length}</div>` : ``}
+      `;
+    }
+
+    content += `
+      <code class="card-title">${props.Water || props.name || props.title || 'No Title'}</code>
+    `;
+
+    if (props.subtitle || (typeof props.Section === 'string' && props.Section.trim() !== '')) {
+      const subtitleText = props.subtitle || props.Section;
+      content += `<div class="card-subtitle subtitle-main">${subtitleText}`;
+
+      if (feature.geometry?.type === 'Point' && Array.isArray(feature.geometry.coordinates)) {
+        const [lng, lat] = feature.geometry.coordinates;
+        const googleMapsLink = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+        content += `<br>  
+          <a href="${googleMapsLink}" target="_blank" title="Get Directions in Google Maps" style="font-weight: normal; text-decoration: none; color: blue; font-size: 0.9em">
+            (Get Directions in Google Maps)
+          </a>`;
+      }
+      content += `</div>`;
+    }
+
+    if (props.region || props.Region) {
+      const regionName = props.Region || props.region;
+      const label = (props.RegionCode == 13) ? "Fishing District" : "Fish & Game Region 2025/2026";
+      content += `<div class="card-subtitle subtitle-region">${regionName} ${label}</div>`;
+    }
+
+    content += `<hr><ul class="card-list">`;
+
+    for (const [key, label] of Object.entries(displayFields)) {
+      const raw = props[key];
+      if (isBlankish(raw)) continue;
+
+      if (key === 'more_info_url') {
+        content += renderMultiLinks(props, label);
+      } else {
+        content += `<li><b>${label}</b>: ${raw}</li>`;
+      }
+    }
+
+    content += `</ul>`;
+
+    const regsHref = getRegionRegUrlFromProps(props);
+    if (regsHref) {
+      content += `
+        <div class="regs-cta">
+          <a href="${regsHref}" target="_blank" rel="noopener noreferrer" class="regs-btn">
+            Download Full Regional Regulations
+          </a>
+        </div>
+      `;
+    }
+
+    content += `</div></div>`;
+
+    card.innerHTML = content;
+    if (photoList.length) setCardImage(0);
+
+    openPanel('card');
+  };
+
+  // ===== Custom icons, icon sizing, etc. (unchanged) =====
+  const customImages = [
+    { name: 'AccessPoint-icon',   url: 'images/FGAccess.png' },
+    { name: 'TrampingAccess-icon', url: 'images/WalkingAccess.png' },
+    { name: '4x4Access-icon',    url: 'images/4x4Access.png' },
+    { name: 'BoatRamp-icon',     url: 'images/BoatRamp.png' },
+    { name: 'Toilet-icon',       url: 'images/Toilet.png' },
+    { name: 'Warning-icon',      url: 'images/Warning.png' },
+    { name: 'Parking-icon',      url: 'images/Parking.png' },
+    { name: 'LandmarkPole-icon', url: 'images/LandmarkPole.png' },
+    { name: 'Shop-icon',         url: 'images/Store.png' },
+    { name: 'Lodge-icon',        url: 'images/Lodge.png' },
+    { name: 'RegBoundary-icon',  url: 'images/RegBoundary.png' },
+    { name: 'BuyDW-icon',        url: 'images/BuyDW.png' },
+    { name: 'Hotspot-icon',      url: 'images/Hotspot.png' },
+    { name: 'Trolling-icon',     url: 'images/Trolling.png' },
+    { name: 'Jigging-icon',      url: 'images/Jigging.png' },
+    { name: 'Hut-icon',          url: 'images/DOC Hut.png' },
+    { name: 'Campsite-icon',     url: 'images/DOC Camp.png' },
+    { name: 'BeatYR-icon',       url: 'images/BeatYR.png' },
+    { name: 'BeatBY-icon',       url: 'images/BeatBY.png' },
+    { name: 'BeatBR-icon',       url: 'images/BeatBR.png' },
+    { name: 'BeatR-icon',        url: 'images/BeatR.png' },
+    { name: 'BeatB-icon',        url: 'images/BeatB.png' },
+    { name: 'BeatY-icon',        url: 'images/BeatY.png' },
+  ];
+
+  function loadCustomImages(map, callback) {
+    let imagesLoaded = 0;
+    customImages.forEach(({ name, url }) => {
+      map.loadImage(url, (error, image) => {
+        if (error) { console.error(`Error loading image "${name}" from ${url}:`, error); return; }
+        if (!map.hasImage(name)) { map.addImage(name, image); }
+        imagesLoaded++;
+        if (imagesLoaded === customImages.length && typeof callback === 'function') callback();
       });
-    }
-
-    // Prepare icon size expression (prevents initial "flash")
-    let selectedFeatureId = null;
-    let hoverFeatureId = null;
-
-    function getIconSizeExpr(selectedId, hoverId) {
-      return [
-        'interpolate', ['linear'], ['zoom'],
-        7, 0.01,
-        12, [
-          'case',
-          // hover (but not selected)
-          ['all', ['==', ['id'], hoverId ?? -1], ['!=', ['id'], selectedId ?? -2]], 0.25,
-          // selected
-          ['==', ['id'], selectedId ?? -2], 0.30,
-          // default
-          0.20
-        ]
-      ];
-    }
-
-    function updateIconSize() {
-      if (!map.getLayer('data-points-all')) return;
-      map.setLayoutProperty('data-points-all', 'icon-size', getIconSizeExpr(selectedFeatureId, hoverFeatureId));
-    }
-
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-    if (!isTouch) {
-      // keep your existing hover handlers for points/rivers here
-      // (mousemove, mouseenter, mouseleave)
-    } else {
-      // Ensure no hover state remains on touch
-      hoverFeatureId = null;
-      if (map.getLayer('data-points-all')) updateIconSize();
-    }
-
-    // Ensure images are loaded before adding layers
-    map.on('styledata', () => {
-      loadCustomImages(map, () => { addCustomDataAndLayers(); });
     });
+  }
 
+  let selectedFeatureId = null;
+  let hoverFeatureId = null;
 
-    function setBasemap(type) {
-      if (type === "Satellite") {
-        const aerial_style = {
-          "id": "st_aerial",
-          "name": "aerial",
-          "version": 8,
-          // 🔑 Provide glyphs so text can render
-          "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-          "sources": {
-            "basemaps-aerial": {
-              "type": "raster",
-              "tiles": [
-                "https://basemaps.linz.govt.nz/v1/tiles/aerial/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
-              ],
-              "tileSize": 256,
-              "attribution": "© CC BY 4.0 LINZ"
-            },
-            "LINZ-Terrain": {
-              "type": "raster-dem",
-              "tileSize": 256,
-              "maxzoom": 18,
-              "tiles": [
-                "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
-              ]
-            }
+  function getIconSizeExpr(selectedId, hoverId) {
+    return [
+      'interpolate', ['linear'], ['zoom'],
+      7, 0.01,
+      12, [
+        'case',
+        ['all', ['==', ['id'], hoverId ?? -1], ['!=', ['id'], selectedId ?? -2]], 0.25,
+        ['==', ['id'], selectedId ?? -2], 0.30,
+        0.20
+      ]
+    ];
+  }
+
+  function updateIconSize() {
+    if (!map.getLayer('data-points-all')) return;
+    map.setLayoutProperty('data-points-all', 'icon-size', getIconSizeExpr(selectedFeatureId, hoverFeatureId));
+  }
+
+  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  if (isTouch) {
+    hoverFeatureId = null;
+    if (map.getLayer('data-points-all')) updateIconSize();
+  }
+
+  map.on('styledata', () => {
+    loadCustomImages(map, () => { addCustomDataAndLayers(); });
+  });
+
+  // ===== Basemap switching (unchanged) =====
+  function setBasemap(type) {
+    if (type === "Satellite") {
+      const aerial_style = {
+        "id": "st_aerial",
+        "name": "aerial",
+        "version": 8,
+        "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+        "sources": {
+          "basemaps-aerial": {
+            "type": "raster",
+            "tiles": [
+              "https://basemaps.linz.govt.nz/v1/tiles/aerial/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
+            ],
+            "tileSize": 256,
+            "attribution": "© CC BY 4.0 LINZ"
           },
-          "layers": [
-            { "id": "basemaps-aerial", "type": "raster", "source": "basemaps-aerial" }
-          ],
-          // optional, if you plan to use terrain/extrusions:
-          "terrain": { "source": "LINZ-Terrain", "exaggeration": 1.0 }
-        };
-
-
-        map.setStyle(aerial_style);
-        //map.setStyle('https://basemaps.linz.govt.nz/v1/styles/aerial.json?api=c01k4rjkthp83wawd7at9n3fwg7&labels=true');
-      } else if (type === "TopoLite") {
-        map.setStyle('https://basemaps.linz.govt.nz/v1/styles/topolite.json?api=d01hep5551e30kxb7w85hck49tp');
-      } else if (type === "Topo") {
-        const TopoStyle = {
-          "id": "st_topo-raster",
-          "version": 8,
-          "name": "st_topo-raster",
-          "metadata": { "maputnik:renderer": "mbgljs" },
-
-          "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-
-          "sources": {
-            "LINZ-Elevation-Hillshade": {
-              "maxzoom": 18,
-              "minzoom": 0,
-              "tileSize": 256,
-              "tiles": [
-                "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?pipeline=terrain-rgb&api=d01hep5551e30kxb7w85hck49tp"
-              ],
-              "type": "raster-dem"
-            },
-            "LINZ-Topo-Raster": {
-              "attribution": "© 2024 Toitū Te Whenua - CC BY 4.0",
-              "maxzoom": 28,
-              "minzoom": 0,
-              "tileSize": 192,
-              "tiles": [
-                "https://basemaps.linz.govt.nz/v1/tiles/topo-raster/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
-              ],
-              "type": "raster"
-            },
-            "LINZ-Terrain": {
-              "type": "raster-dem",
-              "tileSize": 256,
-              "maxzoom": 18,
-              "tiles": [
-                "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
-              ]
-            }
-          },
-
-          "layers": [
-            {
-              "id": "Topo-Raster",
-              "type": "raster",
-              "source": "LINZ-Topo-Raster",
-              "layout": { "visibility": "visible" }
-            },
-            {
-              "id": "Hillshade",
-              "type": "hillshade",
-              "source": "LINZ-Elevation-Hillshade",
-              "layout": { "visibility": "visible" },
-              "paint": {
-                "hillshade-accent-color": [
-                  "interpolate", ["linear"], ["zoom"],
-                  0, "rgb(100, 100, 100)",
-                  3, "rgba(100, 100, 100, 0.400)",
-                  10, "rgba(100, 100, 100, 0.333)",
-                  11, "rgba(100, 100, 100, 0.267)"
-                ],
-                "hillshade-exaggeration": 0.4,
-                "hillshade-highlight-color": [
-                  "interpolate", ["linear"], ["zoom"],
-                  0, "rgb(225, 229, 224)",
-                  3, "rgba(225, 229, 224, 0.400)",
-                  10, "rgba(225, 229, 224, 0.333)",
-                  11, "rgba(225, 229, 224, 0.0667)"
-                ],
-                "hillshade-illumination-anchor": "map",
-                "hillshade-illumination-direction": 315,
-                "hillshade-shadow-color": [
-                  "interpolate", ["linear"], ["zoom"],
-                  0, "rgb(12, 12, 12)",
-                  3, "rgba(12, 12, 12, 0.400)",
-                  10, "rgba(12, 12, 12, 0.400)",
-                  16, "rgba(12, 12, 12, 1.00)"
-                ]
-              }
-            }
-          ],
-
-          "sky": {
-            "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 10, 1, 12, 0],
-            "fog-color": "#e8e8e8",
-            "fog-ground-blend": 0.8,
-            "horizon-color": "#ecffff",
-            "horizon-fog-blend": 0.65,
-            "sky-color": "#77b5fe",
-            "sky-horizon-blend": 0.5
+          "LINZ-Terrain": {
+            "type": "raster-dem",
+            "tileSize": 256,
+            "maxzoom": 18,
+            "tiles": [
+              "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
+            ]
           }
+        },
+        "layers": [
+          { "id": "basemaps-aerial", "type": "raster", "source": "basemaps-aerial" }
+        ],
+        "terrain": { "source": "LINZ-Terrain", "exaggeration": 1.0 }
+      };
+      map.setStyle(aerial_style);
+    } else if (type === "TopoLite") {
+      map.setStyle('https://basemaps.linz.govt.nz/v1/styles/topolite.json?api=d01hep5551e30kxb7w85hck49tp');
+    } else if (type === "Topo") {
+      const TopoStyle = {
+        "id": "st_topo-raster",
+        "version": 8,
+        "name": "st_topo-raster",
+        "metadata": { "maputnik:renderer": "mbgljs" },
+        "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+        "sources": {
+          "LINZ-Elevation-Hillshade": {
+            "maxzoom": 18,
+            "minzoom": 0,
+            "tileSize": 256,
+            "tiles": [
+              "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?pipeline=terrain-rgb&api=d01hep5551e30kxb7w85hck49tp"
+            ],
+            "type": "raster-dem"
+          },
+          "LINZ-Topo-Raster": {
+            "attribution": "© 2024 Toitū Te Whenua - CC BY 4.0",
+            "maxzoom": 28,
+            "minzoom": 0,
+            "tileSize": 192,
+            "tiles": [
+              "https://basemaps.linz.govt.nz/v1/tiles/topo-raster/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
+            ],
+            "type": "raster"
+          },
+          "LINZ-Terrain": {
+            "type": "raster-dem",
+            "tileSize": 256,
+            "maxzoom": 18,
+            "tiles": [
+              "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
+            ]
+          }
+        },
+        "layers": [
+          {
+            "id": "Topo-Raster",
+            "type": "raster",
+            "source": "LINZ-Topo-Raster",
+            "layout": { "visibility": "visible" }
+          },
+          {
+            "id": "Hillshade",
+            "type": "hillshade",
+            "source": "LINZ-Elevation-Hillshade",
+            "layout": { "visibility": "visible" },
+            "paint": {
+              "hillshade-accent-color": [
+                "interpolate", ["linear"], ["zoom"],
+                0, "rgb(100, 100, 100)",
+                3, "rgba(100, 100, 100, 0.400)",
+                10, "rgba(100, 100, 100, 0.333)",
+                11, "rgba(100, 100, 100, 0.267)"
+              ],
+              "hillshade-exaggeration": 0.4,
+              "hillshade-highlight-color": [
+                "interpolate", ["linear"], ["zoom"],
+                0, "rgb(225, 229, 224)",
+                3, "rgba(225, 229, 224, 0.400)",
+                10, "rgba(225, 229, 224, 0.333)",
+                11, "rgba(225, 229, 224, 0.0667)"
+              ],
+              "hillshade-illumination-anchor": "map",
+              "hillshade-illumination-direction": 315,
+              "hillshade-shadow-color": [
+                "interpolate", ["linear"], ["zoom"],
+                0, "rgb(12, 12, 12)",
+                3, "rgba(12, 12, 12, 0.400)",
+                10, "rgba(12, 12, 12, 0.400)",
+                16, "rgba(12, 12, 12, 1.00)"
+              ]
+            }
+          }
+        ],
+        "sky": {
+          "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 10, 1, 12, 0],
+          "fog-color": "#e8e8e8",
+          "fog-ground-blend": 0.8,
+          "horizon-color": "#ecffff",
+          "horizon-fog-blend": 0.65,
+          "sky-color": "#77b5fe",
+          "sky-horizon-blend": 0.5
         }
-
-        map.setStyle(TopoStyle);
-      }
-
-      // Update button highlight
-      document.querySelectorAll(".basemap-btn").forEach(btn => {
-        btn.classList.remove("active");
-        if (btn.dataset.basemap === type) {
-          btn.classList.add("active");
-        }
-      });
+      };
+      map.setStyle(TopoStyle);
     }
 
-    // Hook up the new basemap buttons
     document.querySelectorAll(".basemap-btn").forEach(btn => {
-      btn.addEventListener("click", () => setBasemap(btn.dataset.basemap));
+      btn.classList.remove("active");
+      if (btn.dataset.basemap === type) {
+        btn.classList.add("active");
+      }
     });
+  }
 
-    // Default basemap selection
-    window.addEventListener("load", () => {
-      setBasemap("Topo");
-    });
+  document.querySelectorAll(".basemap-btn").forEach(btn => {
+    btn.addEventListener("click", () => setBasemap(btn.dataset.basemap));
+  });
 
+  window.addEventListener("load", () => {
+    setBasemap("Topo");
+  });
 
-    // Legacy helper (safe no-op if container missing)
-    function updateLayerFilter() {
-      const container = document.getElementById('point-type-filter');
-      if (!container) return;
-      const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-      const selectedTypes = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
-      const filter = ['in', ['get', 'point_type'], ['literal', selectedTypes]];
-      if (map.getLayer('data-points-all')) map.setFilter('data-points-all', filter);
-    }
+  function updateLayerFilter() {
+    const container = document.getElementById('point-type-filter');
+    if (!container) return;
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    const selectedTypes = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+    const filter = ['in', ['get', 'point_type'], ['literal', selectedTypes]];
+    if (map.getLayer('data-points-all')) map.setFilter('data-points-all', filter);
+  }
 
-    const clearSelection = () => {
-      unselectFeatures();
+  const clearSelection = () => {
+    unselectFeatures();
+    const input = document.getElementById('search');
+    const suggestions = document.getElementById('suggestions');
+    input.value = '';
+    suggestions.innerHTML = '';
+    suggestions.style.display = 'none';
+    card.innerHTML = '';
+    card.style.display = 'none';
+  };
 
-      // Reset search + card UI
-      const input = document.getElementById('search');
-      const suggestions = document.getElementById('suggestions');
-      input.value = '';
-      suggestions.innerHTML = '';
-      suggestions.style.display = 'none';
+  function closeCard() {
+    unselectFeatures();
+    openPanel(null);
+  }
 
-      card.innerHTML = '';
-      card.style.display = 'none';
-    };
+  const selectFeature = (feature) => {
+    clearSelection();
 
-    function closeCard() {
-      unselectFeatures();   // reset both points + rivers
-      openPanel(null);      // hide the panel
-    }
-
-    // make sure these exist once globally:
-    // let selectedRiverId = null;
-    // function updateSelectedRiverLayers(){ /* as given earlier */ }
-
-    const selectFeature = (feature) => {
-      clearSelection(); // this already unselects and hides the halo
-
-      if (feature.layer.id === 'data-points-all') {
-        selectedPoint = feature;
-        map.setFeatureState({ source: 'data-points', id: feature.id }, { selected: true });
-
-        selectedFeatureId = feature.id;
-        hoverFeatureId = null;
-        updateIconSize();
-
-      } else if (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill') {
-        selectedRiver = feature;
-        map.setFeatureState(
-          { source: 'Waterways', sourceLayer: 'waterways', id: feature.id },
-          { selected: true }
-        );
-
-        // NEW: drive the selected halo
-        selectedRiverId = feature.id;
-        updateSelectedRiverLayers();
-      }
-
-      showCard(feature);
-    };
-
-    function unselectFeatures() {
-      // Clear river selection
-      if (selectedRiver) {
-        try {
-          map.setFeatureState(
-            { source: 'Waterways', sourceLayer: 'waterways', id: selectedRiver.id },
-            { selected: false, highlight: false }
-          );
-        } catch (e) { }
-        selectedRiver = null;
-      }
-
-      // NEW: hide the halo layer
-      selectedRiverId = null;
-      updateSelectedRiverLayers();
-
-      // Clear point selection
-      if (selectedPoint) {
-        try {
-          map.setFeatureState(
-            { source: 'data-points', id: selectedPoint.id },
-            { selected: false }
-          );
-        } catch (e) { }
-        selectedPoint = null;
-      }
-
-      // Reset the ID variables that drive icon size
-      selectedFeatureId = null;
+    if (feature.layer.id === 'data-points-all') {
+      selectedPoint = feature;
+      map.setFeatureState({ source: 'data-points', id: feature.id }, { selected: true });
+      selectedFeatureId = feature.id;
       hoverFeatureId = null;
       updateIconSize();
+    } else if (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill') {
+      selectedRiver = feature;
+      map.setFeatureState(
+        { source: 'Waterways', sourceLayer: 'waterways', id: feature.id },
+        { selected: true }
+      );
+      selectedRiverId = feature.id;
+      updateSelectedRiverLayers();
     }
 
+    showCard(feature);
+  };
 
-    let allFeatures = [];
-    let allPointsFeatures = [];
+  function unselectFeatures() {
+    if (selectedRiver) {
+      try {
+        map.setFeatureState(
+          { source: 'Waterways', sourceLayer: 'waterways', id: selectedRiver.id },
+          { selected: false, highlight: false }
+        );
+      } catch (e) { }
+      selectedRiver = null;
+    }
 
+    selectedRiverId = null;
+    updateSelectedRiverLayers();
 
-    const zoomLevel = document.getElementById('zoom-level');
-    zoomLevel.textContent = `Zoom: ${map.getZoom().toFixed(2)}`;
-    map.on('zoom', () => { zoomLevel.textContent = `Zoom: ${map.getZoom().toFixed(2)}`; });
+    if (selectedPoint) {
+      try {
+        map.setFeatureState(
+          { source: 'data-points', id: selectedPoint.id },
+          { selected: false }
+        );
+      } catch (e) { }
+      selectedPoint = null;
+    }
 
-    // (Old) attach change listeners to legacy point filter — safe no-op if missing
-    const legacyCheckboxes = document.querySelectorAll('#point-type-filter input[type="checkbox"]');
-    legacyCheckboxes.forEach(cb => cb.addEventListener('change', updateLayerFilter));
+    selectedFeatureId = null;
+    hoverFeatureId = null;
+    updateIconSize();
+  }
 
+  let allFeatures = [];
+  let allPointsFeatures = [];
 
+  const zoomLevel = document.getElementById('zoom-level');
+  zoomLevel.textContent = `Zoom: ${map.getZoom().toFixed(2)}`;
+  map.on('zoom', () => { zoomLevel.textContent = `Zoom: ${map.getZoom().toFixed(2)}`; });
 
+  const legacyCheckboxes = document.querySelectorAll('#point-type-filter input[type="checkbox"]');
+  legacyCheckboxes.forEach(cb => cb.addEventListener('change', updateLayerFilter));
 
+  const host = url.hostname;
+  const dataQ = (url.searchParams.get('data') || '').trim().toLowerCase();
+  const isDev = dataQ === 'dev';
 
-    const host = url.hostname;
-    const dataQ = (url.searchParams.get('data') || '').trim().toLowerCase();
+  const TILES_BASE = 'https://data.fishandgameaccessmap.org';
+  const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson';
 
-    const isDev = dataQ === 'dev';
+  const WATERWAYS_NAME = isDev ? 'all_waters_dev' : 'all_waters';
+  const POINTS_FILE = isDev ? 'AccessPoints.geojson?token=fish-access-2025'
+    : 'AccessPoints.geojson?token=fish-access-2025';
+  const SEARCH_FILE = isDev ? 'waterway_search_index_dev.geojson?token=fish-access-2025'
+    : 'waterway_search_index.geojson?token=fish-access-2025';
 
-    // One server; different filenames
-    const TILES_BASE = 'https://data.fishandgameaccessmap.org';
-    const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson';
+  const URL_WATERWAYS_TILES = `${TILES_BASE}/${WATERWAYS_NAME}/{z}/{x}/{y}`;
+  const URL_POINTS_GEOJSON = `${GEOJSON_BASE}/${POINTS_FILE}`;
+  const URL_SEARCH_INDEX = `${GEOJSON_BASE}/${SEARCH_FILE}`;
 
-    // Names flip by env
-    const WATERWAYS_NAME = isDev ? 'all_waters_dev' : 'all_waters';
-    const POINTS_FILE = isDev ? 'AccessPoints.geojson?token=fish-access-2025' //change to _dev when available
-      : 'AccessPoints.geojson?token=fish-access-2025';
-    const SEARCH_FILE = isDev ? 'waterway_search_index_dev.geojson?token=fish-access-2025'
-      : 'waterway_search_index.geojson?token=fish-access-2025';
+  fetch(URL_SEARCH_INDEX)
+    .then(res => res.json()).then(d => { allFeatures = d.features; })
+    .catch(err => console.error('Failed to load search index:', err));
 
-    // URLs used by your sources
-    const URL_WATERWAYS_TILES = `${TILES_BASE}/${WATERWAYS_NAME}/{z}/{x}/{y}`;
-    const URL_POINTS_GEOJSON = `${GEOJSON_BASE}/${POINTS_FILE}`;
-    const URL_SEARCH_INDEX = `${GEOJSON_BASE}/${SEARCH_FILE}`;
+  fetch(URL_POINTS_GEOJSON)
+    .then(res => res.json()).then(d => { allPointsFeatures = d.features; })
+    .catch(err => console.error('Failed to load points data:', err));
 
-    console.log({ isDev, host, dataQ, URL_POINTS_GEOJSON, URL_SEARCH_INDEX, URL_WATERWAYS_TILES });
+  function addCustomDataAndLayers() {
+    const sources = map.getStyle().sources;
 
+    let firstSymbolId = null;
+    let insertBeforeLayer = null;
+    for (const layer of map.getStyle().layers) {
+      if (!firstSymbolId && layer.type === 'symbol') firstSymbolId = layer.id;
+      if (layer.id === 'Housenumber') { insertBeforeLayer = 'Poi-SportsField'; break; }
+    }
+    if (!insertBeforeLayer) insertBeforeLayer = firstSymbolId;
 
+    if (!sources['PublicAccessAreas']) {
+      map.addSource('PublicAccessAreas', {
+        type: 'vector',
+        tiles: ['https://data.fishandgameaccessmap.org/combined_public_access_layers/{z}/{x}/{y}'],
+        minzoom: 0, maxzoom: 13
+      });
+    }
 
-    fetch(URL_SEARCH_INDEX)
-      .then(res => res.json()).then(d => { allFeatures = d.features; })
-      .catch(err => console.error('Failed to load search index:', err));
-
-    fetch(URL_POINTS_GEOJSON)
-      .then(res => res.json()).then(d => { allPointsFeatures = d.features; })
-      .catch(err => console.error('Failed to load points data:', err));
-
-    function addCustomDataAndLayers() {
-      const sources = map.getStyle().sources;
-
-      let firstSymbolId = null;
-      let insertBeforeLayer = null;
-      for (const layer of map.getStyle().layers) {
-        if (!firstSymbolId && layer.type === 'symbol') firstSymbolId = layer.id;
-        if (layer.id === 'Housenumber') { insertBeforeLayer = 'Poi-SportsField'; break; }
-      }
-      if (!insertBeforeLayer) insertBeforeLayer = firstSymbolId;
-
-
-      if (!sources['PublicAccessAreas']) {
-        map.addSource('PublicAccessAreas', {
-          type: 'vector', tiles: ['https://data.fishandgameaccessmap.org/combined_public_access_layers/{z}/{x}/{y}'],
-          minzoom: 0, maxzoom: 13
-        });
-      }
-
-      if (!map.getLayer('PublicAccessAreas-fill')) {
-        map.addLayer({
-          id: 'PublicAccessAreas-fill',
-          type: 'fill',
-          source: 'PublicAccessAreas',
-          'source-layer': 'mylayer',
-          minzoom: 12,
-          paint: {
-            'fill-color': [
+    if (!map.getLayer('PublicAccessAreas-fill')) {
+      map.addLayer({
+        id: 'PublicAccessAreas-fill',
+        type: 'fill',
+        source: 'PublicAccessAreas',
+        'source-layer': 'mylayer',
+        minzoom: 12,
+        paint: {
+          'fill-color': [
+            'match', ['get', 'DataType'],
+            'DOC Conservation Area', '#2d6c3e',
+            'Esplanade Reserve', '#66f0cb',
+            'Esplanade Strip', '#ff66dc',
+            'Hydro Parcel', '#abecff',
+            'Non-Primary Parcel', '#ffcc66',
+            'Public Access Easement', '#ffd8f1',
+            'Reserve Land', '#a9cb66',
+            'Road Parcel', '#cca3e1',
+            'Walkway Easement', '#ffb2b2',
+            '#cccccc'
+          ],
+          'fill-opacity': [
+            'interpolate', ['linear'], ['zoom'],
+            12, [
               'match', ['get', 'DataType'],
-              'DOC Conservation Area', '#2d6c3e',
-              'Esplanade Reserve', '#66f0cb',
-              'Esplanade Strip', '#ff66dc',
-              'Hydro Parcel', '#abecff',
-              'Non-Primary Parcel', '#ffcc66',
-              'Public Access Easement', '#ffd8f1',
-              'Reserve Land', '#a9cb66',
-              'Road Parcel', '#cca3e1',
-              'Walkway Easement', '#ffb2b2',
-        /* default */            '#cccccc'
+              'Non-Primary Parcel', 0.10,
+              0.80
             ],
-            'fill-opacity': [
-              'interpolate', ['linear'], ['zoom'],
-              12, [
+            16, [
+              '*',
+              [
                 'match', ['get', 'DataType'],
                 'Non-Primary Parcel', 0.10,
-    /* default */           0.80
+                0.80
               ],
-              16, [
-                '*',
-                [
-                  'match', ['get', 'DataType'],
-                  'Non-Primary Parcel', 0.10,
-      /* default */           0.80
-                ],
-                0.4   // scale factor at max zoom
+              0.4
+            ],
+            17, [
+              '*',
+              [
+                'match', ['get', 'DataType'],
+                'Non-Primary Parcel', 0.10,
+                0.80
               ],
-              17, [
-                '*',
-                [
-                  'match', ['get', 'DataType'],
-                  'Non-Primary Parcel', 0.10,
-      /* default */           0.80
-                ],
-                0.3   // scale factor at max zoom
-              ]
+              0.3
             ]
-          }
-        }, insertBeforeLayer);
-      }
+          ]
+        }
+      }, insertBeforeLayer);
+    }
 
+    if (!sources['Waterways']) {
+      map.addSource('Waterways', {
+        type: 'vector',
+        tiles: [URL_WATERWAYS_TILES],
+        minzoom: 0, maxzoom: 13
+      });
+    }
 
-      if (!sources['Waterways']) {
-        map.addSource('Waterways', {
-          type: 'vector',
-          tiles: [URL_WATERWAYS_TILES],
-          minzoom: 0, maxzoom: 13
-        });
-      }
-
-      if (!map.getLayer('Waterways-line')) {
-        map.addLayer({
-          id: 'Waterways-line',
-          type: 'line',
-          minzoom: 7,
-          source: 'Waterways',
-          'source-layer': 'waterways',
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: {
-            'line-color': [
-              'case',
-              ['any',
-                ['<', TODAY_UNIX, ['get', 'open_date_unix']],
-                ['>', TODAY_UNIX, ['get', 'close_date_unix']]
-              ],
-              ['case',
-                ['boolean', ['feature-state', 'selected'], false], '#ac261f',
-                ['boolean', ['feature-state', 'highlight'], false], '#DE0125',
-                '#DE0125'
-              ],
-              ['case',
-                ['boolean', ['feature-state', 'selected'], false], '#3949ab',
-                ['boolean', ['feature-state', 'highlight'], false], '#093476',
-                '#0c4194'
-              ]
+    if (!map.getLayer('Waterways-line')) {
+      map.addLayer({
+        id: 'Waterways-line',
+        type: 'line',
+        minzoom: 7,
+        source: 'Waterways',
+        'source-layer': 'waterways',
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: {
+          'line-color': [
+            'case',
+            ['any',
+              ['<', TODAY_UNIX, ['get', 'open_date_unix']],
+              ['>', TODAY_UNIX, ['get', 'close_date_unix']]
             ],
-            'line-width': [
-              'case',
-              ['boolean', ['feature-state', 'selected'], false], 5,
-              ['boolean', ['feature-state', 'highlight'], false], 4,
-              1.5
+            ['case',
+              ['boolean', ['feature-state', 'selected'], false], '#ac261f',
+              ['boolean', ['feature-state', 'highlight'], false], '#DE0125',
+              '#DE0125'
             ],
-            'line-opacity': .7
-          }
-        }, insertBeforeLayer);
-      }
-
-      if (!map.getLayer('Waterways-fill')) {
-        map.addLayer({
-          id: 'Waterways-fill',
-          type: 'fill',
-          minzoom: 7,
-          source: 'Waterways',
-          'source-layer': 'waterways',
-          paint: {
-            'fill-color': [
-              'case',
-              ['any',
-                ['<', TODAY_UNIX, ['get', 'open_date_unix']],
-                ['>', TODAY_UNIX, ['get', 'close_date_unix']]
-              ],
-              ['case',
-                ['boolean', ['feature-state', 'selected'], false], '#DE0125',
-                ['boolean', ['feature-state', 'highlight'], false], '#DE0125',
-                '#f7022a'
-              ],
-              ['case',
-                ['boolean', ['feature-state', 'selected'], false], '#0b46a1',
-                ['boolean', ['feature-state', 'highlight'], false], '#0b46a1',
-                '#0F52BA'
-              ]
-            ],
-            'fill-opacity': [
-              'interpolate', ['linear'], ['zoom'],
-              12, .5,
-              15.01, .1,
-              18, .01
+            ['case',
+              ['boolean', ['feature-state', 'selected'], false], '#3949ab',
+              ['boolean', ['feature-state', 'highlight'], false], '#093476',
+              '#0c4194'
             ]
-          }
-        }, insertBeforeLayer);
-      }
+          ],
+          'line-width': [
+            'case',
+            ['boolean', ['feature-state', 'selected'], false], 5,
+            ['boolean', ['feature-state', 'highlight'], false], 4,
+            1.5
+          ],
+          'line-opacity': .7
+        }
+      }, insertBeforeLayer);
+    }
 
-
-
-      // --- Selected-only Waterways stroke (wide halo only) ---
-      if (!map.getLayer('Waterways-selected-halo')) {
-        map.addLayer({
-          id: 'Waterways-selected-halo',
-          type: 'line',
-          source: 'Waterways',
-          'source-layer': 'waterways',
-          minzoom: 7,
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: {
-            'line-color': [
-              'case',
-              ['any',
-                ['<', TODAY_UNIX, ['get', 'open_date_unix']],
-                ['>', TODAY_UNIX, ['get', 'close_date_unix']]
-              ],
-              ['case',
-                ['boolean', ['feature-state', 'selected'], false], '#9B0019', ///
-                ['boolean', ['feature-state', 'highlight'], false], '#f42f58',
-                '#f42f58'
-              ],
-              ['case',
-                ['boolean', ['feature-state', 'selected'], false], '#002366', ///
-                ['boolean', ['feature-state', 'highlight'], false], '#4ca6e6',
-                '#4ca6e6'
-              ]
+    if (!map.getLayer('Waterways-fill')) {
+      map.addLayer({
+        id: 'Waterways-fill',
+        type: 'fill',
+        minzoom: 7,
+        source: 'Waterways',
+        'source-layer': 'waterways',
+        paint: {
+          'fill-color': [
+            'case',
+            ['any',
+              ['<', TODAY_UNIX, ['get', 'open_date_unix']],
+              ['>', TODAY_UNIX, ['get', 'close_date_unix']]
             ],
-            'line-width': [
-              'case',
-              ['boolean', ['feature-state', 'selected'], false], 5,
-              ['boolean', ['feature-state', 'highlight'], false], 5,
-              3
+            ['case',
+              ['boolean', ['feature-state', 'selected'], false], '#DE0125',
+              ['boolean', ['feature-state', 'highlight'], false], '#DE0125',
+              '#f7022a'
             ],
-            'line-opacity': 1
-          },
-          // Hidden until a river is selected; filter is updated by updateSelectedRiverLayers()
-          filter: ['==', ['id'], -1]
-        }); // note: appended on top (no insertBeforeLayer)
-      }
+            ['case',
+              ['boolean', ['feature-state', 'selected'], false], '#0b46a1',
+              ['boolean', ['feature-state', 'highlight'], false], '#0b46a1',
+              '#0F52BA'
+            ]
+          ],
+          'fill-opacity': [
+            'interpolate', ['linear'], ['zoom'],
+            12, .5,
+            15.01, .1,
+            18, .01
+          ]
+        }
+      }, insertBeforeLayer);
+    }
 
-      // --- Transparent, wider hitbox for touch devices ---
-      if (isTouch && !map.getLayer('Waterways-touch')) {
-        map.addLayer({
-          id: 'Waterways-touch',
-          type: 'line',
-          source: 'Waterways',
-          'source-layer': 'waterways',
-          minzoom: 7,
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: {
-            // 1.5x the interactive width of the visual layer
-            'line-width': 10,
-            // Totally invisible but still hit-testable
-            'line-opacity': 0,
-            'line-color': '#000000'
-          }
-        });
-      }
-
-
-
-      if (!sources['FG Regions']) {
-        map.addSource('FG Regions', {
-          type: 'vector',
-          tiles: ['https://data.fishandgameaccessmap.org/fg_regions/{z}/{x}/{y}'],
-          minzoom: 0, maxzoom: 10
-        });
-      }
-
-      if (!map.getLayer('FG Regions-linebackground')) {
-        map.addLayer({
-          id: 'FG Regions-linebackground',
-          type: 'line',
-          source: 'FG Regions',
-          'source-layer': 'fg_regions',
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: {
-            'line-color': '#fff',
-            'line-width': [
-              'interpolate', ['linear'], ['zoom'],
-              5, 3,
-              10, 4,   // at zoom 10 → 2px
-              14, 8,   // at zoom 14 → 6px
-              18, 12   // at zoom 18 → 12px
+    if (!map.getLayer('Waterways-selected-halo')) {
+      map.addLayer({
+        id: 'Waterways-selected-halo',
+        type: 'line',
+        source: 'Waterways',
+        'source-layer': 'waterways',
+        minzoom: 7,
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: {
+          'line-color': [
+            'case',
+            ['any',
+              ['<', TODAY_UNIX, ['get', 'open_date_unix']],
+              ['>', TODAY_UNIX, ['get', 'close_date_unix']]
             ],
-            'line-opacity': 1
-          }
-        }, insertBeforeLayer);
-      }
-
-      if (!map.getLayer('FG Regions-line')) {
-        map.addLayer({
-          id: 'FG Regions-line',
-          type: 'line',
-          source: 'FG Regions',
-          'source-layer': 'fg_regions',
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: {
-            'line-color': '#008678',
-            'line-width': [
-              'interpolate', ['linear'], ['zoom'],
-              5, 1.5,
-              10, 2,   // at zoom 10 → 1px
-              14, 4,   // at zoom 14 → 3px
-              18, 8    // at zoom 18 → 8px
+            ['case',
+              ['boolean', ['feature-state', 'selected'], false], '#9B0019',
+              ['boolean', ['feature-state', 'highlight'], false], '#f42f58',
+              '#f42f58'
             ],
-            'line-opacity': 1
-          }
-        }, insertBeforeLayer);
-      }
+            ['case',
+              ['boolean', ['feature-state', 'selected'], false], '#002366',
+              ['boolean', ['feature-state', 'highlight'], false], '#4ca6e6',
+              '#4ca6e6'
+            ]
+          ],
+          'line-width': [
+            'case',
+            ['boolean', ['feature-state', 'selected'], false], 5,
+            ['boolean', ['feature-state', 'highlight'], false], 5,
+            3
+          ],
+          'line-opacity': 1
+        },
+        filter: ['==', ['id'], -1]
+      });
+    }
 
+    if (isTouch && !map.getLayer('Waterways-touch')) {
+      map.addLayer({
+        id: 'Waterways-touch',
+        type: 'line',
+        source: 'Waterways',
+        'source-layer': 'waterways',
+        minzoom: 7,
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: {
+          'line-width': 10,
+          'line-opacity': 0,
+          'line-color': '#000000'
+        }
+      });
+    }
 
-      if (!sources['Routes']) map.addSource('Routes', { type: 'geojson', data: 'https://data.fishandgameaccessmap.org/secure-geojson/Routes.geojson?token=fish-access-2025' });
+    if (!sources['FG Regions']) {
+      map.addSource('FG Regions', {
+        type: 'vector',
+        tiles: ['https://data.fishandgameaccessmap.org/fg_regions/{z}/{x}/{y}'],
+        minzoom: 0, maxzoom: 10
+      });
+    }
 
+    if (!map.getLayer('FG Regions-linebackground')) {
+      map.addLayer({
+        id: 'FG Regions-linebackground',
+        type: 'line',
+        source: 'FG Regions',
+        'source-layer': 'fg_regions',
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: {
+          'line-color': '#fff',
+          'line-width': [
+            'interpolate', ['linear'], ['zoom'],
+            5, 3,
+            10, 4,
+            14, 8,
+            18, 12
+          ],
+          'line-opacity': 1
+        }
+      }, insertBeforeLayer);
+    }
 
-      if (!map.getLayer('Routes-line')) {
-        map.addLayer({
-          id: 'Routes-line',
-          type: 'line',
-          source: 'Routes',
-          minzoom: 9.5,
-          paint: { 'line-width': 3.5, 'line-color': ['get', 'line_color'], 'line-dasharray': [2, 1] }
-        });
-      }
+    if (!map.getLayer('FG Regions-line')) {
+      map.addLayer({
+        id: 'FG Regions-line',
+        type: 'line',
+        source: 'FG Regions',
+        'source-layer': 'fg_regions',
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: {
+          'line-color': '#008678',
+          'line-width': [
+            'interpolate', ['linear'], ['zoom'],
+            5, 1.5,
+            10, 2,
+            14, 4,
+            18, 8
+          ],
+          'line-opacity': 1
+        }
+      }, insertBeforeLayer);
+    }
 
+    if (!sources['Routes']) {
+      map.addSource('Routes', {
+        type: 'geojson',
+        data: 'https://data.fishandgameaccessmap.org/secure-geojson/Routes.geojson?token=fish-access-2025'
+      });
+    }
 
+    if (!map.getLayer('Routes-line')) {
+      map.addLayer({
+        id: 'Routes-line',
+        type: 'line',
+        source: 'Routes',
+        minzoom: 9.5,
+        paint: { 'line-width': 3.5, 'line-color': ['get', 'line_color'], 'line-dasharray': [2, 1] }
+      });
+    }
 
+    // ---- DEV: flow-dev source + layers ----
+    if (isDev) {
+      const FLOW_DEV_URL = `${GEOJSON_BASE}/flow_combined_dev.geojson?token=fish-access-2025`;
 
-
-      if (!sources['data-points']) {
-        map.addSource('data-points', {
+      if (!sources['flow-dev']) {
+        map.addSource('flow-dev', {
           type: 'geojson',
-          data: URL_POINTS_GEOJSON,
-          generateId: true
+          data: FLOW_DEV_URL
         });
       }
 
-      if (!map.getLayer('data-points-all')) {
+      if (!map.getLayer('flow-dev-flow-circles')) {
         map.addLayer({
-          id: 'data-points-all',
-          type: 'symbol',
-          source: 'data-points',
-          minzoom: 7,
-          layout: {
-            'icon-image': ['concat', ['get', 'point_type'], '-icon'],
-            'icon-size': getIconSizeExpr(selectedFeatureId, hoverFeatureId), /* final expr at creation */
-            'icon-anchor': ['get', 'anchor'],
-            'icon-allow-overlap': true,
-            'icon-rotate': ['get', 'bearing']
-          }
-        });
-      }
-
-      if (!sources['search']) {
-        map.addSource('search', { type: 'geojson', data: URL_SEARCH_INDEX });
-      }
-
-      if (!map.getLayer('search-points-all')) {
-        map.addLayer({
-          id: 'search-points-all',
+          id: 'flow-dev-flow-circles',
           type: 'circle',
-          source: 'search',
-          paint: { 'circle-radius': 5, 'circle-color': '#FF5733', 'circle-opacity': 0.0 }
-        });
+          source: 'flow-dev',
+          minzoom: 6,
+          filter: ['==', ['get', 'parameter'], 'Flow'],
+          paint: {
+            'circle-radius': [
+              'interpolate', ['linear'], ['zoom'],
+              6, 0.5,
+              11, 5,
+              14, 10
+            ],
+            'circle-color': '#3498db',
+            'circle-opacity': 0.85,
+            'circle-stroke-color': '#ffffff',
+            'circle-stroke-width': [
+              'interpolate', ['linear'], ['zoom'],
+              6, 0.5,
+              11, 2
+            ],
+            'circle-translate': [
+              'interpolate', ['linear'], ['zoom'],
+              6, ['literal', [-2, 0]],
+              11, ['literal', [-7, 0]],
+              14, ['literal', [-14, 0]]
+            ]
+          }
+        }, insertBeforeLayer);
       }
 
-      //          if (!map.getLayer('FG Regions-fill')) {
-      //   map.addLayer({
-      //     id: 'FG Regions-fill',
-      //     type: 'fill',
-      //     source: 'FG Regions',
-      //     'source-layer': 'fg_regions',
-      //     paint: {
-      //       'fill-color': '#86000E',
-      //       'fill-opacity': 0.5
-      //     },
-      //     filter: ['in', 'RegionCode', 13] // ✅ only fills regions with these codes
-      //   }, insertBeforeLayer);
-      // }
-
-      if (!sources['FG Region Centroids']) {
-        map.addSource('FG Region Centroids', {
-          type: 'geojson',
-          data: 'https://data.fishandgameaccessmap.org/secure-geojson/fg_regions_centroid.geojson?token=fish-access-2025'
-        });
-      }
-
-      if (!map.getLayer('FG Region Labels')) {
+      if (!map.getLayer('flow-dev-wt-circles')) {
         map.addLayer({
-          id: 'FG Region Labels',
+          id: 'flow-dev-wt-circles',
+          type: 'circle',
+          source: 'flow-dev',
+          minzoom: 6,
+          filter: ['==', ['get', 'parameter'], 'Temperature'],
+          paint: {
+            'circle-radius': [
+              'interpolate', ['linear'], ['zoom'],
+              6, 0.5,
+              11, 5,
+              14, 10
+            ],
+            'circle-color': '#e67e22',
+            'circle-opacity': 0.85,
+            'circle-stroke-color': '#ffffff',
+            'circle-stroke-width': [
+              'interpolate', ['linear'], ['zoom'],
+              6, 0.5,
+              11, 2
+            ],
+            'circle-translate': [
+              'interpolate', ['linear'], ['zoom'],
+              6, ['literal', [1, 0]],
+              11, ['literal', [7, 0]],
+              14, ['literal', [14, 0]]
+            ]
+          }
+        }, insertBeforeLayer);
+      }
+
+      if (!map.getLayer('flow-dev-flow-labels')) {
+        map.addLayer({
+          id: 'flow-dev-flow-labels',
           type: 'symbol',
-          source: 'FG Region Centroids',
-          maxzoom: 7,
+          source: 'flow-dev',
+          minzoom: 12,
+          filter: ['==', ['get', 'parameter'], 'Flow'],
           layout: {
-            'text-field': ['get', 'region'],
-            'text-font': ['Noto Sans Medium'],
-            'text-size': 12,
-            'text-anchor': 'center',
-            'text-allow-overlap': true
+            'text-field': [
+              'concat',
+              ['to-string', ['/', ['round', ['*', ['get', 'latest_value'], 10]], 10]],
+              ' ',
+              ['coalesce', ['get', 'unit'], '']
+            ],
+            'text-font': ['Noto Sans Regular'],
+            'text-size': 11,
+            'text-anchor': 'right',
+            'text-offset': [-1.5, 0],
+            'text-allow-overlap': false
           },
           paint: {
-            'text-color': '#008678',
+            'text-color': '#0b4870',
             'text-halo-color': '#ffffff',
-            'text-halo-width': 2
+            'text-halo-width': 3,
+            'text-translate': [
+              'interpolate', ['linear'], ['zoom'],
+              6, ['literal', [0, 0]],
+              11, ['literal', [0, 0]],
+              14, ['literal', [-10, 0]]
+            ]
           }
-        });
+        }, insertBeforeLayer);
       }
 
-
-      // Wire filters
-      if (window.setupAWFilters) window.setupAWFilters(map);
+      if (!map.getLayer('flow-dev-wt-labels')) {
+        map.addLayer({
+          id: 'flow-dev-wt-labels',
+          type: 'symbol',
+          source: 'flow-dev',
+          minzoom: 12,
+          filter: ['==', ['get', 'parameter'], 'Temperature'],
+          layout: {
+            'text-field': [
+              'concat',
+              ['to-string', ['/', ['round', ['*', ['get', 'latest_value'], 10]], 10]],
+              ' ',
+              ['coalesce', ['get', 'unit'], '']
+            ],
+            'text-font': ['Noto Sans Regular'],
+            'text-size': 11,
+            'text-anchor': 'left',
+            'text-offset': [1.5, 0],
+            'text-allow-overlap': false
+          },
+          paint: {
+            'text-color': '#0b4870',
+            'text-halo-color': '#ffffff',
+            'text-halo-width': 4,
+            'text-translate': [
+              'interpolate', ['linear'], ['zoom'],
+              6, ['literal', [0, 0]],
+              11, ['literal', [0, 0]],
+              14, ['literal', [10, 0]]
+            ]
+          }
+        }, insertBeforeLayer);
+      }
     }
 
-
-    // Make region names clickable → zoom to their centroid
-    map.on('mouseenter', 'FG Region Labels', () => { map.getCanvas().style.cursor = 'pointer'; });
-    map.on('mouseleave', 'FG Region Labels', () => { map.getCanvas().style.cursor = ''; });
-
-    map.on('click', 'FG Region Labels', (e) => {
-      const f = e.features && e.features[0];
-      if (!f || !f.geometry || f.geometry.type !== 'Point') return;
-
-      const [lng, lat] = f.geometry.coordinates;
-
-      // If a side panel is open, pad left so the name doesn't end up under it
-      const leftPad = (window.activePanel === 'card' || window.activePanel === 'filters' || window.activePanel === 'basemaps')
-        ? 420 : 10;
-
-      map.easeTo({
-        center: [lng, lat],
-        zoom: Math.max(map.getZoom(), 8),   // target zoom when you “drill in”
-        duration: 800,
-        padding: { top: 80, right: 10, bottom: 10, left: leftPad }
+    if (!sources['data-points']) {
+      map.addSource('data-points', {
+        type: 'geojson',
+        data: URL_POINTS_GEOJSON,
+        generateId: true
       });
-    });
-
-    // Public access hover popup (single handler)
-    const popup = document.createElement('div');
-    popup.style.position = 'absolute';
-    popup.style.pointerEvents = 'none';
-    popup.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
-    popup.style.color = '#fff';
-    popup.style.fontFamily = 'Arial, sans-serif';
-    popup.style.padding = '4px 8px';
-    popup.style.borderRadius = '4px';
-    popup.style.fontSize = '12px';
-    popup.style.display = 'none';
-    document.body.appendChild(popup);
-
-    map.on('mousemove', 'PublicAccessAreas-fill', (e) => {
-      const feature = e.features?.[0];
-      if (feature) {
-        popup.style.display = 'block';
-        popup.textContent = feature.properties.DataType || 'No DataType';
-        popup.style.left = e.originalEvent.pageX + 10 + 'px';
-        popup.style.top = e.originalEvent.pageY + 10 + 'px';
-      }
-    });
-    map.on('mouseleave', 'PublicAccessAreas-fill', () => { popup.style.display = 'none'; });
-
-    // ======= Hover/selection with RAF throttling =======
-    map.on('click', 'data-points-all', e => {
-      selectedFeatureId = e.features[0].id;
-      hoverFeatureId = null;
-      updateIconSize();
-    });
-
-    // Unified click handler to prioritize points over rivers
-    map.on('click', (e) => {
-      const riverTapLayers = isTouch
-        ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
-        : ['Waterways-line', 'Waterways-fill'];
-
-      const features = map.queryRenderedFeatures(e.point, {
-        layers: ['data-points-all', ...riverTapLayers]
-      });
-
-      if (features.length === 0) { clearSelection(); card.style.display = 'none'; return; }
-      const pointFeature = features.find(f => f.layer.id === 'data-points-all');
-      const riverFeature = features.find(f => f.layer.id === 'Waterways-line') || features.find(f => f.layer.id === 'Waterways-fill');
-      if (pointFeature) selectFeature(pointFeature); else if (riverFeature) selectFeature(riverFeature);
-    });
-
-    map.on('click', (e) => {
-      const features = map.queryRenderedFeatures(e.point, {
-        layers: ['data-points-all'] // your point layer
-      });
-
-      if (features.length === 0) {
-        // Reset selection + hover when basemap is clicked
-        selectedFeatureId = null;
-        hoverFeatureId = null;
-        updateIconSize();
-      }
-    });
-
-    let hoverDirty = false;
-    map.on('mousemove', 'data-points-all', e => {
-      map.getCanvas().style.cursor = 'pointer';
-      const hoveredId = e.features[0].id;
-      if (hoveredId !== selectedFeatureId && hoveredId !== hoverFeatureId) {
-        hoverFeatureId = hoveredId;
-        if (!hoverDirty) {
-          hoverDirty = true;
-          requestAnimationFrame(() => { hoverDirty = false; updateIconSize(); });
-        }
-      }
-    });
-    map.on('mouseleave', 'data-points-all', () => {
-      map.getCanvas().style.cursor = '';
-      if (hoverFeatureId !== null) {
-        hoverFeatureId = null;
-        requestAnimationFrame(updateIconSize);
-      }
-    });
-
-    let hoveredRiverId = null;
-    let hoveringLayers = new Set();
-    function updateCursor() {
-      map.getCanvas().style.cursor = (hoveringLayers.size > 0) ? 'pointer' : '';
     }
 
-    // Throttled river hover (shared for line+fill)
-    let nextHoverId = null, hoverScheduled = false;
-    function setRiverHover(id) {
-      nextHoverId = id;
-      if (hoverScheduled) return;
-      hoverScheduled = true;
-      requestAnimationFrame(() => {
-        hoverScheduled = false;
-        if (hoveredRiverId !== nextHoverId) {
-          if (hoveredRiverId != null) {
-            map.setFeatureState({ source: 'Waterways', sourceLayer: 'waterways', id: hoveredRiverId }, { highlight: false });
-          }
-          hoveredRiverId = nextHoverId;
-          if (hoveredRiverId != null) {
-            map.setFeatureState({ source: 'Waterways', sourceLayer: 'waterways', id: hoveredRiverId }, { highlight: true });
-          }
+    if (!map.getLayer('data-points-all')) {
+      map.addLayer({
+        id: 'data-points-all',
+        type: 'symbol',
+        source: 'data-points',
+        minzoom: 7,
+        layout: {
+          'icon-image': ['concat', ['get', 'point_type'], '-icon'],
+          'icon-size': getIconSizeExpr(selectedFeatureId, hoverFeatureId),
+          'icon-anchor': ['get', 'anchor'],
+          'icon-allow-overlap': true,
+          'icon-rotate': ['get', 'bearing']
         }
       });
     }
 
-    map.on('mouseenter', 'Waterways-line', () => { hoveringLayers.add('line'); updateCursor(); });
-    map.on('mouseleave', 'Waterways-line', () => { hoveringLayers.delete('line'); updateCursor(); if (hoveringLayers.size === 0) setRiverHover(null); });
-    map.on('mousemove', 'Waterways-line', (e) => { const f = e.features?.[0]; setRiverHover(f ? f.id : null); });
-
-    map.on('mouseenter', 'Waterways-fill', () => { hoveringLayers.add('fill'); updateCursor(); });
-    map.on('mouseleave', 'Waterways-fill', () => { hoveringLayers.delete('fill'); updateCursor(); if (hoveringLayers.size === 0) setRiverHover(null); });
-    map.on('mousemove', 'Waterways-fill', (e) => { const f = e.features?.[0]; setRiverHover(f ? f.id : null); });
-
-    // Search (unchanged logic; could be debounced later if needed)
-    const inputEl = document.getElementById('search');
-    const suggestions = document.getElementById('suggestions');
-    inputEl.addEventListener('input', () => {
-      const query = inputEl.value.trim().toLowerCase();
-      suggestions.innerHTML = '';
-      if (!query) { suggestions.style.display = 'none'; return; }
-
-      const riverMatches = allFeatures.filter(f => f.properties.Water.toLowerCase().includes(query));
-      const pointMatches = allPointsFeatures.filter(f => f.properties.title && f.properties.title.toLowerCase().includes(query));
-
-      if (riverMatches.length) {
-        const header = document.createElement('div');
-        header.className = 'suggestion-header river-header';
-        header.innerHTML = `<span>WATERWAYS</span>`;
-        suggestions.appendChild(header);
-        riverMatches.forEach(f => {
-          const div = document.createElement('div');
-          div.className = 'suggestion river';
-          div.innerHTML = `
-            <strong>${f.properties.Water}</strong><br>
-            ${typeof f.properties.Section === 'string' && f.properties.Section ? `<div class="section">${f.properties.Section}</div>` : ''}
-            <div class="region">${f.properties.Region || ''}</div>`;
-          div.style.cursor = 'pointer';
-          div.onclick = () => selectFeatureFromSearch(f);
-          suggestions.appendChild(div);
-        });
-      }
-
-      if (pointMatches.length) {
-        const header = document.createElement('div');
-        header.className = 'suggestion-header point-header';
-        header.innerHTML = `<span> ACCESS POINTS</span>`;
-        suggestions.appendChild(header);
-        pointMatches.forEach(f => {
-          const div = document.createElement('div');
-          div.className = 'suggestion point';
-          div.innerHTML = `
-            <strong>${f.properties.title}</strong><br>
-            <div class="region">${f.properties.Region || ''}</div>`;
-          div.style.cursor = 'pointer';
-          div.onclick = () => selectFeatureFromSearch(f);
-          suggestions.appendChild(div);
-        });
-      }
-
-      suggestions.style.display = (riverMatches.length || pointMatches.length) ? 'block' : 'none';
-    });
-    function selectFeatureFromSearch(f) {
-      const isRiver = typeof f.properties.Water !== 'undefined';
-      const coords = f.geometry.coordinates;
-
-      clearSelection();
-      // center first so tiles are present
-      map.flyTo({ center: coords, zoom: Math.max(map.getZoom(), 12) });
-
-      // After the move completes, pull the real feature under the crosshair
-      map.once('moveend', () => {
-        const pt = map.project(coords);
-        // small hitbox around the coordinate
-        const bbox = [
-          { x: pt.x - 10, y: pt.y - 10 },
-          { x: pt.x + 10, y: pt.y + 10 }
-        ];
-
-        let found = null;
-        if (isRiver) {
-          const rivers = map.queryRenderedFeatures([bbox[0], bbox[1]], {
-            layers: (isTouch
-              ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
-              : ['Waterways-line', 'Waterways-fill'])
-          });
-          // optional: try to match on names/section to be robust
-          found = rivers.find(r =>
-            (r.properties?.Water === f.properties.Water) &&
-            (isBlankish(f.properties.Section) || r.properties?.Section === f.properties.Section)
-          ) || rivers[0];
-
-          if (found) {
-            selectFeature(found);
-            return;
-          }
-
-          // Fallback: synthesize a river-like feature so showCard gives the default river image
-          found = {
-            type: 'Feature',
-            geometry: f.geometry,
-            properties: f.properties,
-            layer: { id: 'Waterways-line' }, // <- makes showCard treat as river
-            id: f.id
-          };
-          showCard(found);
-          return;
-        } else {
-          const points = map.queryRenderedFeatures([bbox[0], bbox[1]], {
-            layers: ['data-points-all']
-          });
-          // Try to match by title/region if present
-          found = points.find(p =>
-            (p.properties?.title && f.properties?.title && p.properties.title === f.properties.title) ||
-            (p.properties?.Region && f.properties?.Region && p.properties.Region === f.properties.Region)
-          ) || points[0];
-
-          if (found) {
-            selectFeature(found);
-            return;
-          }
-
-          // Fallback: synthesize a point-like feature so showCard can pick default point image
-          found = {
-            type: 'Feature',
-            geometry: f.geometry,
-            properties: f.properties,
-            layer: { id: 'data-points-all' }, // <- makes showCard treat as point
-            id: f.id
-          };
-          showCard(found);
-          return;
-        }
-      });
-
-      // keep the input tidy & hide list immediately
-      inputEl.value = isRiver ? (f.properties.Water || '') : (f.properties.title || '');
-      suggestions.style.display = 'none';
+    if (!sources['search']) {
+      map.addSource('search', { type: 'geojson', data: URL_SEARCH_INDEX });
     }
 
+    if (!map.getLayer('search-points-all')) {
+      map.addLayer({
+        id: 'search-points-all',
+        type: 'circle',
+        source: 'search',
+        paint: { 'circle-radius': 5, 'circle-color': '#FF5733', 'circle-opacity': 0.0 }
+      });
+    }
 
-    // Initialize filter wiring now that the map object exists
+    if (!sources['FG Region Centroids']) {
+      map.addSource('FG Region Centroids', {
+        type: 'geojson',
+        data: 'https://data.fishandgameaccessmap.org/secure-geojson/fg_regions_centroid.geojson?token=fish-access-2025'
+      });
+    }
+
+    if (!map.getLayer('FG Region Labels')) {
+      map.addLayer({
+        id: 'FG Region Labels',
+        type: 'symbol',
+        source: 'FG Region Centroids',
+        maxzoom: 7,
+        layout: {
+          'text-field': ['get', 'region'],
+          'text-font': ['Noto Sans Medium'],
+          'text-size': 12,
+          'text-anchor': 'center',
+          'text-allow-overlap': true
+        },
+        paint: {
+          'text-color': '#008678',
+          'text-halo-color': '#ffffff',
+          'text-halo-width': 2
+        }
+      });
+    }
+
     if (window.setupAWFilters) window.setupAWFilters(map);
-    // Expose TODAY_UNIX to filter script
-    window.__TODAY_UNIX__ = TODAY_UNIX;
+  }
 
-    // Define NZTM2000 once (after proj4 is loaded)
-    proj4.defs("EPSG:2193",
-      "+proj=tmerc +lat_0=0 +lon_0=173 +k=0.9996 " +
-      "+x_0=1600000 +y_0=10000000 +datum=NZGD2000 +units=m +no_defs"
-    );
-    // Disable the browser context menu over the map canvas
-    map.getCanvas().addEventListener("contextmenu", (ev) => ev.preventDefault());
+  // ===== NEW: flow-dev click → side panel (no popup) =====
+  
+  // == Region label click, hover popups etc (unchanged) ==
+  map.on('mouseenter', 'FG Region Labels', () => { map.getCanvas().style.cursor = 'pointer'; });
+  map.on('mouseleave', 'FG Region Labels', () => { map.getCanvas().style.cursor = ''; });
 
-    // Right-click menu: Copy coords / Open in WAMS (Herenga ā Nuku)
-    map.on("contextmenu", (e) => {
-      const { lat, lng } = e.lngLat.wrap();
+  map.on('click', 'FG Region Labels', (e) => {
+    const f = e.features && e.features[0];
+    if (!f || !f.geometry || f.geometry.type !== 'Point') return;
 
-      // Small card with two action buttons (styled inline for portability)
-      const html = `
-  <div style="
-    font: 13px 'Segoe UI', Arial, sans-serif;
-    min-width: 160px;
-    background: #fff;
-    border: 1px solid #d0d7de;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    overflow: hidden;
-  ">
-    <div id="copyCoords" style="
-      padding: 8px 10px;
-      cursor: pointer;
-      border-bottom: 1px solid #eee;
-    " onmouseover="this.style.background='#f6f8fa'" onmouseout="this.style.background='#fff'">
-      📋 Copy coordinates
-    </div>
-    <div id="openWAMS" style="
-      padding: 8px 10px;
-      cursor: pointer;
-    " onmouseover="this.style.background='#f6f8fa'" onmouseout="this.style.background='#fff'">
-      🌏 Open in WAMS
-    </div>
-  </div>
-`;
+    const [lng, lat] = f.geometry.coordinates;
 
+    const leftPad = (window.activePanel === 'card' || window.activePanel === 'filters' || window.activePanel === 'basemaps')
+      ? 420 : 10;
 
-      // Remove any existing popups first
-      document.querySelectorAll(".maplibregl-popup").forEach(p => p.remove());
+    map.easeTo({
+      center: [lng, lat],
+      zoom: Math.max(map.getZoom(), 8),
+      duration: 800,
+      padding: { top: 80, right: 10, bottom: 10, left: leftPad }
+    });
+  });
 
-      // Create the popup menu at the click location
-      const menu = new maplibregl.Popup({
-        closeButton: true,
-        closeOnClick: true,
-        anchor: "bottom",
-        offset: 8
-      })
-        .setLngLat(e.lngLat)
-        .setHTML(html)
-        .addTo(map);
+  const hoverPopup = document.createElement('div');
+  hoverPopup.style.position = 'absolute';
+  hoverPopup.style.pointerEvents = 'none';
+  hoverPopup.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+  hoverPopup.style.color = '#fff';
+  hoverPopup.style.fontFamily = 'Arial, sans-serif';
+  hoverPopup.style.padding = '4px 8px';
+  hoverPopup.style.borderRadius = '4px';
+  hoverPopup.style.fontSize = '12px';
+  hoverPopup.style.display = 'none';
+  document.body.appendChild(hoverPopup);
 
-      const el = menu.getElement();
+  map.on('mousemove', 'PublicAccessAreas-fill', (e) => {
+    const feature = e.features?.[0];
+    if (feature) {
+      hoverPopup.style.display = 'block';
+      hoverPopup.textContent = feature.properties.DataType || 'No DataType';
+      hoverPopup.style.left = e.originalEvent.pageX + 10 + 'px';
+      hoverPopup.style.top = e.originalEvent.pageY + 10 + 'px';
+    }
+  });
+  map.on('mouseleave', 'PublicAccessAreas-fill', () => { hoverPopup.style.display = 'none'; });
 
-      // Slight hover affordance (no external CSS)
-      const styleHover = (btn, on) => {
-        btn.style.background = on ? "#f6f8fa" : "#fff";
-      };
-      const hookHover = (btn) => {
-        btn.addEventListener("mouseenter", () => styleHover(btn, true));
-        btn.addEventListener("mouseleave", () => styleHover(btn, false));
-        btn.addEventListener("focus", () => styleHover(btn, true));
-        btn.addEventListener("blur", () => styleHover(btn, false));
-      };
+  map.on('click', 'data-points-all', e => {
+    selectedFeatureId = e.features[0].id;
+    hoverFeatureId = null;
+    updateIconSize();
+  });
 
-      const btnCopy = el.querySelector("#copyCoords");
-      const btnWams = el.querySelector("#openWAMS");
-      hookHover(btnCopy);
-      hookHover(btnWams);
+  map.on('click', (e) => {
+  const riverTapLayers = isTouch
+    ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
+    : ['Waterways-line', 'Waterways-fill'];
 
-      // ACTION: Copy coords as "lat<TAB>lon" (no confirmation popup)
-      btnCopy.addEventListener("click", async (ev) => {
-        ev.preventDefault();
-        try {
-          await navigator.clipboard.writeText(`${lat.toFixed(6)}\t${lng.toFixed(6)}`);
-        } catch (err) {
-          // Fallback: create a temporary text area if clipboard API fails
-          const ta = document.createElement("textarea");
-          ta.value = `${lat.toFixed(6)}\t${lng.toFixed(6)}`;
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand("copy");
-          ta.remove();
-        }
-        // Close the menu immediately
-        menu.remove();
-      });
+  // Include flow-dev layers when in dev
+  const layersToQuery = ['data-points-all', ...riverTapLayers];
+  if (isDev) {
+    layersToQuery.push('flow-dev-flow-circles', 'flow-dev-wt-circles');
+  }
 
-      // ACTION: Open Herenga ā Nuku viewer centered at this point (EPSG:2193)
-      btnWams.addEventListener("click", (ev) => {
-        ev.preventDefault();
+  const features = map.queryRenderedFeatures(e.point, {
+    layers: layersToQuery
+  });
 
-        // 4326 (lng,lat) → 2193 (E,N)
-        const [E, N] = proj4("EPSG:4326", "EPSG:2193", [lng, lat]);
-        const Ee = E.toFixed(4);
-        const Nn = N.toFixed(4);
-        // Use current map zoom as level (clamped to sensible range)
-        const level = Math.max(0, Math.min(20, Math.round(map.getZoom())));
+  // If nothing at all under the cursor → clear
+  if (!features.length) {
+    clearSelection();
+    card.style.display = 'none';
+    return;
+  }
 
-        const base = "https://maps.herengaanuku.govt.nz/Viewer/";
-        const mapId = "9cd99517a0db4d18a894c3839df4d3a3"; // your updated map
-        const url = `${base}?map=${mapId}&center=${Ee},${Nn},2193&level=${level}`;
+  // 1) Flow / water temp first
+  const flowFeature = features.find(f =>
+    f.layer.id === 'flow-dev-flow-circles' ||
+    f.layer.id === 'flow-dev-wt-circles'
+  );
 
-        window.open(url, "_blank", "noopener");
-        // Close the menu immediately
-        menu.remove();
-      });
+  if (flowFeature) {
+    const [lng, lat] = flowFeature.geometry.coordinates;
+
+    // centre view with left padding for side panel
+    const padLeft = 420;
+    map.easeTo({
+      center: [lng, lat],
+      zoom: Math.max(map.getZoom(), 10),
+      duration: 800,
+      padding: { top: 80, right: 10, bottom: 10, left: padLeft }
     });
 
+    showFlowCard(flowFeature);
+    return; // IMPORTANT: don't fall through to clearSelection()
+  }
 
-  </script>
+  // 2) Points
+  const pointFeature = features.find(f => f.layer.id === 'data-points-all');
+
+  // 3) Rivers
+  const riverFeature =
+    features.find(f => f.layer.id === 'Waterways-line') ||
+    features.find(f => f.layer.id === 'Waterways-fill');
+
+  if (pointFeature) {
+    selectFeature(pointFeature);
+  } else if (riverFeature) {
+    selectFeature(riverFeature);
+  } else {
+    // Shouldn’t normally happen, but safe fallback:
+    clearSelection();
+    card.style.display = 'none';
+  }
+});
+
+  let hoverDirty = false;
+  map.on('mousemove', 'data-points-all', e => {
+    map.getCanvas().style.cursor = 'pointer';
+    const hoveredId = e.features[0].id;
+    if (hoveredId !== selectedFeatureId && hoveredId !== hoverFeatureId) {
+      hoverFeatureId = hoveredId;
+      if (!hoverDirty) {
+        hoverDirty = true;
+        requestAnimationFrame(() => { hoverDirty = false; updateIconSize(); });
+      }
+    }
+  });
+  map.on('mouseleave', 'data-points-all', () => {
+    map.getCanvas().style.cursor = '';
+    if (hoverFeatureId !== null) {
+      hoverFeatureId = null;
+      requestAnimationFrame(updateIconSize);
+    }
+  });
+
+  let hoveredRiverId = null;
+  let hoveringLayers = new Set();
+  function updateCursor() {
+    map.getCanvas().style.cursor = (hoveringLayers.size > 0) ? 'pointer' : '';
+  }
+
+  let nextHoverId = null, hoverScheduled = false;
+  function setRiverHover(id) {
+    nextHoverId = id;
+    if (hoverScheduled) return;
+    hoverScheduled = true;
+    requestAnimationFrame(() => {
+      hoverScheduled = false;
+      if (hoveredRiverId !== nextHoverId) {
+        if (hoveredRiverId != null) {
+          map.setFeatureState({ source: 'Waterways', sourceLayer: 'waterways', id: hoveredRiverId }, { highlight: false });
+        }
+        hoveredRiverId = nextHoverId;
+        if (hoveredRiverId != null) {
+          map.setFeatureState({ source: 'Waterways', sourceLayer: 'waterways', id: hoveredRiverId }, { highlight: true });
+        }
+      }
+    });
+  }
+
+  map.on('mouseenter', 'Waterways-line', () => { hoveringLayers.add('line'); updateCursor(); });
+  map.on('mouseleave', 'Waterways-line', () => { hoveringLayers.delete('line'); updateCursor(); if (hoveringLayers.size === 0) setRiverHover(null); });
+  map.on('mousemove', 'Waterways-line', (e) => { const f = e.features?.[0]; setRiverHover(f ? f.id : null); });
+
+  map.on('mouseenter', 'Waterways-fill', () => { hoveringLayers.add('fill'); updateCursor(); });
+  map.on('mouseleave', 'Waterways-fill', () => { hoveringLayers.delete('fill'); updateCursor(); if (hoveringLayers.size === 0) setRiverHover(null); });
+  map.on('mousemove', 'Waterways-fill', (e) => { const f = e.features?.[0]; setRiverHover(f ? f.id : null); });
+
+  // ===== Search (unchanged) =====
+  const inputEl = document.getElementById('search');
+  const suggestions = document.getElementById('suggestions');
+  inputEl.addEventListener('input', () => {
+    const query = inputEl.value.trim().toLowerCase();
+    suggestions.innerHTML = '';
+    if (!query) { suggestions.style.display = 'none'; return; }
+
+    const riverMatches = allFeatures.filter(f => f.properties.Water.toLowerCase().includes(query));
+    const pointMatches = allPointsFeatures.filter(f => f.properties.title && f.properties.title.toLowerCase().includes(query));
+
+    if (riverMatches.length) {
+      const header = document.createElement('div');
+      header.className = 'suggestion-header river-header';
+      header.innerHTML = `<span>WATERWAYS</span>`;
+      suggestions.appendChild(header);
+      riverMatches.forEach(f => {
+        const div = document.createElement('div');
+        div.className = 'suggestion river';
+        div.innerHTML = `
+          <strong>${f.properties.Water}</strong><br>
+          ${typeof f.properties.Section === 'string' && f.properties.Section ? `<div class="section">${f.properties.Section}</div>` : ''}
+          <div class="region">${f.properties.Region || ''}</div>`;
+        div.style.cursor = 'pointer';
+        div.onclick = () => selectFeatureFromSearch(f);
+        suggestions.appendChild(div);
+      });
+    }
+
+    if (pointMatches.length) {
+      const header = document.createElement('div');
+      header.className = 'suggestion-header point-header';
+      header.innerHTML = `<span> ACCESS POINTS</span>`;
+      suggestions.appendChild(header);
+      pointMatches.forEach(f => {
+        const div = document.createElement('div');
+        div.className = 'suggestion point';
+        div.innerHTML = `
+          <strong>${f.properties.title}</strong><br>
+          <div class="region">${f.properties.Region || ''}</div>`;
+        div.style.cursor = 'pointer';
+        div.onclick = () => selectFeatureFromSearch(f);
+        suggestions.appendChild(div);
+      });
+    }
+
+    suggestions.style.display = (riverMatches.length || pointMatches.length) ? 'block' : 'none';
+  });
+
+  function selectFeatureFromSearch(f) {
+    const isRiver = typeof f.properties.Water !== 'undefined';
+    const coords = f.geometry.coordinates;
+
+    clearSelection();
+    map.flyTo({ center: coords, zoom: Math.max(map.getZoom(), 12) });
+
+    map.once('moveend', () => {
+      const pt = map.project(coords);
+      const bbox = [
+        { x: pt.x - 10, y: pt.y - 10 },
+        { x: pt.x + 10, y: pt.y + 10 }
+      ];
+
+      let found = null;
+      if (isRiver) {
+        const rivers = map.queryRenderedFeatures([bbox[0], bbox[1]], {
+          layers: (isTouch
+            ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
+            : ['Waterways-line', 'Waterways-fill'])
+        });
+        found = rivers.find(r =>
+          (r.properties?.Water === f.properties.Water) &&
+          (isBlankish(f.properties.Section) || r.properties?.Section === f.properties.Section)
+        ) || rivers[0];
+
+        if (found) {
+          selectFeature(found);
+          return;
+        }
+
+        found = {
+          type: 'Feature',
+          geometry: f.geometry,
+          properties: f.properties,
+          layer: { id: 'Waterways-line' },
+          id: f.id
+        };
+        showCard(found);
+        return;
+      } else {
+        const points = map.queryRenderedFeatures([bbox[0], bbox[1]], {
+          layers: ['data-points-all']
+        });
+        found = points.find(p =>
+          (p.properties?.title && f.properties?.title && p.properties.title === f.properties.title) ||
+          (p.properties?.Region && f.properties?.Region && p.properties.Region === f.properties.Region)
+        ) || points[0];
+
+        if (found) {
+          selectFeature(found);
+          return;
+        }
+
+        found = {
+          type: 'Feature',
+          geometry: f.geometry,
+          properties: f.properties,
+          layer: { id: 'data-points-all' },
+          id: f.id
+        };
+        showCard(found);
+        return;
+      }
+    });
+
+    inputEl.value = isRiver ? (f.properties.Water || '') : (f.properties.title || '');
+    suggestions.style.display = 'none';
+  }
+
+  if (window.setupAWFilters) window.setupAWFilters(map);
+  window.__TODAY_UNIX__ = TODAY_UNIX;
+
+  proj4.defs("EPSG:2193",
+    "+proj=tmerc +lat_0=0 +lon_0=173 +k=0.9996 " +
+    "+x_0=1600000 +y_0=10000000 +datum=NZGD2000 +units=m +no_defs"
+  );
+
+  map.getCanvas().addEventListener("contextmenu", (ev) => ev.preventDefault());
+
+  map.on("contextmenu", (e) => {
+    const { lat, lng } = e.lngLat.wrap();
+
+    const html = `
+      <div style="
+        font: 13px 'Segoe UI', Arial, sans-serif;
+        min-width: 160px;
+        background: #fff;
+        border: 1px solid #d0d7de;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        overflow: hidden;
+      ">
+        <div id="copyCoords" style="
+          padding: 8px 10px;
+          cursor: pointer;
+          border-bottom: 1px solid #eee;
+        ">
+          📋 Copy coordinates
+        </div>
+        <div id="openWAMS" style="
+          padding: 8px 10px;
+          cursor: pointer;
+        ">
+          🌏 Open in WAMS
+        </div>
+      </div>
+    `;
+
+    document.querySelectorAll(".maplibregl-popup").forEach(p => p.remove());
+
+    const menu = new maplibregl.Popup({
+      closeButton: true,
+      closeOnClick: true,
+      anchor: "bottom",
+      offset: 8
+    })
+      .setLngLat(e.lngLat)
+      .setHTML(html)
+      .addTo(map);
+
+    const el = menu.getElement();
+
+    const styleHover = (btn, on) => {
+      btn.style.background = on ? "#f6f8fa" : "#fff";
+    };
+    const hookHover = (btn) => {
+      btn.addEventListener("mouseenter", () => styleHover(btn, true));
+      btn.addEventListener("mouseleave", () => styleHover(btn, false));
+      btn.addEventListener("focus", () => styleHover(btn, true));
+      btn.addEventListener("blur", () => styleHover(btn, false));
+    };
+
+    const btnCopy = el.querySelector("#copyCoords");
+    const btnWams = el.querySelector("#openWAMS");
+    hookHover(btnCopy);
+    hookHover(btnWams);
+
+    btnCopy.addEventListener("click", async (ev) => {
+      ev.preventDefault();
+      try {
+        await navigator.clipboard.writeText(`${lat.toFixed(6)}\t${lng.toFixed(6)}`);
+      } catch (err) {
+        const ta = document.createElement("textarea");
+        ta.value = `${lat.toFixed(6)}\t${lng.toFixed(6)}`;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+      }
+      menu.remove();
+    });
+
+    btnWams.addEventListener("click", (ev) => {
+      ev.preventDefault();
+
+      const [E, N] = proj4("EPSG:4326", "EPSG:2193", [lng, lat]);
+      const Ee = E.toFixed(4);
+      const Nn = N.toFixed(4);
+      const level = Math.max(0, Math.min(20, Math.round(map.getZoom())));
+
+      const base = "https://maps.herengaanuku.govt.nz/Viewer/";
+      const mapId = "9cd99517a0db4d18a894c3839df4d3a3";
+      const url = `${base}?map=${mapId}&center=${Ee},${Nn},2193&level=${level}`;
+
+      window.open(url, "_blank", "noopener");
+      menu.remove();
+    });
+  });
+</script>
 
 </body>
 
