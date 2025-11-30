@@ -577,8 +577,12 @@
   }
 
   const styleURL = 'https://basemaps.linz.govt.nz/v1/styles/topo-raster.json?api=d01hep5551e30kxb7w85hck49tp';
-  const TODAY_UNIX = Math.floor(Date.now() / 1000);
+  //const TODAY_UNIX = Math.floor(Date.now() / 1000);
 
+const TODAY_UNIX = Math.floor((Date.now() + (13 * 60 * 60 * 1000)) / 1000);
+
+
+console.log("TODAY_UNIX:", TODAY_UNIX);
   const map = new maplibregl.Map({
     container: 'map',
     style: styleURL,
