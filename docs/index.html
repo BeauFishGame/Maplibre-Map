@@ -277,6 +277,12 @@
             return isBlankish(v) ? null : v;
           }
 
+
+        const FG_LICENCE_URL = "https://fishandgame.eslltd.co.nz/";
+        const DOC_TAUPO_LICENCE_URL = "https://www.doc.govt.nz/parks-and-recreation/buy-a-taupo-fishing-licence-online/";
+
+
+
           const REGION_REG_URLS = {
             1: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.03-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Northland-V2-WEB.pdf",
             2: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Auckland-Waikato-V4-WEB.pdf",  // Auckland/Waikato
@@ -293,7 +299,12 @@
             13: "https://www.doc.govt.nz/parks-and-recreation/places-to-go/central-north-island/places/taupo-trout-fishery/other-pages/rules-and-regulation---what-you-need-to-know/"
           };
 
-
+function getRegionCode(props) {
+  const raw =
+    props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
+  const rc = Number.parseInt(String(raw ?? '').trim(), 10);
+  return Number.isFinite(rc) ? rc : null;
+}
           function getRegionRegUrlFromProps(props) {
             // accept RegionCode as number or string; treat NA-ish as missing
             const raw =
@@ -1560,6 +1571,33 @@ canvas._chartInstance = new Chart(ctx, {
         </div>
       `;
     }
+
+// NEW: Licence CTA based on Region Code
+const rc = getRegionCode(props);
+if (rc !== null) {
+  if (rc < 13) {
+    // Standard Fish & Game licence
+    content += `
+      <div class="regs-cta">
+        <a href="${FG_LICENCE_URL}" target="_blank" rel="noopener noreferrer" class="regs-btn">
+          Buy a Fish &amp; Game Licence
+        </a>
+      </div>
+    `;
+  } else if (rc === 13) {
+    // Taupō DOC licence
+    content += `
+      <div class="regs-cta">
+        <a href="${DOC_TAUPO_LICENCE_URL}" target="_blank" rel="noopener noreferrer" class="regs-btn">
+          Buy a Taupō Fishing Licence (DOC)
+        </a>
+      </div>
+    `;
+  }
+}
+
+
+
 
     content += `</div></div>`;
 
