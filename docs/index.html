@@ -29,7 +29,8 @@
   </div>
 
   <div id="map"></div>
-
+<div id="center-crosshair"></div>
+<div id="public-access-banner"></div>
   <div id="top-bar">
     <a href="https://www.fishandgame.org.nz/" target="_blank">
       <img class="logo" src="images/White%20LS.png" alt="Logo">
@@ -222,6 +223,7 @@
               <div class="hint">Show/Hide toggles outlines + labels together.</div>
             </div>
           </div>
+
 
         </div><!-- /filters-body -->
 
@@ -1776,6 +1778,63 @@ canvas._chartInstance = new Chart(ctx, {
     setBasemap("Topo");
   });
 
+
+const crosshairEl = document.getElementById('center-crosshair');
+const accessBannerEl = document.getElementById('public-access-banner');
+
+// Mobile UI = touch device AND narrow screen
+let isMobileUI = isTouch && window.innerWidth < 768;
+
+window.addEventListener('resize', () => {
+  isMobileUI = isTouch && window.innerWidth < 768;
+  updateCenterPublicAccess();
+});
+
+
+function updateCenterPublicAccess() {
+  if (!isMobileUI) {
+    crosshairEl.style.display = 'none';
+    accessBannerEl.style.display = 'none';
+    return;
+  }
+
+  if (map.getZoom() < 12) {
+    crosshairEl.style.display = 'none';
+    accessBannerEl.style.display = 'none';
+    return;
+  }
+
+  crosshairEl.style.display = 'block';
+
+  const point = map.project(map.getCenter());
+  const features = map.queryRenderedFeatures(point, {
+    layers: ['PublicAccessAreas-fill']
+  });
+
+  if (!features.length) {
+    accessBannerEl.style.display = 'none';
+    return;
+  }
+
+  const type = features[0]?.properties?.DataType || 'Public Access';
+  accessBannerEl.textContent = type;
+  accessBannerEl.style.display = 'block';
+}
+
+map.on('move', updateCenterPublicAccess);
+map.on('moveend', updateCenterPublicAccess);
+map.on('load', updateCenterPublicAccess);
+
+
+
+
+
+
+
+
+
+
+  
   function updateLayerFilter() {
     const container = document.getElementById('point-type-filter');
     if (!container) return;
@@ -2405,16 +2464,23 @@ canvas._chartInstance = new Chart(ctx, {
   hoverPopup.style.display = 'none';
   document.body.appendChild(hoverPopup);
 
-  map.on('mousemove', 'PublicAccessAreas-fill', (e) => {
-    const feature = e.features?.[0];
-    if (feature) {
-      hoverPopup.style.display = 'block';
-      hoverPopup.textContent = feature.properties.DataType || 'No DataType';
-      hoverPopup.style.left = e.originalEvent.pageX + 10 + 'px';
-      hoverPopup.style.top = e.originalEvent.pageY + 10 + 'px';
-    }
-  });
-  map.on('mouseleave', 'PublicAccessAreas-fill', () => { hoverPopup.style.display = 'none'; });
+map.on('mousemove', 'PublicAccessAreas-fill', (e) => {
+  // 🔒 No hover tooltip on touch devices – crosshair + banner handles this
+  if (isTouch) return;
+
+  const feature = e.features?.[0];
+  if (feature) {
+    hoverPopup.style.display = 'block';
+    hoverPopup.textContent = feature.properties.DataType || 'Public Access';
+    hoverPopup.style.left = e.originalEvent.pageX + 10 + 'px';
+    hoverPopup.style.top = e.originalEvent.pageY + 10 + 'px';
+  }
+});
+
+map.on('mouseleave', 'PublicAccessAreas-fill', () => {
+  if (isTouch) return; // nothing to do on touch
+  hoverPopup.style.display = 'none';
+});
 
   map.on('click', 'data-points-all', e => {
     selectedFeatureId = e.features[0].id;

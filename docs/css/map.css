@@ -816,4 +816,70 @@
             color: #666;
             text-align: center;
           }
-       
+       /* Center crosshair: + shape */
+#center-crosshair {
+  position: fixed;
+  /* Move it slightly above the true screen center */
+  top: 50%; /* was 50% */
+  left: 50%;
+  width: 28px;
+  height: 28px;
+  margin-left: -14px;
+  margin-top: -14px;
+  z-index: 9999;
+  pointer-events: none;
+  display: none;
+}
+
+#center-crosshair::before,
+#center-crosshair::after {
+  content: "";
+  position: absolute;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* Vertical line */
+#center-crosshair::before {
+  width: 2px;
+  height: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Horizontal line */
+#center-crosshair::after {
+  height: 2px;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Optional: subtle drop-shadow */
+#center-crosshair::before,
+#center-crosshair::after {
+  box-shadow: 0 0 4px rgba(0,0,0,0.5);
+}
+
+/* Hide crosshair by default on large screens */
+@media (min-width: 768px) {
+  #center-crosshair {
+    display: none !important;
+  }
+}
+
+#public-access-banner {
+  position: fixed;
+  top: 60px;              /* just under the top bar */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #ffffff;
+  font-size: 12px;
+  border-radius: 4px;
+  font-family: Arial, sans-serif;
+  pointer-events: none;
+  display: none;          /* JS will turn this on/off */
+  white-space: nowrap;
+}
