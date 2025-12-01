@@ -1704,150 +1704,162 @@ if (rc !== null) {
   map.on('styledata', () => {
     loadCustomImages(map, () => { addCustomDataAndLayers(); });
   });
+// ===== Basemap switching =====
+let currentBasemap = null;
 
-  // ===== Basemap switching (unchanged) =====
-  function setBasemap(type) {
-    if (type === "Satellite") {
-      const aerial_style = {
-        "id": "st_aerial",
-        "name": "aerial",
-        "version": 8,
-        "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-        "sources": {
-          "basemaps-aerial": {
-            "type": "raster",
-            "tiles": [
-              "https://basemaps.linz.govt.nz/v1/tiles/aerial/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
-            ],
-            "tileSize": 256,
-            "attribution": "© CC BY 4.0 LINZ"
-          },
-          "LINZ-Terrain": {
-            "type": "raster-dem",
-            "tileSize": 256,
-            "maxzoom": 18,
-            "tiles": [
-              "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
-            ]
-          }
+// ===== Basemap switching =====
+function setBasemap(type) {
+
+  if (type === "Satellite") {
+    const aerial_style = {
+      id: "st_aerial",
+      name: "aerial",
+      version: 8,
+      glyphs: "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+      sources: {
+        "basemaps-aerial": {
+          type: "raster",
+          tiles: [
+            "https://basemaps.linz.govt.nz/v1/tiles/aerial/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
+          ],
+          tileSize: 256,
+          attribution: "© CC BY 4.0 LINZ"
         },
-        "layers": [
-          { "id": "basemaps-aerial", "type": "raster", "source": "basemaps-aerial" }
-        ],
-        "terrain": { "source": "LINZ-Terrain", "exaggeration": 1.0 }
-      };
-      map.setStyle(aerial_style);
-    } else if (type === "TopoLite") {
-      map.setStyle('https://basemaps.linz.govt.nz/v1/styles/topolite.json?api=d01hep5551e30kxb7w85hck49tp');
-    } else if (type === "Topo") {
-      const TopoStyle = {
-        "id": "st_topo-raster",
-        "version": 8,
-        "name": "st_topo-raster",
-        "metadata": { "maputnik:renderer": "mbgljs" },
-        "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-        "sources": {
-          "LINZ-Elevation-Hillshade": {
-            "maxzoom": 18,
-            "minzoom": 0,
-            "tileSize": 256,
-            "tiles": [
-              "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?pipeline=terrain-rgb&api=d01hep5551e30kxb7w85hck49tp"
-            ],
-            "type": "raster-dem"
-          },
-          "LINZ-Topo-Raster": {
-            "attribution": "© 2024 Toitū Te Whenua - CC BY 4.0",
-            "maxzoom": 28,
-            "minzoom": 0,
-            "tileSize": 192,
-            "tiles": [
-              "https://basemaps.linz.govt.nz/v1/tiles/topo-raster/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
-            ],
-            "type": "raster"
-          },
-          "LINZ-Terrain": {
-            "type": "raster-dem",
-            "tileSize": 256,
-            "maxzoom": 18,
-            "tiles": [
-              "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
-            ]
-          }
-        },
-        "layers": [
-          {
-            "id": "Topo-Raster",
-            "type": "raster",
-            "source": "LINZ-Topo-Raster",
-            "layout": { "visibility": "visible" }
-          },
-          {
-            "id": "Hillshade",
-            "type": "hillshade",
-            "source": "LINZ-Elevation-Hillshade",
-            "layout": { "visibility": "visible" },
-            "paint": {
-              "hillshade-accent-color": [
-                "interpolate", ["linear"], ["zoom"],
-                0, "rgb(100, 100, 100)",
-                3, "rgba(100, 100, 100, 0.400)",
-                10, "rgba(100, 100, 100, 0.333)",
-                11, "rgba(100, 100, 100, 0.267)"
-              ],
-              "hillshade-exaggeration": 0.4,
-              "hillshade-highlight-color": [
-                "interpolate", ["linear"], ["zoom"],
-                0, "rgb(225, 229, 224)",
-                3, "rgba(225, 229, 224, 0.400)",
-                10, "rgba(225, 229, 224, 0.333)",
-                11, "rgba(225, 229, 224, 0.0667)"
-              ],
-              "hillshade-illumination-anchor": "map",
-              "hillshade-illumination-direction": 315,
-              "hillshade-shadow-color": [
-                "interpolate", ["linear"], ["zoom"],
-                0, "rgb(12, 12, 12)",
-                3, "rgba(12, 12, 12, 0.400)",
-                10, "rgba(12, 12, 12, 0.400)",
-                16, "rgba(12, 12, 12, 1.00)"
-              ]
-            }
-          }
-        ],
-        "sky": {
-          "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 10, 1, 12, 0],
-          "fog-color": "#e8e8e8",
-          "fog-ground-blend": 0.8,
-          "horizon-color": "#ecffff",
-          "horizon-fog-blend": 0.65,
-          "sky-color": "#77b5fe",
-          "sky-horizon-blend": 0.5
+        "LINZ-Terrain": {
+          type: "raster-dem",
+          tileSize: 256,
+          maxzoom: 18,
+          tiles: [
+            "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
+          ]
         }
-      };
-      map.setStyle(TopoStyle);
-    }
+      },
+      layers: [
+        { id: "basemaps-aerial", type: "raster", source: "basemaps-aerial" }
+      ],
+      terrain: { source: "LINZ-Terrain", exaggeration: 1.0 }
+    };
+    map.setStyle(aerial_style);
 
-    document.querySelectorAll(".basemap-btn").forEach(btn => {
+  } else if (type === "TopoLite") {
+    map.setStyle(
+      "https://basemaps.linz.govt.nz/v1/styles/topolite.json?api=d01hep5551e30kxb7w85hck49tp"
+    );
+
+  } else if (type === "Topo") {
+    const TopoStyle = {
+      id: "st_topo-raster",
+      name: "st_topo-raster",
+      version: 8,
+      glyphs: "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+      sources: {
+        "LINZ-Elevation-Hillshade": {
+          maxzoom: 18,
+          minzoom: 0,
+          tileSize: 256,
+          tiles: [
+            "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?pipeline=terrain-rgb&api=d01hep5551e30kxb7w85hck49tp"
+          ],
+          type: "raster-dem"
+        },
+        "LINZ-Topo-Raster": {
+          attribution: "© 2024 Toitū Te Whenua - CC BY 4.0",
+          maxzoom: 28,
+          minzoom: 0,
+          tileSize: 192,
+          tiles: [
+            "https://basemaps.linz.govt.nz/v1/tiles/topo-raster/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
+          ],
+          type: "raster"
+        },
+        "LINZ-Terrain": {
+          type: "raster-dem",
+          tileSize: 256,
+          maxzoom: 18,
+          tiles: [
+            "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
+          ]
+        }
+      },
+      layers: [
+        {
+          id: "Topo-Raster",
+          type: "raster",
+          source: "LINZ-Topo-Raster",
+          layout: { visibility: "visible" }
+        },
+        {
+          id: "Hillshade",
+          type: "hillshade",
+          source: "LINZ-Elevation-Hillshade",
+          layout: { visibility: "visible" },
+          paint: {
+            "hillshade-accent-color": [
+              "interpolate", ["linear"], ["zoom"],
+              0, "rgb(100, 100, 100)",
+              3, "rgba(100, 100, 100, 0.400)",
+              10, "rgba(100, 100, 100, 0.333)",
+              11, "rgba(100, 100, 100, 0.267)"
+            ],
+            "hillshade-exaggeration": 0.4,
+            "hillshade-highlight-color": [
+              "interpolate", ["linear"], ["zoom"],
+              0, "rgb(225, 229, 224)",
+              3, "rgba(225, 229, 224, 0.400)",
+              10, "rgba(225, 229, 224, 0.333)",
+              11, "rgba(225, 229, 224, 0.0667)"
+            ],
+            "hillshade-illumination-anchor": "map",
+            "hillshade-illumination-direction": 315,
+            "hillshade-shadow-color": [
+              "interpolate", ["linear"], ["zoom"],
+              0, "rgb(12, 12, 12)",
+              3, "rgba(12, 12, 12, 0.400)",
+              10, "rgba(12, 12, 12, 0.400)",
+              16, "rgba(12, 12, 12, 1.00)"
+            ]
+          }
+        }
+      ],
+      sky: {
+        "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 10, 1, 12, 0],
+        "fog-color": "#e8e8e8",
+        "fog-ground-blend": 0.8,
+        "horizon-color": "#ecffff",
+        "horizon-fog-blend": 0.65,
+        "sky-color": "#77b5fe",
+        "sky-horizon-blend": 0.5
+      }
+    };
+
+    map.setStyle(TopoStyle);
+  }
+
+  // 🔹 Update active state
+  currentBasemap = type;
+  document.querySelectorAll(".basemap-btn").forEach(btn => {
+    const isActive = btn.dataset.basemap === type;
+    btn.classList.toggle("active", isActive);
+    btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+  });
+}
+
+// ===== Wire buttons ONCE =====
+document.querySelectorAll(".basemap-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     const type = btn.dataset.basemap;
+    if (type === currentBasemap) return; // no tracking spam
     setBasemap(type);
     if (window.umami) {
-      umami.track('basemap-change', { basemap: type });
+      umami.track("basemap-change", { basemap: type });
     }
   });
 });
 
-
-  }
-
-  document.querySelectorAll(".basemap-btn").forEach(btn => {
-    btn.addEventListener("click", () => setBasemap(btn.dataset.basemap));
-  });
-
-  window.addEventListener("load", () => {
-    setBasemap("Topo");
-  });
+// ===== Set initial map without tracking =====
+window.addEventListener("load", () => {
+  setBasemap("Topo");
+});
 
 
 const crosshairEl = document.getElementById('center-crosshair');
@@ -2581,7 +2593,9 @@ map.on('click', 'data-points-all', e => {
   if (window.umami) {
     umami.track('access-point-select', {
       region_code: props.region || '',
-      point_type: props.point_type || ''
+      point_type: props.point_type || '',
+      point_title: props.title || '',
+      point_subtitle: props.subtitle || ''
       
     });
   }
