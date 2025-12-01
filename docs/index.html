@@ -2579,7 +2579,7 @@ map.on('click', 'data-points-all', e => {
 
   // 📊 Analytics Event — Track region + point selection
   if (window.umami) {
-    umami.track('-access-point-select', {
+    umami.track('access-point-select', {
       region_code: props.region || '',
       point_type: props.point_type || ''
       
