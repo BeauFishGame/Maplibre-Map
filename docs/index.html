@@ -1835,7 +1835,7 @@ function setBasemap(type) {
     map.setStyle(TopoStyle);
   }
 
-  // 🔹 Update active state
+ 
   currentBasemap = type;
   document.querySelectorAll(".basemap-btn").forEach(btn => {
     const isActive = btn.dataset.basemap === type;

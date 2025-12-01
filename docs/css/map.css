@@ -283,7 +283,7 @@
     }
 
     .basemap-btn.active {
-      background-color: #10b981;
+      background-color: #009e91;
       /* green highlight */
       color: white;
       font-weight: bold;
@@ -666,7 +666,7 @@
           }
 
           .btn[aria-pressed="true"] {
-            background: #10b981
+            background: #009e91
           }
 
           .btn.small {
