@@ -1933,26 +1933,42 @@ map.on('load', updateCenterPublicAccess);
   }
 
   const selectFeature = (feature) => {
-    clearSelection();
+  if (!feature) return;
 
-    if (feature.layer.id === 'data-points-all') {
-      selectedPoint = feature;
-      map.setFeatureState({ source: 'data-points', id: feature.id }, { selected: true });
-      selectedFeatureId = feature.id;
-      hoverFeatureId = null;
-      updateIconSize();
-    } else if (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill') {
-      selectedRiver = feature;
-      map.setFeatureState(
-        { source: 'Waterways', sourceLayer: 'waterways', id: feature.id },
-        { selected: true }
-      );
-      selectedRiverId = feature.id;
-      updateSelectedRiverLayers();
+  const props = feature.properties || {};
+  clearSelection();
+
+  if (feature.layer.id === 'data-points-all') {
+    // ===== POINTS =====
+    selectedPoint = feature;
+    map.setFeatureState({ source: 'data-points', id: feature.id }, { selected: true });
+    selectedFeatureId = feature.id;
+    hoverFeatureId = null;
+    updateIconSize();
+
+  } else if (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill') {
+    // ===== WATERWAYS =====
+    selectedRiver = feature;
+    map.setFeatureState(
+      { source: 'Waterways', sourceLayer: 'waterways', id: feature.id },
+      { selected: true }
+    );
+    selectedRiverId = feature.id;
+    updateSelectedRiverLayers();
+
+    // 📊 Umami analytics: waterway selection by region
+    if (window.umami) {
+      const rc = getRegionCode(props);   // uses your existing helper
+      umami.track('waterway-select', {
+        region_name: props.Region || props.region || null,
+        water_name: props.Water || props.name || null,
+        water_type: props.water_type || null
+      });
     }
+  }
 
-    showCard(feature);
-  };
+  showCard(feature);
+};
 
   function unselectFeatures() {
     if (selectedRiver) {
