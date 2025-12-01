@@ -417,6 +417,13 @@ function getRegionCode(props) {
                 e.target.setAttribute('aria-pressed', String(!pressed));
                 e.target.textContent = pressed ? 'Hidden' : 'Shown';
                 setVisibility(LAYERS[src] || [], !pressed);
+if (window.umami) {
+  umami.track('layer-visibility-toggle', {
+    source: src,            // waterways / points / publicAccess / regions
+    visible: !pressed
+  });
+}
+
               });
             });
 
@@ -1533,9 +1540,13 @@ canvas._chartInstance = new Chart(ctx, {
         const [lng, lat] = feature.geometry.coordinates;
         const googleMapsLink = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
         content += `<br>  
-          <a href="${googleMapsLink}" target="_blank" title="Get Directions in Google Maps" style="font-weight: normal; text-decoration: none; color: blue; font-size: 0.9em">
-            (Get Directions in Google Maps)
-          </a>`;
+  <a href="${googleMapsLink}"
+     target="_blank"
+     title="Get Directions in Google Maps"
+     style="..."
+     onclick="if(window.umami){umami.track('directions-click-google-maps')}">
+    (Get Directions in Google Maps)
+  </a>`;
       }
       content += `</div>`;
     }
@@ -1562,16 +1573,25 @@ canvas._chartInstance = new Chart(ctx, {
     content += `</ul>`;
 
     const regsHref = getRegionRegUrlFromProps(props);
-    if (regsHref) {
-      content += `
-        <div class="regs-cta">
-          <a href="${regsHref}" target="_blank" rel="noopener noreferrer" class="regs-btn">
-            Download Full Regional Regulations
-          </a>
-        </div>
-      `;
-    }
 
+    if (regsHref) {
+  const rc = getRegionCode(props); // you already have this helper above
+  content += `
+    <div class="regs-cta">
+      <a href="${regsHref}"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="regs-btn"
+         onclick="if(window.umami){umami.track('regs-download-click',{region_code:${rc ?? 'null'}})}">
+        Download Full Regional Regulations
+      </a>
+    </div>
+  `;
+}
+
+
+
+    
 // NEW: Licence CTA based on Region Code
 const rc = getRegionCode(props);
 if (rc !== null) {
@@ -1579,7 +1599,11 @@ if (rc !== null) {
     // Standard Fish & Game licence
     content += `
       <div class="regs-cta">
-        <a href="${FG_LICENCE_URL}" target="_blank" rel="noopener noreferrer" class="regs-btn">
+        <a href="${FG_LICENCE_URL}"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="regs-btn"
+           onclick="umami.track('buy-fg-licence-click')">
           Buy a Fish &amp; Game Licence
         </a>
       </div>
@@ -1588,7 +1612,11 @@ if (rc !== null) {
     // Taupō DOC licence
     content += `
       <div class="regs-cta">
-        <a href="${DOC_TAUPO_LICENCE_URL}" target="_blank" rel="noopener noreferrer" class="regs-btn">
+        <a href="${DOC_TAUPO_LICENCE_URL}"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="regs-btn"
+           onclick="umami.track('buy-taupo-licence-click')">
           Buy a Taupō Fishing Licence (DOC)
         </a>
       </div>
@@ -1801,11 +1829,16 @@ if (rc !== null) {
     }
 
     document.querySelectorAll(".basemap-btn").forEach(btn => {
-      btn.classList.remove("active");
-      if (btn.dataset.basemap === type) {
-        btn.classList.add("active");
-      }
-    });
+  btn.addEventListener("click", () => {
+    const type = btn.dataset.basemap;
+    setBasemap(type);
+    if (window.umami) {
+      umami.track('basemap-change', { basemap: type });
+    }
+  });
+});
+
+
   }
 
   document.querySelectorAll(".basemap-btn").forEach(btn => {
@@ -2521,11 +2554,27 @@ map.on('mouseleave', 'PublicAccessAreas-fill', () => {
   hoverPopup.style.display = 'none';
 });
 
-  map.on('click', 'data-points-all', e => {
-    selectedFeatureId = e.features[0].id;
-    hoverFeatureId = null;
-    updateIconSize();
-  });
+
+map.on('click', 'data-points-all', e => {
+  const feature = e.features && e.features[0];
+  if (!feature) return;
+
+  const props = feature.properties || {};
+
+  // 📊 Analytics Event — Track region + point selection
+  if (window.umami) {
+    umami.track('point-select', {
+      region_code: props.region || '',
+      point_type: props.point_type || ''
+      
+    });
+  }
+
+  selectedFeatureId = feature.id;
+  hoverFeatureId = null;
+  updateIconSize();
+});
+
 
   map.on('click', (e) => {
   const riverTapLayers = isTouch
@@ -2639,6 +2688,10 @@ map.on('mouseleave', 'PublicAccessAreas-fill', () => {
   const suggestions = document.getElementById('suggestions');
   inputEl.addEventListener('input', () => {
     const query = inputEl.value.trim().toLowerCase();
+     if (window.umami && query.length === 1) {
+    // fire once per new search (cheap heuristic)
+    umami.track('search-typing-start');
+  }
     suggestions.innerHTML = '';
     if (!query) { suggestions.style.display = 'none'; return; }
 
