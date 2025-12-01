@@ -2620,10 +2620,26 @@ map.on('click', 'data-points-all', e => {
     f.layer.id === 'flow-dev-wt-circles'
   );
 
-  if (flowFeature) {
+
+if (flowFeature) {
+  const props = flowFeature.properties || {};
+
+  // 📊 Umami analytics: flow / temp station selected
+  if (window.umami) {
+    const rc = getRegionCode(props);  // uses your helper near the top
+
+    umami.track('station-select', {
+      region_code: rc ?? null,                       // numeric region code
+      region_name: props.Region || props.region || null,
+      site_name: props.site_name || null,
+      parameter: props.parameter || null,           // "Flow" or "Temperature"
+      source: props.source || props.source_name || null
+    });
+  }
+
   // Just open the side panel card, don't move the map
   showFlowCard(flowFeature);
-  return; // IMPORTANT: don't fall through to clearSelection()
+  return;
 }
 
 
