@@ -90,20 +90,12 @@
       color: #333;
       margin-top: 4px;
     }
-
-    .directions-inline-image {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      opacity: 0.85;
-      transition: transform 0.2s, opacity 0.2s;
-    }
-
-    .directions-inline-image:hover {
-      transform: scale(1.1);
-      opacity: 1;
-    }
-
+.get-directions-link {
+  font-weight: normal;
+  font-size: 14px; /* adjust to taste */
+  text-decoration: underline;
+  line-height: 1.2;
+}
     .subtitle-region {
       font-size: 1.em;
       font-style: italic;

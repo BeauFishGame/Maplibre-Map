@@ -1540,13 +1540,14 @@ canvas._chartInstance = new Chart(ctx, {
         const [lng, lat] = feature.geometry.coordinates;
         const googleMapsLink = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
         content += `<br>  
-  <a href="${googleMapsLink}"
+ <a href="${googleMapsLink}"
+     class="get-directions-link"
      target="_blank"
      title="Get Directions in Google Maps"
-     style="..."
      onclick="if(window.umami){umami.track('directions-click-google-maps')}">
     (Get Directions in Google Maps)
-  </a>`;
+  </a>
+`;
       }
       content += `</div>`;
     }
@@ -1676,6 +1677,57 @@ if (rc !== null) {
 
   let selectedFeatureId = null;
   let hoverFeatureId = null;
+
+
+  // ===== Hover for flow-dev circles (Flow + Temperature) =====
+let flowHoverId = null;
+let selectedFlowId = null;
+
+function setFlowHover(id) {
+  if (id === flowHoverId) return;
+  if (flowHoverId !== null) {
+    // clear previous
+    map.setFeatureState(
+      { source: 'flow-dev', id: flowHoverId },
+      { hover: false }
+    );
+  }
+  flowHoverId = id;
+  if (flowHoverId !== null) {
+    map.setFeatureState(
+      { source: 'flow-dev', id: flowHoverId },
+      { hover: true }
+    );
+  }
+}
+
+// Flow hover
+map.on('mousemove', 'flow-dev-flow-circles', (e) => {
+  map.getCanvas().style.cursor = 'pointer';
+  const f = e.features && e.features[0];
+  if (f && typeof f.id !== 'undefined') {
+    setFlowHover(f.id);
+  }
+});
+
+map.on('mouseleave', 'flow-dev-flow-circles', () => {
+  map.getCanvas().style.cursor = '';
+  setFlowHover(null);
+});
+
+// Temperature hover
+map.on('mousemove', 'flow-dev-wt-circles', (e) => {
+  map.getCanvas().style.cursor = 'pointer';
+  const f = e.features && e.features[0];
+  if (f && typeof f.id !== 'undefined') {
+    setFlowHover(f.id);
+  }
+});
+
+map.on('mouseleave', 'flow-dev-wt-circles', () => {
+  map.getCanvas().style.cursor = '';
+  setFlowHover(null);
+});
 
   function getIconSizeExpr(selectedId, hoverId) {
     return [
@@ -1982,34 +2034,47 @@ map.on('load', updateCenterPublicAccess);
   showCard(feature);
 };
 
-  function unselectFeatures() {
-    if (selectedRiver) {
-      try {
-        map.setFeatureState(
-          { source: 'Waterways', sourceLayer: 'waterways', id: selectedRiver.id },
-          { selected: false, highlight: false }
-        );
-      } catch (e) { }
-      selectedRiver = null;
-    }
-
-    selectedRiverId = null;
-    updateSelectedRiverLayers();
-
-    if (selectedPoint) {
-      try {
-        map.setFeatureState(
-          { source: 'data-points', id: selectedPoint.id },
-          { selected: false }
-        );
-      } catch (e) { }
-      selectedPoint = null;
-    }
-
-    selectedFeatureId = null;
-    hoverFeatureId = null;
-    updateIconSize();
+ function unselectFeatures() {
+  if (selectedRiver) {
+    try {
+      map.setFeatureState(
+        { source: 'Waterways', sourceLayer: 'waterways', id: selectedRiver.id },
+        { selected: false, highlight: false }
+      );
+    } catch (e) { }
+    selectedRiver = null;
   }
+
+  selectedRiverId = null;
+  updateSelectedRiverLayers();
+
+  if (selectedPoint) {
+    try {
+      map.setFeatureState(
+        { source: 'data-points', id: selectedPoint.id },
+        { selected: false }
+      );
+    } catch (e) { }
+    selectedPoint = null;
+  }
+
+  // NEW: clear selected flow/temp station
+  if (selectedFlowId !== null) {
+    try {
+      map.setFeatureState(
+        { source: 'flow-dev', id: selectedFlowId },
+        { selected: false, hover: false }
+      );
+    } catch (e) { }
+    selectedFlowId = null;
+    flowHoverId = null;
+  }
+
+  selectedFeatureId = null;
+  hoverFeatureId = null;
+  updateIconSize();
+}
+
 
   let allFeatures = [];
   let allPointsFeatures = [];
@@ -2324,7 +2389,8 @@ map.on('load', updateCenterPublicAccess);
       if (!sources['flow-dev']) {
         map.addSource('flow-dev', {
           type: 'geojson',
-          data: FLOW_DEV_URL
+          data: FLOW_DEV_URL,
+          generateId: true   
         });
       }
 
@@ -2337,11 +2403,28 @@ map.on('load', updateCenterPublicAccess);
           filter: ['==', ['get', 'parameter'], 'Flow'],
           paint: {
             'circle-radius': [
-              'interpolate', ['linear'], ['zoom'],
-              7, 0.01,
-              11, 5,
-              14, 10
-            ],
+  'interpolate', ['linear'], ['zoom'],
+  7, [
+    'case',
+    ['boolean', ['feature-state', 'selected'], false], 3,    // 🔹 selected
+    ['boolean', ['feature-state', 'hover'], false], 2.5,       // hover
+    2                                                        // default
+  ],
+  11, [
+    'case',
+    ['boolean', ['feature-state', 'selected'], false], 7,
+    ['boolean', ['feature-state', 'hover'], false], 6,
+    5
+  ],
+  14, [
+    'case',
+    ['boolean', ['feature-state', 'selected'], false], 12,
+    ['boolean', ['feature-state', 'hover'], false], 11,
+    10
+  ]
+],
+
+
             'circle-color': '#3498db',
             'circle-opacity': 0.85,
             'circle-stroke-color': '#ffffff',
@@ -2369,11 +2452,28 @@ map.on('load', updateCenterPublicAccess);
           filter: ['==', ['get', 'parameter'], 'Temperature'],
           paint: {
             'circle-radius': [
-              'interpolate', ['linear'], ['zoom'],
-              7, 0.01,
-              11, 5,
-              14, 10
-            ],
+  'interpolate', ['linear'], ['zoom'],
+  7, [
+    'case',
+    ['boolean', ['feature-state', 'selected'], false], 3,    // 🔹 selected
+    ['boolean', ['feature-state', 'hover'], false], 2.5,       // hover
+    2                                                        // default
+  ],
+  11, [
+    'case',
+    ['boolean', ['feature-state', 'selected'], false], 7,
+    ['boolean', ['feature-state', 'hover'], false], 6,
+    5
+  ],
+  14, [
+    'case',
+    ['boolean', ['feature-state', 'selected'], false], 12,
+    ['boolean', ['feature-state', 'hover'], false], 11,
+    10
+  ]
+],
+
+
             'circle-color': '#e67e22',
             'circle-opacity': 0.85,
             'circle-stroke-color': '#ffffff',
@@ -2605,13 +2705,11 @@ map.on('click', 'data-points-all', e => {
   updateIconSize();
 });
 
-
-  map.on('click', (e) => {
+map.on('click', (e) => {
   const riverTapLayers = isTouch
     ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
     : ['Waterways-line', 'Waterways-fill'];
 
-  // Include flow-dev layers when in dev
   const layersToQuery = ['data-points-all', ...riverTapLayers];
   if (isDev) {
     layersToQuery.push('flow-dev-flow-circles', 'flow-dev-wt-circles');
@@ -2621,56 +2719,77 @@ map.on('click', 'data-points-all', e => {
     layers: layersToQuery
   });
 
-  // If nothing at all under the cursor → clear
+  // Nothing under the cursor → clear everything
   if (!features.length) {
     clearSelection();
     card.style.display = 'none';
     return;
   }
 
-  // 1) Flow / water temp first
+  // Flow / Temperature first
   const flowFeature = features.find(f =>
     f.layer.id === 'flow-dev-flow-circles' ||
     f.layer.id === 'flow-dev-wt-circles'
   );
 
-
-if (flowFeature) {
-  const props = flowFeature.properties || {};
-
-  // 📊 Umami analytics: flow / temp station selected
-  if (window.umami) {
-    const rc = getRegionCode(props);  // uses your helper near the top
-
-    umami.track('station-select', {
-      region_code: rc ?? null,                       // numeric region code
-      region_name: props.Region || props.region || null,
-      site_name: props.site_name || null,
-      parameter: props.parameter || null,           // "Flow" or "Temperature"
-      source: props.source || props.source_name || null
-    });
-  }
-
-  // Just open the side panel card, don't move the map
-  showFlowCard(flowFeature);
-  return;
-}
-
-
-  // 2) Points
+  // Access points
   const pointFeature = features.find(f => f.layer.id === 'data-points-all');
 
-  // 3) Rivers
+  // Rivers
   const riverFeature =
     features.find(f => f.layer.id === 'Waterways-line') ||
     features.find(f => f.layer.id === 'Waterways-fill');
 
+  if (flowFeature) {
+    // Clear any previous selection (points, rivers, other flow)
+    clearSelection();
+
+    const id = flowFeature.id;
+    const props = flowFeature.properties || {};
+
+    // Mark this flow/temp station as selected
+    selectedFlowId = id;
+    try {
+      map.setFeatureState(
+        { source: 'flow-dev', id },
+        { selected: true }
+      );
+    } catch (e) {}
+
+    // Optional: also clear hover state
+    if (flowHoverId !== null) {
+      try {
+        map.setFeatureState(
+          { source: 'flow-dev', id: flowHoverId },
+          { hover: false }
+        );
+      } catch (e) {}
+      flowHoverId = null;
+    }
+
+    // analytics
+    if (window.umami) {
+      const rc = getRegionCode(props);
+      umami.track('station-select', {
+        region_code: rc ?? null,
+        region_name: props.Region || props.region || null,
+        site_name: props.site_name || null,
+        parameter: props.parameter || null,
+        source: props.source || props.source_name || null
+      });
+    }
+
+    // Show side panel
+    showFlowCard(flowFeature);
+    return;
+  }
+
+  // If no flow/temp clicked, let your existing logic handle points/rivers.
   if (pointFeature) {
     selectFeature(pointFeature);
   } else if (riverFeature) {
     selectFeature(riverFeature);
   } else {
-    // Shouldn’t normally happen, but safe fallback:
     clearSelection();
     card.style.display = 'none';
   }
