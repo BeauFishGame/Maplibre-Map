@@ -2406,9 +2406,9 @@
                 'interpolate', ['linear'], ['zoom'],
                 7, [
                   'case',
-                  ['boolean', ['feature-state', 'selected'], false], 3,    // 🔹 selected
-                  ['boolean', ['feature-state', 'hover'], false], 2.5,       // hover
-                  2                                                        // default
+                  ['boolean', ['feature-state', 'selected'], false], 1.5,    // 🔹 selected
+                  ['boolean', ['feature-state', 'hover'], false], 1,       // hover
+                  .5                                                        // default
                 ],
                 11, [
                   'case',
@@ -2435,7 +2435,7 @@
               ],
               'circle-translate': [
                 'interpolate', ['linear'], ['zoom'],
-                6, ['literal', [-2, 0]],
+                6, ['literal', [-.3, 0]],
                 11, ['literal', [-7, 0]],
                 14, ['literal', [-14, 0]]
               ]
@@ -2484,7 +2484,7 @@
               ],
               'circle-translate': [
                 'interpolate', ['linear'], ['zoom'],
-                6, ['literal', [1, 0]],
+                6, ['literal', [.3, 0]],
                 11, ['literal', [7, 0]],
                 14, ['literal', [14, 0]]
               ]
