@@ -1205,270 +1205,361 @@
     };
 
     // ===== NEW: Flow (and WT) side-panel card =====
-    function showFlowCard(feature) {
-      const props = feature.properties || {};
+    // ===== NEW: Flow (and WT) side-panel card =====
+function showFlowCard(feature) {
+  const props = feature.properties || {};
 
-      const site = props.site_name;
-      const station_name = props.station_name;
-      const param = props.parameter || 'Value';   // "Flow" or "Temperature"
-      const rawVal = props.latest_value;
-      const whenRaw = props.latest_datetime;
-      const unitProp = props.unit;
+  const site = props.site_name;
+  const station_name = props.station_name;
+  const param = props.parameter || 'Value';   // "Flow" or "Temperature"
+  const rawVal = props.latest_value;
+  const whenRaw = props.latest_datetime;
+  const unitProp = props.unit;
 
-      // NEW: pick default image based on Flow vs Temperature
-      const defaultImage = flowTypeDefaultImages[param] || null;
-      window.__cardPhotos = defaultImage ? [defaultImage] : [];
-      window.__cardPhotoIndex = 0;
+  // NEW: read flow thresholds (if present)
+  const worthwhileUpperRaw = props.worthwhile_upper;
+  const worthwhileLowerRaw = props.worthwhile_lower;
 
-      const unit = unitProp ||
-        (param === 'Flow'
-          ? 'm³/s'
-          : param === 'Temperature'
-            ? '°C'
-            : '');
+  const worthwhileUpper = (worthwhileUpperRaw !== null &&
+                           worthwhileUpperRaw !== undefined &&
+                           worthwhileUpperRaw !== '')
+    ? Number(worthwhileUpperRaw)
+    : NaN;
 
-      const numVal = (typeof rawVal === 'number')
-        ? rawVal
-        : (rawVal !== null && rawVal !== undefined && rawVal !== ''
-          ? Number(rawVal)
-          : NaN);
+  const worthwhileLower = (worthwhileLowerRaw !== null &&
+                           worthwhileLowerRaw !== undefined &&
+                           worthwhileLowerRaw !== '')
+    ? Number(worthwhileLowerRaw)
+    : NaN;
 
-      const isNumeric = Number.isFinite(numVal);
-      const valFormatted = isNumeric ? numVal.toFixed(1) : (rawVal ?? 'NA');
+  // NEW: pick default image based on Flow vs Temperature
+  const defaultImage = flowTypeDefaultImages[param] || null;
+  window.__cardPhotos = defaultImage ? [defaultImage] : [];
+  window.__cardPhotoIndex = 0;
 
-      let summaryText = 'Latest value not available';
-      if (whenRaw) {
-        try {
-          const d = new Date(whenRaw);
+  const unit = unitProp ||
+    (param === 'Flow'
+      ? 'm³/s'
+      : param === 'Temperature'
+        ? '°C'
+        : '');
 
-          const timeText = d.toLocaleString("en-NZ", {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-            timeZone: "Pacific/Auckland"
-          }).replace(":00", "").toLowerCase();
+  const numVal = (typeof rawVal === 'number')
+    ? rawVal
+    : (rawVal !== null && rawVal !== undefined && rawVal !== ''
+      ? Number(rawVal)
+      : NaN);
 
-          const dateText = d.toLocaleDateString("en-NZ", {
-            day: "numeric",
-            month: "short",
-            timeZone: "Pacific/Auckland"
-          });
+  const isNumeric = Number.isFinite(numVal);
+  const valFormatted = isNumeric ? numVal.toFixed(1) : (rawVal ?? 'NA');
 
-          summaryText = `${param} is ${valFormatted} ${unit || ''} as of ${timeText} ${dateText}`;
-        } catch {
-          summaryText = `${param} is ${valFormatted} ${unit || ''} (time: ${whenRaw})`;
-        }
-      }
+  let summaryText = 'Latest value not available';
+  if (whenRaw) {
+    try {
+      const d = new Date(whenRaw);
 
-      let times = [];
-      let values = [];
-      try {
-        if (props.times_json) times = JSON.parse(props.times_json);
-        if (props.values_json) values = JSON.parse(props.values_json);
-      } catch (err) {
-        console.error('Error parsing times_json / values_json', err);
-      }
+      const timeText = d.toLocaleString("en-NZ", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "Pacific/Auckland"
+      }).replace(":00", "").toLowerCase();
 
-      if (times.length !== values.length) {
-        const n = Math.min(times.length, values.length);
-        times = times.slice(0, n);
-        values = values.slice(0, n);
-      }
-
-      const lineColor = param === 'Flow' ? '#3498db' : '#e67e22';
-
-      const sourceURL = props.source_url || null;
-
-      const cardHtml = `
-      <div class="map-overlay-inner">
-        <button class="close-button" onclick="closeCard()">&times;</button>
-        <div class="panel-scroll">
-          ${defaultImage ? `
-          <div class="card-image-wrap">
-            <img id="cardMainImage"
-                 src="${defaultImage}"
-                 alt="River ${param.toLowerCase()} default image"
-                 onclick="openImageModal()" />
-          </div>
-          ` : ``}
-          <code class="card-title">${site}</code>
-
- <div class="card-subtitle subtitle-main">
-  ${!isBlankish(station_name)
-          ? `${station_name}${sourceURL ? ' | ' : ''}`
-          : ''
-        }
-  ${sourceURL
-          ? `<a href="${sourceURL}" target="_blank" rel="noopener" class="get-directions-link"> Source</a>`
-          : ''
-        }
-</div>
-          <hr>
-          <ul class="card-list">
-            <li>
-                ${summaryText.replace(`${param} is `, '')}</li>
-          </ul>
-          <h4 style="margin-top:10px; margin-bottom:4px;">Recent time series</h4>
-          <div style="width:100%; max-width:360px; height:210px;">
-            <canvas id="flowDevChartCanvas" width="360" height="210"></canvas>
-          </div>
-        </div>
-      </div>
-    `;
-
-
-      card.innerHTML = cardHtml;
-      openPanel('card');
-      const canvas = document.getElementById('flowDevChartCanvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-
-      if (canvas._chartInstance) {
-        canvas._chartInstance.destroy();
-      }
-
-      const timeObjs = times.map(t => new Date(t));
-
-      /**
-       * Plugin: draw a red threshold line + shaded area above 20°C
-       * and a warning message when param === "Temperature".
-       */
-      const tempThresholdPlugin = {
-        id: 'tempThreshold',
-        afterDraw(chart) {
-          // Only run if this is a temperature chart
-          if (param !== 'Temperature') return;
-
-          const { ctx, chartArea, scales } = chart;
-          const yScale = scales.y;
-          if (!yScale) return;
-
-          const threshold = 20; // 20°C
-          const yPixel = yScale.getPixelForValue(threshold);
-
-          // If threshold is outside the visible range, skip
-          if (yPixel < chartArea.top || yPixel > chartArea.bottom) return;
-
-          ctx.save();
-
-          const { left, right, top } = chartArea;
-          const width = right - left;
-
-          // --- 1) Shaded area ABOVE the 20°C line ---
-          ctx.fillStyle = 'rgba(220, 53, 69, 0.08)'; // faint red
-          ctx.fillRect(left, top, width, yPixel - top);
-
-          // --- 2) Red dashed threshold line at 20°C ---
-          ctx.strokeStyle = 'rgba(220, 53, 69, 0.9)';
-          ctx.lineWidth = 1;
-          ctx.setLineDash([4, 3]);
-          ctx.beginPath();
-          ctx.moveTo(left, yPixel);
-          ctx.lineTo(right, yPixel);
-          ctx.stroke();
-          ctx.setLineDash([]);
-
-          // --- 3) Warning text ---
-          const text =
-            'Trout released above 20°C have much lower survival – consider fishing another time';
-          ctx.fillStyle = 'rgba(139, 0, 0, 0.95)';
-          ctx.font = '10px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'top';
-
-          const textX = (left + right) / 2;
-          const textY = top + 4;
-          const maxWidth = width - 10;
-
-          ctx.fillText(text, textX, textY, maxWidth);
-
-          ctx.restore();
-        }
-      };
-
-      // Only attach plugin when needed
-      const plugins = [];
-      if (param === 'Temperature') {
-        plugins.push(tempThresholdPlugin);
-      }
-
-      canvas._chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: timeObjs,
-          datasets: [{
-            label: `${param} (${unit || ''})`,
-            data: values,
-            borderColor: lineColor,
-            backgroundColor: lineColor,
-            tension: 0.2,
-            pointRadius: 0,
-            borderWidth: 1.5
-          }]
-        },
-        options: {
-          responsive: false,
-          interaction: {
-            mode: 'index',
-            intersect: false
-          },
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              mode: 'index',
-              intersect: false,
-              displayColors: false,
-              callbacks: {
-                label: (ctx) => {
-                  const d = new Date(ctx.parsed.x);
-                  const v = ctx.parsed.y;
-
-                  const timeText = d.toLocaleString("en-NZ", {
-                    timeZone: "Pacific/Auckland",
-                    hour: "numeric",
-                    hour12: true
-                  }).replace(":00", "").toLowerCase();
-
-                  const dateText = d.toLocaleDateString("en-NZ", {
-                    timeZone: "Pacific/Auckland",
-                    day: "numeric",
-                    month: "short"
-                  });
-
-                  const valueText = v.toFixed(1);
-                  return `${valueText} ${unit || ''} at ${timeText} ${dateText}`;
-                },
-                title: () => ''
-              }
-            }
-          },
-          scales: {
-            x: {
-              type: 'time',
-              time: {
-                unit: 'day',
-                stepSize: 1,
-                displayFormats: { day: 'd MMM' }
-              },
-              ticks: { maxRotation: 45 }
-            },
-            y: {
-              title: {
-                display: true,
-                text: `${param} (${unit || ''})`,
-                font: { size: 11 }
-              },
-              ticks: { maxTicksLimit: 5 }
-            }
-          },
-          elements: {
-            line: { stepped: false }
-          }
-        },
-        plugins // 👈 add our threshold plugin (only for Temperature)
+      const dateText = d.toLocaleDateString("en-NZ", {
+        day: "numeric",
+        month: "short",
+        timeZone: "Pacific/Auckland"
       });
 
+      summaryText = `${param} is ${valFormatted} ${unit || ''} as of ${timeText} ${dateText}`;
+    } catch {
+      summaryText = `${param} is ${valFormatted} ${unit || ''} (time: ${whenRaw})`;
     }
+  }
+
+  let times = [];
+  let values = [];
+  try {
+    if (props.times_json) times = JSON.parse(props.times_json);
+    if (props.values_json) values = JSON.parse(props.values_json);
+  } catch (err) {
+    console.error('Error parsing times_json / values_json', err);
+  }
+
+  if (times.length !== values.length) {
+    const n = Math.min(times.length, values.length);
+    times = times.slice(0, n);
+    values = values.slice(0, n);
+  }
+
+  const lineColor = param === 'Flow' ? '#3498db' : '#e67e22';
+
+  const sourceURL = props.source_url || null;
+
+  const cardHtml = `
+    <div class="map-overlay-inner">
+      <button class="close-button" onclick="closeCard()">&times;</button>
+      <div class="panel-scroll">
+        ${defaultImage ? `
+        <div class="card-image-wrap">
+          <img id="cardMainImage"
+               src="${defaultImage}"
+               alt="River ${param.toLowerCase()} default image"
+               onclick="openImageModal()" />
+        </div>
+        ` : ``}
+        <code class="card-title">${site}</code>
+
+        <div class="card-subtitle subtitle-main">
+          ${
+            !isBlankish(station_name)
+              ? `${station_name}${sourceURL ? ' | ' : ''}`
+              : ''
+          }
+          ${
+            sourceURL
+              ? `<a href="${sourceURL}" target="_blank" rel="noopener" class="get-directions-link"> Source</a>`
+              : ''
+          }
+        </div>
+        <hr>
+        <ul class="card-list">
+          <li>${summaryText.replace(`${param} is `, '')}</li>
+        </ul>
+        <h4 style="margin-top:10px; margin-bottom:4px;">Recent time series</h4>
+        <div style="width:100%; max-width:360px; height:210px;">
+          <canvas id="flowDevChartCanvas" width="360" height="210"></canvas>
+        </div>
+      </div>
+    </div>
+  `;
+
+  card.innerHTML = cardHtml;
+  openPanel('card');
+  const canvas = document.getElementById('flowDevChartCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  if (canvas._chartInstance) {
+    canvas._chartInstance.destroy();
+  }
+
+  const timeObjs = times.map(t => new Date(t));
+
+  /**
+   * Plugin: draw a red threshold line + shaded area above 20°C
+   * and a warning message when param === "Temperature".
+   */
+  const tempThresholdPlugin = {
+    id: 'tempThreshold',
+    afterDraw(chart) {
+      // Only run if this is a temperature chart
+      if (param !== 'Temperature') return;
+
+      const { ctx, chartArea, scales } = chart;
+      const yScale = scales.y;
+      if (!yScale) return;
+
+      const threshold = 20; // 20°C
+      const yPixel = yScale.getPixelForValue(threshold);
+
+      // If threshold is outside the visible range, skip
+      if (yPixel < chartArea.top || yPixel > chartArea.bottom) return;
+
+      ctx.save();
+
+      const { left, right, top } = chartArea;
+      const width = right - left;
+
+      // --- 1) Shaded area ABOVE the 20°C line ---
+      ctx.fillStyle = 'rgba(220, 53, 69, 0.08)'; // faint red
+      ctx.fillRect(left, top, width, yPixel - top);
+
+      // --- 2) Red dashed threshold line at 20°C ---
+      ctx.strokeStyle = 'rgba(220, 53, 69, 0.9)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(left, yPixel);
+      ctx.lineTo(right, yPixel);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // --- 3) Warning text ---
+      const text =
+        'Trout released above 20°C have much lower survival – consider fishing another time';
+      ctx.fillStyle = 'rgba(139, 0, 0, 0.95)';
+      ctx.font = '10px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+
+      const textX = (left + right) / 2;
+      const textY = top + 4;
+      const maxWidth = width - 10;
+
+      ctx.fillText(text, textX, textY, maxWidth);
+
+      ctx.restore();
+    }
+  };
+
+  // NEW: Flow threshold plugin (uses worthwhile_upper / worthwhile_lower)
+  // UPDATED: Flow worthwhile threshold plugin
+const flowThresholdPlugin = {
+  id: 'flowThreshold',
+  afterDraw(chart) {
+    if (param !== 'Flow') return;
+
+    const { ctx, chartArea, scales } = chart;
+    const yScale = scales.y;
+    if (!yScale) return;
+
+    if (!Number.isFinite(worthwhileUpper)) return;
+
+    const { left, right, top, bottom } = chartArea;
+    const width = right - left;
+
+    const yLimit = yScale.getPixelForValue(worthwhileUpper);
+
+    ctx.save();
+
+    // 🔹 Shaded "Worthwhile" area BELOW threshold
+    if (yLimit <= bottom) {
+      const shadeTop = Math.max(yLimit, top);
+      ctx.fillStyle = 'rgba(0, 123, 255, 0.10)'; // blue
+      ctx.fillRect(left, shadeTop, width, bottom - shadeTop);
+    }
+
+    // 🔺 Shaded "Not worthwhile" area ABOVE threshold
+    if (yLimit >= top) {
+      const shadeBottom = Math.min(yLimit, bottom);
+      ctx.fillStyle = 'rgba(220, 53, 69, 0.10)'; // red
+      ctx.fillRect(left, top, width, shadeBottom - top);
+    }
+
+    // ——— Draw threshold line ———
+    ctx.setLineDash([4, 3]);
+    ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(left, yLimit);
+    ctx.lineTo(right, yLimit);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // ——— Labels ———
+    ctx.font = '11px system-ui, sans-serif';
+    ctx.fillStyle = 'rgba(0, 123, 255, 0.95)'; // blue
+    ctx.textAlign = 'left';
+
+    // Worthwhile label (below line)
+    if (yLimit + 14 <= bottom) {
+      ctx.textBaseline = 'top';
+      ctx.fillText('Worthwhile', left + 4, yLimit + 4);
+    }
+
+    // Not worthwhile label (above line)
+    if (yLimit - 14 >= top) {
+      ctx.fillStyle = 'rgba(220, 53, 69, 0.95)'; // red
+      ctx.textBaseline = 'bottom';
+      ctx.fillText('Not worthwhile', left + 4, yLimit - 4);
+    }
+
+    ctx.restore();
+  }
+};
+
+
+  // Only attach plugins when needed
+  const plugins = [];
+  if (param === 'Temperature') {
+    plugins.push(tempThresholdPlugin);
+  }
+
+  // NEW: add flow plugin only when at least one threshold exists
+  if (
+    param === 'Flow' &&
+    (Number.isFinite(worthwhileUpper) || Number.isFinite(worthwhileLower))
+  ) {
+    plugins.push(flowThresholdPlugin);
+  }
+
+  canvas._chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: timeObjs,
+      datasets: [{
+        label: `${param} (${unit || ''})`,
+        data: values,
+        borderColor: lineColor,
+        backgroundColor: lineColor,
+        tension: 0.2,
+        pointRadius: 0,
+        borderWidth: 1.5
+      }]
+    },
+    options: {
+      responsive: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          displayColors: false,
+          callbacks: {
+            label: (ctx) => {
+              const d = new Date(ctx.parsed.x);
+              const v = ctx.parsed.y;
+
+              const timeText = d.toLocaleString("en-NZ", {
+                timeZone: "Pacific/Auckland",
+                hour: "numeric",
+                hour12: true
+              }).replace(":00", "").toLowerCase();
+
+              const dateText = d.toLocaleDateString("en-NZ", {
+                timeZone: "Pacific/Auckland",
+                day: "numeric",
+                month: "short"
+              });
+
+              const valueText = v.toFixed(1);
+              return `${valueText} ${unit || ''} at ${timeText} ${dateText}`;
+            },
+            title: () => ''
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'time',
+          time: {
+            unit: 'day',
+            stepSize: 1,
+            displayFormats: { day: 'd MMM' }
+          },
+          ticks: { maxRotation: 45 }
+        },
+        y: {
+          title: {
+            display: true,
+            text: `${param} (${unit || ''})`,
+            font: { size: 11 }
+          },
+          ticks: { maxTicksLimit: 5 }
+        }
+      },
+      elements: {
+        line: { stepped: false }
+      }
+    },
+    plugins // 👈 temperature + flow threshold plugins
+  });
+}
 
     // ===== Existing showCard for waterways/points (unchanged) =====
     const showCard = (feature) => {
