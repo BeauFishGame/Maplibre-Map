@@ -13,9 +13,9 @@
   <script async src="https://stats.fishandgameaccessmap.org/script.js"
     data-website-id="727d8b53-6b74-4eef-8258-daf48932ff65"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
   <link rel="stylesheet" href="css/map.css">
 </head>
 
@@ -29,8 +29,8 @@
   </div>
 
   <div id="map"></div>
-<div id="center-crosshair"></div>
-<div id="public-access-banner"></div>
+  <div id="center-crosshair"></div>
+  <div id="public-access-banner"></div>
   <div id="top-bar">
     <a href="https://www.fishandgame.org.nz/" target="_blank">
       <img class="logo" src="images/White%20LS.png" alt="Logo">
@@ -79,7 +79,7 @@
 
               <div class="group" data-group="w-method" data-type="radioOne">
                 <div class="group-title">
-                  Currently available for Northland, Auckland/Waikato and Eastern Fish & Game Regions. 
+                  Currently available for Northland, Auckland/Waikato and Eastern Fish & Game Regions.
                   <br><br>
                   <i class="disclaimer">
                     Disclaimer: The fisheries shown here are not exhaustive — some waterways are too small or remote to
@@ -191,25 +191,27 @@
               </div>
             </div>
             <div class="source-body">
-  <div class="hint">
-    Last updated: 18/09/2025 
-    <br><br>
-    <a href="https://www.herengaanuku.govt.nz/types-of-access" target="_blank">
-      Learn more about legal public access in NZ here
-    </a>
-    <br><br>
-    <a href="https://www.herengaanuku.govt.nz/types-of-access/rivers-lakes-and-coast/hydro-parcels" target="_blank">
-      Hydro parcels are complicated. Learn more here.
-    </a>
-    <br><br>
-    <i class="disclaimer">
-      Disclaimer: All efforts were made to ensure the accuracy of this information; however, there
-      may be circumstances beyond our control that alter or preclude public access. Please note that
-      the onus is on anglers to ensure they are not trespassing — if in doubt, please ask the adjacent
-      landowner.
-    </i>
-  </div>
-</div></div>
+              <div class="hint">
+                Last updated: 18/09/2025
+                <br><br>
+                <a href="https://www.herengaanuku.govt.nz/types-of-access" target="_blank">
+                  Learn more about legal public access in NZ here
+                </a>
+                <br><br>
+                <a href="https://www.herengaanuku.govt.nz/types-of-access/rivers-lakes-and-coast/hydro-parcels"
+                  target="_blank">
+                  Hydro parcels are complicated. Learn more here.
+                </a>
+                <br><br>
+                <i class="disclaimer">
+                  Disclaimer: All efforts were made to ensure the accuracy of this information; however, there
+                  may be circumstances beyond our control that alter or preclude public access. Please note that
+                  the onus is on anglers to ensure they are not trespassing — if in doubt, please ask the adjacent
+                  landowner.
+                </i>
+              </div>
+            </div>
+          </div>
           <!-- ================= FISH & GAME REGIONS ================= -->
           <div class="source-card" data-source="regions">
             <div class="source-head">
@@ -278,8 +280,8 @@
           }
 
 
-        const FG_LICENCE_URL = "https://fishandgame.eslltd.co.nz/";
-        const DOC_TAUPO_LICENCE_URL = "https://www.doc.govt.nz/parks-and-recreation/buy-a-taupo-fishing-licence-online/";
+          const FG_LICENCE_URL = "https://fishandgame.eslltd.co.nz/";
+          const DOC_TAUPO_LICENCE_URL = "https://www.doc.govt.nz/parks-and-recreation/buy-a-taupo-fishing-licence-online/";
 
 
 
@@ -299,12 +301,12 @@
             13: "https://www.doc.govt.nz/parks-and-recreation/places-to-go/central-north-island/places/taupo-trout-fishery/other-pages/rules-and-regulation---what-you-need-to-know/"
           };
 
-function getRegionCode(props) {
-  const raw =
-    props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
-  const rc = Number.parseInt(String(raw ?? '').trim(), 10);
-  return Number.isFinite(rc) ? rc : null;
-}
+          function getRegionCode(props) {
+            const raw =
+              props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
+            const rc = Number.parseInt(String(raw ?? '').trim(), 10);
+            return Number.isFinite(rc) ? rc : null;
+          }
           function getRegionRegUrlFromProps(props) {
             // accept RegionCode as number or string; treat NA-ish as missing
             const raw =
@@ -417,12 +419,12 @@ function getRegionCode(props) {
                 e.target.setAttribute('aria-pressed', String(!pressed));
                 e.target.textContent = pressed ? 'Hidden' : 'Shown';
                 setVisibility(LAYERS[src] || [], !pressed);
-if (window.umami) {
-  umami.track('layer-visibility-toggle', {
-    source: src,            // waterways / points / publicAccess / regions
-    visible: !pressed
-  });
-}
+                if (window.umami) {
+                  umami.track('layer-visibility-toggle', {
+                    source: src,            // waterways / points / publicAccess / regions
+                    visible: !pressed
+                  });
+                }
 
               });
             });
@@ -561,723 +563,723 @@ if (window.umami) {
   </div>
 
   <div class="map-overlay" id="properties"></div>
-<script>
-  // --- decide initial view from URL (run FIRST) ---
-  const url = new URL(window.location.href);
-  const regionParam = url.searchParams.get('region');
-  const latParam = parseFloat(url.searchParams.get('lat'));
-  const lngParam = parseFloat(url.searchParams.get('lng'));
-  const zParam = parseFloat(url.searchParams.get('z'));
-  const bboxParam = (url.searchParams.get('bbox') || '').trim();
+  <script>
+    // --- decide initial view from URL (run FIRST) ---
+    const url = new URL(window.location.href);
+    const regionParam = url.searchParams.get('region');
+    const latParam = parseFloat(url.searchParams.get('lat'));
+    const lngParam = parseFloat(url.searchParams.get('lng'));
+    const zParam = parseFloat(url.searchParams.get('z'));
+    const bboxParam = (url.searchParams.get('bbox') || '').trim();
 
-  const REGION_VIEWS = {
-    1: { center: [174.15, -35.70], zoom: 6.9 }, 2: { center: [175.182251, -37.998588], zoom: 6.9 },
-    3: { center: [177.127635, -38.307814], zoom: 6.9 }, 4: { center: [174.788398, -39.416080], zoom: 6.9 },
-    5: { center: [176.566401, -39.552397], zoom: 6.9 }, 6: { center: [175.718208, -40.534386], zoom: 6.9 },
-    7: { center: [173.069873, -41.681397], zoom: 6.9 }, 8: { center: [172.301859, -43.106414], zoom: 6.9 },
-    9: { center: [170.728991, -43.047237], zoom: 6.9 }, 10: { center: [170.745253, -44.232766], zoom: 6.9 },
-    11: { center: [169.422244, -45.454679], zoom: 6.9 }, 12: { center: [167.969988, -45.709747], zoom: 6.9 },
-    13: { center: [175.80, -38.80], zoom: 6.9 }
-  };
+    const REGION_VIEWS = {
+      1: { center: [174.15, -35.70], zoom: 6.9 }, 2: { center: [175.182251, -37.998588], zoom: 6.9 },
+      3: { center: [177.127635, -38.307814], zoom: 6.9 }, 4: { center: [174.788398, -39.416080], zoom: 6.9 },
+      5: { center: [176.566401, -39.552397], zoom: 6.9 }, 6: { center: [175.718208, -40.534386], zoom: 6.9 },
+      7: { center: [173.069873, -41.681397], zoom: 6.9 }, 8: { center: [172.301859, -43.106414], zoom: 6.9 },
+      9: { center: [170.728991, -43.047237], zoom: 6.9 }, 10: { center: [170.745253, -44.232766], zoom: 6.9 },
+      11: { center: [169.422244, -45.454679], zoom: 6.9 }, 12: { center: [167.969988, -45.709747], zoom: 6.9 },
+      13: { center: [175.80, -38.80], zoom: 6.9 }
+    };
 
-  let initialCamera = { center: [173.792725, -40.784701], zoom: 5.3 }; // default
+    let initialCamera = { center: [173.792725, -40.784701], zoom: 5.3 }; // default
 
-  if (bboxParam) {
-    const parts = bboxParam.split(',').map(Number);
-    if (parts.length === 4 && parts.every(Number.isFinite)) {
-      initialCamera = {
-        bounds: [[parts[0], parts[1]], [parts[2], parts[3]]],
-        fitBoundsOptions: { padding: { top: 80, right: 10, bottom: 10, left: 10 } }
-      };
+    if (bboxParam) {
+      const parts = bboxParam.split(',').map(Number);
+      if (parts.length === 4 && parts.every(Number.isFinite)) {
+        initialCamera = {
+          bounds: [[parts[0], parts[1]], [parts[2], parts[3]]],
+          fitBoundsOptions: { padding: { top: 80, right: 10, bottom: 10, left: 10 } }
+        };
+      }
+    } else if (Number.isFinite(latParam) && Number.isFinite(lngParam)) {
+      initialCamera = { center: [lngParam, latParam], zoom: Number.isFinite(zParam) ? zParam : 10 };
+    } else if (regionParam && REGION_VIEWS[+regionParam]) {
+      initialCamera = REGION_VIEWS[+regionParam];
     }
-  } else if (Number.isFinite(latParam) && Number.isFinite(lngParam)) {
-    initialCamera = { center: [lngParam, latParam], zoom: Number.isFinite(zParam) ? zParam : 10 };
-  } else if (regionParam && REGION_VIEWS[+regionParam]) {
-    initialCamera = REGION_VIEWS[+regionParam];
-  }
 
-  const styleURL = 'https://basemaps.linz.govt.nz/v1/styles/topo-raster.json?api=d01hep5551e30kxb7w85hck49tp';
-  //const TODAY_UNIX = Math.floor(Date.now() / 1000);
+    const styleURL = 'https://basemaps.linz.govt.nz/v1/styles/topo-raster.json?api=d01hep5551e30kxb7w85hck49tp';
+    //const TODAY_UNIX = Math.floor(Date.now() / 1000);
 
-const TODAY_UNIX = Math.floor((Date.now() + (13 * 60 * 60 * 1000)) / 1000);
+    const TODAY_UNIX = Math.floor((Date.now() + (13 * 60 * 60 * 1000)) / 1000);
 
 
-console.log("TODAY_UNIX:", TODAY_UNIX);
-  const map = new maplibregl.Map({
-    container: 'map',
-    style: styleURL,
-    center: [173.792725, -40.784701],
-    minZoom: 5,
-    ...initialCamera
-  });
+    console.log("TODAY_UNIX:", TODAY_UNIX);
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: styleURL,
+      center: [173.792725, -40.784701],
+      minZoom: 5,
+      ...initialCamera
+    });
 
-  map.addControl(new maplibregl.NavigationControl({ showCompass: true }));
-  map.addControl(new maplibregl.GeolocateControl({
-    positionOptions: { enableHighAccuracy: true },
-    trackUserLocation: true,
-    showUserHeading: true
-  }));
-  map.dragRotate.disable();
-  map.touchZoomRotate.disableRotation();
+    map.addControl(new maplibregl.NavigationControl({ showCompass: true }));
+    map.addControl(new maplibregl.GeolocateControl({
+      positionOptions: { enableHighAccuracy: true },
+      trackUserLocation: true,
+      showUserHeading: true
+    }));
+    map.dragRotate.disable();
+    map.touchZoomRotate.disableRotation();
 
-  // ---- Image modal swipe (unchanged) ----
-  (function addModalSwipe() {
-    let startX = 0, startY = 0, tracking = false;
+    // ---- Image modal swipe (unchanged) ----
+    (function addModalSwipe() {
+      let startX = 0, startY = 0, tracking = false;
 
-    const modal = document.getElementById('imageModal');
-    const img = document.getElementById('modalImage');
+      const modal = document.getElementById('imageModal');
+      const img = document.getElementById('modalImage');
 
-    function onStart(e) {
-      const t = e.touches?.[0];
-      if (!t) return;
-      startX = t.clientX; startY = t.clientY; tracking = true;
-    }
-    function onEnd(e) {
-      if (!tracking) return;
-      const t = e.changedTouches?.[0];
-      if (!t) return;
-      const dx = t.clientX - startX;
-      const dy = t.clientY - startY;
-      tracking = false;
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
-        if (dx < 0) modalNext(); else modalPrev();
+      function onStart(e) {
+        const t = e.touches?.[0];
+        if (!t) return;
+        startX = t.clientX; startY = t.clientY; tracking = true;
+      }
+      function onEnd(e) {
+        if (!tracking) return;
+        const t = e.changedTouches?.[0];
+        if (!t) return;
+        const dx = t.clientX - startX;
+        const dy = t.clientY - startY;
+        tracking = false;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) modalNext(); else modalPrev();
+        }
+      }
+
+      img.addEventListener('touchstart', onStart, { passive: true });
+      img.addEventListener('touchend', onEnd, { passive: true });
+    })();
+
+    // ---- Image card helpers (unchanged) ----
+    function setCardImage(index) {
+      const photos = window.__cardPhotos || [];
+      if (!photos.length) return;
+      const n = ((index % photos.length) + photos.length) % photos.length;
+      window.__cardPhotoIndex = n;
+
+      const main = document.getElementById('cardMainImage');
+      if (main) {
+        main.src = photos[n];
+        main.onclick = () => openImageModal(n);
+      }
+
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImage');
+      if (modal?.classList.contains('show') && modalImg) {
+        modalImg.src = photos[n];
+      }
+
+      const meta = document.querySelector('.carousel-meta');
+      if (meta) {
+        meta.textContent = `${n + 1} / ${photos.length}`;
       }
     }
 
-    img.addEventListener('touchstart', onStart, { passive: true });
-    img.addEventListener('touchend', onEnd, { passive: true });
-  })();
+    function openImageModal(arg) {
+      const modal = document.getElementById("imageModal");
+      const modalImg = document.getElementById("modalImage");
 
-  // ---- Image card helpers (unchanged) ----
-  function setCardImage(index) {
-    const photos = window.__cardPhotos || [];
-    if (!photos.length) return;
-    const n = ((index % photos.length) + photos.length) % photos.length;
-    window.__cardPhotoIndex = n;
+      let idx = window.__cardPhotoIndex || 0;
 
-    const main = document.getElementById('cardMainImage');
-    if (main) {
-      main.src = photos[n];
-      main.onclick = () => openImageModal(n);
+      if (typeof arg === 'number' && Number.isFinite(arg)) {
+        idx = arg;
+      } else if (typeof arg === 'string' && window.__cardPhotos?.length) {
+        const found = window.__cardPhotos.indexOf(arg);
+        if (found >= 0) idx = found;
+      }
+
+      setCardImage(idx);
+      modalImg.src = window.__cardPhotos[idx];
+
+      modal.classList.add("show");
+      updateModalNavVisibility();
+      modal.onclick = (ev) => { if (ev.target === modal) closeModal(); };
+      window.addEventListener('keydown', handleModalKeys);
     }
 
-    const modal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('modalImage');
-    if (modal?.classList.contains('show') && modalImg) {
-      modalImg.src = photos[n];
+    function updateModalNavVisibility() {
+      const count = (window.__cardPhotos || []).length;
+      const prevBtn = document.querySelector('#imageModal .modal-nav.prev');
+      const nextBtn = document.querySelector('#imageModal .modal-nav.next');
+      const show = count > 1;
+      if (prevBtn) prevBtn.style.display = show ? '' : 'none';
+      if (nextBtn) nextBtn.style.display = show ? '' : 'none';
     }
 
-    const meta = document.querySelector('.carousel-meta');
-    if (meta) {
-      meta.textContent = `${n + 1} / ${photos.length}`;
-    }
-  }
-
-  function openImageModal(arg) {
-    const modal = document.getElementById("imageModal");
-    const modalImg = document.getElementById("modalImage");
-
-    let idx = window.__cardPhotoIndex || 0;
-
-    if (typeof arg === 'number' && Number.isFinite(arg)) {
-      idx = arg;
-    } else if (typeof arg === 'string' && window.__cardPhotos?.length) {
-      const found = window.__cardPhotos.indexOf(arg);
-      if (found >= 0) idx = found;
+    function closeModal() {
+      const modal = document.getElementById("imageModal");
+      modal.classList.remove("show");
+      modal.onclick = null;
+      window.removeEventListener('keydown', handleModalKeys);
     }
 
-    setCardImage(idx);
-    modalImg.src = window.__cardPhotos[idx];
+    function handleModalKeys(e) {
+      const count = (window.__cardPhotos || []).length;
+      if (e.key === 'Escape') { closeModal(); return; }
+      if (count < 2) return;
+      if (e.key === 'ArrowRight') { modalNext(e); }
+      else if (e.key === 'ArrowLeft') { modalPrev(e); }
+    }
 
-    modal.classList.add("show");
-    updateModalNavVisibility();
-    modal.onclick = (ev) => { if (ev.target === modal) closeModal(); };
-    window.addEventListener('keydown', handleModalKeys);
-  }
+    function modalNext(ev) {
+      if (ev) ev.stopPropagation();
+      const photos = window.__cardPhotos || [];
+      if (photos.length < 2) return;
+      setCardImage((window.__cardPhotoIndex || 0) + 1);
+      const modalImg = document.getElementById("modalImage");
+      if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
+    }
+    function modalPrev(ev) {
+      if (ev) ev.stopPropagation();
+      const photos = window.__cardPhotos || [];
+      if (photos.length < 2) return;
+      setCardImage((window.__cardPhotoIndex || 0) - 1);
+      const modalImg = document.getElementById("modalImage");
+      if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
+    }
 
-  function updateModalNavVisibility() {
-    const count = (window.__cardPhotos || []).length;
-    const prevBtn = document.querySelector('#imageModal .modal-nav.prev');
-    const nextBtn = document.querySelector('#imageModal .modal-nav.next');
-    const show = count > 1;
-    if (prevBtn) prevBtn.style.display = show ? '' : 'none';
-    if (nextBtn) nextBtn.style.display = show ? '' : 'none';
-  }
+    // ---- Panel logic / openPanel / toggle filters ----
+    let activePanel = null;
+    document.addEventListener('click', function (event) {
+      const filtersEl = document.getElementById('combined-filters');
+      const filtersBtn = document.getElementById('filter-toggle-btn');
+      if (filtersEl.style.display === 'block') {
+        if (!filtersEl.contains(event.target) && !filtersBtn.contains(event.target)) {
+          openPanel(null);
+        }
+      }
+    });
 
-  function closeModal() {
-    const modal = document.getElementById("imageModal");
-    modal.classList.remove("show");
-    modal.onclick = null;
-    window.removeEventListener('keydown', handleModalKeys);
-  }
+    let selectedPoint = null;
+    let selectedRiver = null;
+    let selectedRiverId = null;
 
-  function handleModalKeys(e) {
-    const count = (window.__cardPhotos || []).length;
-    if (e.key === 'Escape') { closeModal(); return; }
-    if (count < 2) return;
-    if (e.key === 'ArrowRight') { modalNext(e); }
-    else if (e.key === 'ArrowLeft') { modalPrev(e); }
-  }
+    function updateSelectedRiverLayers() {
+      const filterExpr = (selectedRiverId == null)
+        ? ['==', ['id'], -1]
+        : ['==', ['id'], selectedRiverId];
 
-  function modalNext(ev) {
-    if (ev) ev.stopPropagation();
-    const photos = window.__cardPhotos || [];
-    if (photos.length < 2) return;
-    setCardImage((window.__cardPhotoIndex || 0) + 1);
-    const modalImg = document.getElementById("modalImage");
-    if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
-  }
-  function modalPrev(ev) {
-    if (ev) ev.stopPropagation();
-    const photos = window.__cardPhotos || [];
-    if (photos.length < 2) return;
-    setCardImage((window.__cardPhotoIndex || 0) - 1);
-    const modalImg = document.getElementById("modalImage");
-    if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
-  }
+      if (map.getLayer('Waterways-selected-halo')) {
+        map.setFilter('Waterways-selected-halo', filterExpr);
+      }
+    }
 
-  // ---- Panel logic / openPanel / toggle filters ----
-  let activePanel = null;
-  document.addEventListener('click', function (event) {
-    const filtersEl = document.getElementById('combined-filters');
-    const filtersBtn = document.getElementById('filter-toggle-btn');
-    if (filtersEl.style.display === 'block') {
-      if (!filtersEl.contains(event.target) && !filtersBtn.contains(event.target)) {
+    function openPanel(which) {
+      const cardEl = document.getElementById('properties');
+      const filtersEl = document.getElementById('combined-filters');
+      const basemapsEl = document.getElementById('combined-basemaps');
+
+      cardEl.style.display = 'none';
+      filtersEl.style.display = 'none';
+      basemapsEl.style.display = 'none';
+      activePanel = null;
+
+      if (which === 'card') {
+        cardEl.style.display = 'block';
+        activePanel = 'card';
+      } else if (which === 'filters') {
+        filtersEl.style.display = 'block';
+        activePanel = 'filters';
+      } else if (which === 'basemaps') {
+        basemapsEl.style.display = 'block';
+        activePanel = 'basemaps';
+      }
+    }
+
+    function toggleFilters() {
+      if (activePanel === 'filters') {
         openPanel(null);
+      } else {
+        openPanel('filters');
       }
     }
-  });
 
-  let selectedPoint = null;
-  let selectedRiver = null;
-  let selectedRiverId = null;
-
-  function updateSelectedRiverLayers() {
-    const filterExpr = (selectedRiverId == null)
-      ? ['==', ['id'], -1]
-      : ['==', ['id'], selectedRiverId];
-
-    if (map.getLayer('Waterways-selected-halo')) {
-      map.setFilter('Waterways-selected-halo', filterExpr);
+    function toggleBasemaps() {
+      if (activePanel === 'basemaps') {
+        openPanel(null);
+      } else {
+        openPanel('basemaps');
+      }
     }
-  }
 
-  function openPanel(which) {
-    const cardEl = document.getElementById('properties');
-    const filtersEl = document.getElementById('combined-filters');
-    const basemapsEl = document.getElementById('combined-basemaps');
-
-    cardEl.style.display = 'none';
-    filtersEl.style.display = 'none';
-    basemapsEl.style.display = 'none';
-    activePanel = null;
-
-    if (which === 'card') {
-      cardEl.style.display = 'block';
-      activePanel = 'card';
-    } else if (which === 'filters') {
-      filtersEl.style.display = 'block';
-      activePanel = 'filters';
-    } else if (which === 'basemaps') {
-      basemapsEl.style.display = 'block';
-      activePanel = 'basemaps';
+    function isBlankish(v) {
+      if (v === null || v === undefined) return true;
+      const s = String(v).trim();
+      if (!s) return true;
+      return /^(na|n\/a|null|undefined|none)$/i.test(s);
     }
-  }
-
-  function toggleFilters() {
-    if (activePanel === 'filters') {
-      openPanel(null);
-    } else {
-      openPanel('filters');
+    function safeGet(obj, key) {
+      const v = obj?.[key];
+      return isBlankish(v) ? null : v;
     }
-  }
 
-  function toggleBasemaps() {
-    if (activePanel === 'basemaps') {
-      openPanel(null);
-    } else {
-      openPanel('basemaps');
+
+
+    function getRegionRegUrlFromProps(props) {
+      const raw =
+        props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
+
+      if (isBlankish(raw)) return null;
+
+      const rc = Number.parseInt(String(raw).trim(), 10);
+      if (!Number.isInteger(rc) || rc < 1 || rc > 13) return null;
+
+      return REGION_REG_URLS[rc] || null;
     }
-  }
 
-  function isBlankish(v) {
-    if (v === null || v === undefined) return true;
-    const s = String(v).trim();
-    if (!s) return true;
-    return /^(na|n\/a|null|undefined|none)$/i.test(s);
-  }
-  function safeGet(obj, key) {
-    const v = obj?.[key];
-    return isBlankish(v) ? null : v;
-  }
+    // ===== Filters wiring (unchanged from your version) =====
+    window.setupAWFilters = function (map) {
+      if (window.__filtersWired) return;
+      window.__filtersWired = true;
 
- 
+      const LAYERS = {
+        waterways: ['Waterways-line', 'Waterways-fill'],
+        points: ['data-points-all'],
+        publicAccess: ['PublicAccessAreas-fill'],
+        regions: ['FG Regions-line', 'FG Regions-linebackground', 'FG Region Labels']
+      };
 
-  function getRegionRegUrlFromProps(props) {
-    const raw =
-      props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
+      const PROPS = {
+        waterways: {
+          fly: 'fly',
+          spin: 'spin',
+          bait: 'bait',
+          closed: 'permanently_closed',
+          open_start: 'open_date_unix',
+          open_end: 'close_date_unix',
+          type: 'water_type',
+          fishery: null,
+          species: null
+        },
+        points: { type: 'point_type' }
+      };
 
-    if (isBlankish(raw)) return null;
+      const FISHERY_FIELDS = {
+        backcountry: 'backcountry',
+        sea_run_salmon: 'searun_salmon_fishery',
+        designated: 'designated_water',
+        controlled: 'controlled_fishery',
+        junior: 'junior_fishery',
+        stocked: 'stocked_put_take_fishery',
+        coarse: 'coarse_fishery'
+      };
 
-    const rc = Number.parseInt(String(raw).trim(), 10);
-    if (!Number.isInteger(rc) || rc < 1 || rc > 13) return null;
+      const filtersRoot = document.getElementById('filters-body');
 
-    return REGION_REG_URLS[rc] || null;
-  }
+      const getRadio = (group) => {
+        const el = filtersRoot.querySelector(`.group[data-group="${group}"] input[type="radio"]:checked`);
+        return el ? el.value : null;
+      };
 
-  // ===== Filters wiring (unchanged from your version) =====
-  window.setupAWFilters = function (map) {
-    if (window.__filtersWired) return;
-    window.__filtersWired = true;
+      const getChecks = (group) => {
+        const groupEl = filtersRoot.querySelector(`.group[data-group="${group}"]`);
+        if (!groupEl) return null;
 
-    const LAYERS = {
-      waterways: ['Waterways-line', 'Waterways-fill'],
-      points: ['data-points-all'],
-      publicAccess: ['PublicAccessAreas-fill'],
-      regions: ['FG Regions-line', 'FG Regions-linebackground', 'FG Region Labels']
+        const allBox = groupEl.querySelector('input[data-role="all"]');
+        const boxes = [...groupEl.querySelectorAll('input[type="checkbox"]:not([data-role="all"])')];
+
+        if ((allBox && allBox.checked) || boxes.length === 0) return null;
+
+        const out = [];
+        for (const b of boxes) {
+          if (!b.checked) continue;
+
+          const dv = b.dataset.values;
+          if (dv) {
+            try {
+              out.push(...JSON.parse(dv));
+            } catch {
+              out.push(...dv.split(',').map(s => s.trim()).filter(Boolean));
+            }
+          } else if (b.value) {
+            out.push(b.value);
+          }
+        }
+
+        if (out.length === 0) return [];
+        return [...new Set(out)];
+      };
+
+      const setVisibility = (ids, visible) => {
+        ids.forEach(id => {
+          if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+        });
+      };
+
+      document.querySelectorAll('#filters-body .toggle-visible').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const pressed = e.target.getAttribute('aria-pressed') === 'true';
+          const src = e.target.dataset.source;
+          e.target.setAttribute('aria-pressed', String(!pressed));
+          e.target.textContent = pressed ? 'Hidden' : 'Shown';
+          setVisibility(LAYERS[src] || [], !pressed);
+        });
+      });
+
+      const lastFilters = Object.create(null);
+
+      function safeSetFilter(layerId, expr) {
+        const json = JSON.stringify(expr);
+        if (lastFilters[layerId] === json) return;
+        lastFilters[layerId] = json;
+        if (map.getLayer(layerId)) map.setFilter(layerId, expr);
+      }
+
+      function applyWaterwayFilters() {
+        const m = getRadio('w-method');
+        const openMode = getRadio('w-open');
+        const wtype = getRadio('w-type');
+        const fishery = getRadio('w-fishery');
+        const species = getChecks('w-species');
+
+        const p = PROPS.waterways;
+        const clauses = [];
+
+        if (m && m !== '__ALL__') {
+          if (m === 'fly_only') {
+            clauses.push(['all',
+              ['==', ['get', p.fly], 1],
+              ['==', ['get', p.spin], 0],
+              ['==', ['get', p.bait], 0],
+              ['==', ['get', p.closed], 0]
+            ]);
+          } else if (['fly', 'spin', 'bait'].includes(m)) {
+            clauses.push(['==', ['get', p[m]], 1]);
+          }
+        }
+
+        if (wtype && wtype !== '__ALL__' && p.type) {
+          clauses.push(['==', ['get', p.type], wtype]);
+        }
+
+        if (fishery && fishery !== '__ALL__') {
+          const field = FISHERY_FIELDS[fishery];
+          if (field) {
+            clauses.push(['==', ['to-number', ['get', field]], 1]);
+          } else {
+            clauses.push(['==', ['literal', 1], 2]);
+          }
+        }
+
+        if (species && species.length && p.species) {
+          clauses.push(['in', ['get', p.species], ['literal', species]]);
+        }
+
+        if (openMode === 'filter_today') {
+          const today = window.__TODAY_UNIX__;
+          clauses.push(['all',
+            ['<=', ['get', p.open_start], today],
+            ['>=', ['get', p.open_end], today]
+          ]);
+        }
+
+        const finalExpr = clauses.length ? ['all', ...clauses] : true;
+        (LAYERS.waterways || []).forEach(id => safeSetFilter(id, finalExpr));
+      }
+
+      function applyPointFilters() {
+        const selected = getChecks('p-type');
+        let expr = true;
+        if (selected === null) {
+          expr = true;
+        } else if (selected.length === 0) {
+          expr = ['==', ['get', 'point_type'], '__NONE__'];
+        } else {
+          expr = ['in', ['get', PROPS.points.type], ['literal', selected]];
+        }
+        (LAYERS.points || []).forEach(id => safeSetFilter(id, expr));
+      }
+
+      let filterTimer = null;
+      function scheduleApply(fn) {
+        if (filterTimer) cancelAnimationFrame(filterTimer);
+        let t;
+        filterTimer = requestAnimationFrame(() => {
+          clearTimeout(t);
+          t = setTimeout(() => fn(), 120);
+        });
+      }
+
+      filtersRoot.addEventListener('change', (e) => {
+        const container = e.target.closest('.source-card');
+        if (!container) return;
+        const src = container.dataset.source;
+        scheduleApply(() => {
+          if (src === 'waterways') applyWaterwayFilters();
+          if (src === 'points') applyPointFilters();
+        });
+      });
+
+      function applyAllIfReady() {
+        if (map.getLayer('Waterways-line') && map.getLayer('data-points-all')) {
+          applyWaterwayFilters();
+          applyPointFilters();
+        }
+      }
+      map.on('idle', applyAllIfReady);
     };
 
-    const PROPS = {
-      waterways: {
-        fly: 'fly',
-        spin: 'spin',
-        bait: 'bait',
-        closed: 'permanently_closed',
-        open_start: 'open_date_unix',
-        open_end: 'close_date_unix',
-        type: 'water_type',
-        fishery: null,
-        species: null
-      },
-      points: { type: 'point_type' }
-    };
+    // ===== Normalise URLs, photos, etc. (unchanged) =====
+    function splitList(raw) {
+      if (isBlankish(raw)) return [];
+      return String(raw)
+        .split(/[;,\|\n]+/g)
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
 
-    const FISHERY_FIELDS = {
-      backcountry: 'backcountry',
-      sea_run_salmon: 'searun_salmon_fishery',
-      designated: 'designated_water',
-      controlled: 'controlled_fishery',
-      junior: 'junior_fishery',
-      stocked: 'stocked_put_take_fishery',
-      coarse: 'coarse_fishery'
-    };
+    function normalizeUrl(raw) {
+      if (!raw) return null;
+      let u = String(raw).trim();
+      if (!u) return null;
 
-    const filtersRoot = document.getElementById('filters-body');
+      const lower = u.toLowerCase();
+      if (lower.startsWith('javascript:')) return null;
+      if (lower.startsWith('data:image/')) return u;
 
-    const getRadio = (group) => {
-      const el = filtersRoot.querySelector(`.group[data-group="${group}"] input[type="radio"]:checked`);
-      return el ? el.value : null;
-    };
+      if (
+        u.startsWith('/') ||
+        u.startsWith('./') ||
+        u.startsWith('../') ||
+        !/^[a-z]+:\/\//i.test(u)
+      ) {
+        return u;
+      }
 
-    const getChecks = (group) => {
-      const groupEl = filtersRoot.querySelector(`.group[data-group="${group}"]`);
-      if (!groupEl) return null;
+      try {
+        const url = new URL(u);
+        if (!/^https?:$/.test(url.protocol)) return null;
+        return url.href;
+      } catch {
+        try {
+          const url2 = new URL('https://' + u);
+          if (!/^https?:$/.test(url2.protocol)) return null;
+          return url2.href;
+        } catch {
+          return null;
+        }
+      }
+    }
 
-      const allBox = groupEl.querySelector('input[data-role="all"]');
-      const boxes = [...groupEl.querySelectorAll('input[type="checkbox"]:not([data-role="all"])')];
+    function parseMultiLinks(props) {
+      const urlsRaw = safeGet(props, 'more_info_url') ?? safeGet(props, 'moreinfo_url') ?? safeGet(props, 'MoreInfoURL');
+      const namesRaw = safeGet(props, 'more_info_name') ?? safeGet(props, 'moreinfo_name') ?? safeGet(props, 'MoreInfoName');
 
-      if ((allBox && allBox.checked) || boxes.length === 0) return null;
+      const toArray = (v) => {
+        if (Array.isArray(v)) return v;
+        const s = (v ?? '').toString().trim();
+        if (!s) return [];
+        if (s.startsWith('[') && s.endsWith(']')) {
+          try {
+            const arr = JSON.parse(s);
+            return Array.isArray(arr) ? arr : splitList(s);
+          } catch { return splitList(s); }
+        }
+        return splitList(s);
+      };
+
+      const urlList = toArray(urlsRaw);
+      const nameList = toArray(namesRaw);
 
       const out = [];
-      for (const b of boxes) {
-        if (!b.checked) continue;
-
-        const dv = b.dataset.values;
-        if (dv) {
-          try {
-            out.push(...JSON.parse(dv));
-          } catch {
-            out.push(...dv.split(',').map(s => s.trim()).filter(Boolean));
-          }
-        } else if (b.value) {
-          out.push(b.value);
-        }
+      for (let i = 0; i < urlList.length; i++) {
+        const href = normalizeUrl(urlList[i]);
+        if (!href) continue;
+        let text = nameList[i] && !isBlankish(nameList[i])
+          ? nameList[i]
+          : (() => {
+            try { return new URL(href).hostname.replace(/^www\./, ''); }
+            catch { return href; }
+          })();
+        out.push({ href, text });
       }
-
-      if (out.length === 0) return [];
-      return [...new Set(out)];
-    };
-
-    const setVisibility = (ids, visible) => {
-      ids.forEach(id => {
-        if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
-      });
-    };
-
-    document.querySelectorAll('#filters-body .toggle-visible').forEach(btn => {
-      btn.addEventListener('click', e => {
-        const pressed = e.target.getAttribute('aria-pressed') === 'true';
-        const src = e.target.dataset.source;
-        e.target.setAttribute('aria-pressed', String(!pressed));
-        e.target.textContent = pressed ? 'Hidden' : 'Shown';
-        setVisibility(LAYERS[src] || [], !pressed);
-      });
-    });
-
-    const lastFilters = Object.create(null);
-
-    function safeSetFilter(layerId, expr) {
-      const json = JSON.stringify(expr);
-      if (lastFilters[layerId] === json) return;
-      lastFilters[layerId] = json;
-      if (map.getLayer(layerId)) map.setFilter(layerId, expr);
+      return out;
     }
 
-    function applyWaterwayFilters() {
-      const m = getRadio('w-method');
-      const openMode = getRadio('w-open');
-      const wtype = getRadio('w-type');
-      const fishery = getRadio('w-fishery');
-      const species = getChecks('w-species');
+    function renderMultiLinks(props, label = 'More Info') {
+      const links = parseMultiLinks(props);
+      if (!links.length) return '';
 
-      const p = PROPS.waterways;
-      const clauses = [];
-
-      if (m && m !== '__ALL__') {
-        if (m === 'fly_only') {
-          clauses.push(['all',
-            ['==', ['get', p.fly], 1],
-            ['==', ['get', p.spin], 0],
-            ['==', ['get', p.bait], 0],
-            ['==', ['get', p.closed], 0]
-          ]);
-        } else if (['fly', 'spin', 'bait'].includes(m)) {
-          clauses.push(['==', ['get', p[m]], 1]);
-        }
+      if (links.length === 1) {
+        const { href, text } = links[0];
+        return `<li><b>${label}</b>: <a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`;
       }
 
-      if (wtype && wtype !== '__ALL__' && p.type) {
-        clauses.push(['==', ['get', p.type], wtype]);
-      }
+      const items = links.map(({ href, text }) =>
+        `<li style="margin:2px 0;"><a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`
+      ).join('');
 
-      if (fishery && fishery !== '__ALL__') {
-        const field = FISHERY_FIELDS[fishery];
-        if (field) {
-          clauses.push(['==', ['to-number', ['get', field]], 1]);
-        } else {
-          clauses.push(['==', ['literal', 1], 2]);
-        }
-      }
-
-      if (species && species.length && p.species) {
-        clauses.push(['in', ['get', p.species], ['literal', species]]);
-      }
-
-      if (openMode === 'filter_today') {
-        const today = window.__TODAY_UNIX__;
-        clauses.push(['all',
-          ['<=', ['get', p.open_start], today],
-          ['>=', ['get', p.open_end], today]
-        ]);
-      }
-
-      const finalExpr = clauses.length ? ['all', ...clauses] : true;
-      (LAYERS.waterways || []).forEach(id => safeSetFilter(id, finalExpr));
-    }
-
-    function applyPointFilters() {
-      const selected = getChecks('p-type');
-      let expr = true;
-      if (selected === null) {
-        expr = true;
-      } else if (selected.length === 0) {
-        expr = ['==', ['get', 'point_type'], '__NONE__'];
-      } else {
-        expr = ['in', ['get', PROPS.points.type], ['literal', selected]];
-      }
-      (LAYERS.points || []).forEach(id => safeSetFilter(id, expr));
-    }
-
-    let filterTimer = null;
-    function scheduleApply(fn) {
-      if (filterTimer) cancelAnimationFrame(filterTimer);
-      let t;
-      filterTimer = requestAnimationFrame(() => {
-        clearTimeout(t);
-        t = setTimeout(() => fn(), 120);
-      });
-    }
-
-    filtersRoot.addEventListener('change', (e) => {
-      const container = e.target.closest('.source-card');
-      if (!container) return;
-      const src = container.dataset.source;
-      scheduleApply(() => {
-        if (src === 'waterways') applyWaterwayFilters();
-        if (src === 'points') applyPointFilters();
-      });
-    });
-
-    function applyAllIfReady() {
-      if (map.getLayer('Waterways-line') && map.getLayer('data-points-all')) {
-        applyWaterwayFilters();
-        applyPointFilters();
-      }
-    }
-    map.on('idle', applyAllIfReady);
-  };
-
-  // ===== Normalise URLs, photos, etc. (unchanged) =====
-  function splitList(raw) {
-    if (isBlankish(raw)) return [];
-    return String(raw)
-      .split(/[;,\|\n]+/g)
-      .map(s => s.trim())
-      .filter(Boolean);
-  }
-
-  function normalizeUrl(raw) {
-    if (!raw) return null;
-    let u = String(raw).trim();
-    if (!u) return null;
-
-    const lower = u.toLowerCase();
-    if (lower.startsWith('javascript:')) return null;
-    if (lower.startsWith('data:image/')) return u;
-
-    if (
-      u.startsWith('/') ||
-      u.startsWith('./') ||
-      u.startsWith('../') ||
-      !/^[a-z]+:\/\//i.test(u)
-    ) {
-      return u;
-    }
-
-    try {
-      const url = new URL(u);
-      if (!/^https?:$/.test(url.protocol)) return null;
-      return url.href;
-    } catch {
-      try {
-        const url2 = new URL('https://' + u);
-        if (!/^https?:$/.test(url2.protocol)) return null;
-        return url2.href;
-      } catch {
-        return null;
-      }
-    }
-  }
-
-  function parseMultiLinks(props) {
-    const urlsRaw = safeGet(props, 'more_info_url') ?? safeGet(props, 'moreinfo_url') ?? safeGet(props, 'MoreInfoURL');
-    const namesRaw = safeGet(props, 'more_info_name') ?? safeGet(props, 'moreinfo_name') ?? safeGet(props, 'MoreInfoName');
-
-    const toArray = (v) => {
-      if (Array.isArray(v)) return v;
-      const s = (v ?? '').toString().trim();
-      if (!s) return [];
-      if (s.startsWith('[') && s.endsWith(']')) {
-        try {
-          const arr = JSON.parse(s);
-          return Array.isArray(arr) ? arr : splitList(s);
-        } catch { return splitList(s); }
-      }
-      return splitList(s);
-    };
-
-    const urlList = toArray(urlsRaw);
-    const nameList = toArray(namesRaw);
-
-    const out = [];
-    for (let i = 0; i < urlList.length; i++) {
-      const href = normalizeUrl(urlList[i]);
-      if (!href) continue;
-      let text = nameList[i] && !isBlankish(nameList[i])
-        ? nameList[i]
-        : (() => {
-          try { return new URL(href).hostname.replace(/^www\./, ''); }
-          catch { return href; }
-        })();
-      out.push({ href, text });
-    }
-    return out;
-  }
-
-  function renderMultiLinks(props, label = 'More Info') {
-    const links = parseMultiLinks(props);
-    if (!links.length) return '';
-
-    if (links.length === 1) {
-      const { href, text } = links[0];
-      return `<li><b>${label}</b>: <a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`;
-    }
-
-    const items = links.map(({ href, text }) =>
-      `<li style="margin:2px 0;"><a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a></li>`
-    ).join('');
-
-    return `<li><b>${label}</b>:
+      return `<li><b>${label}</b>:
             <ul style="margin:4px 0 0 18px; padding:0;">${items}</ul>
           </li>`;
-  }
-
-  window.__cardPhotos = [];
-  window.__cardPhotoIndex = 0;
-
-  function collectPhotoUrls(props) {
-    const candidates = [
-      props.image, props.images, props.photo, props.photos,
-      props.image1, props.image2, props.image3, props.image4,
-      props.Image1, props.Image2, props.Image3, props.Image4,
-      props.img1, props.img2, props.img3, props.img4
-    ];
-
-    const out = [];
-    for (const c of candidates) {
-      if (!c) continue;
-      if (Array.isArray(c)) {
-        out.push(...c);
-      } else {
-        const s = String(c).trim();
-        if (!s) continue;
-        if (s.includes(',')) {
-          out.push(...s.split(',').map(x => x.trim()).filter(Boolean));
-        } else {
-          out.push(s);
-        }
-      }
     }
 
-    const cleaned = [];
-    const seen = new Set();
-    for (const v of out) {
-      const n = normalizeUrl(v);
-      if (!n) continue;
-      if (!seen.has(n)) { seen.add(n); cleaned.push(n); }
-    }
-    return cleaned;
-  }
-
-  function nextImage() {
-    setCardImage(window.__cardPhotoIndex + 1);
-  }
-  function prevImage() {
-    setCardImage(window.__cardPhotoIndex - 1);
-  }
-
-  const card = document.getElementById('properties');
-
-  const DOC_REGION_CODE = 13;
-
-  const riverDefaultImage = {
-    FG: 'images/Slide12.PNG',
-    DOC: 'images/Slide13.PNG'
-  };
-
-    const flowTypeDefaultImages = {
-    Flow: 'images/Slide18.png',        // river flow
-    Temperature: 'images/Slide19.png', // river temp
-  };
-
-
-  function getRiverDefaultImage(props) {
-    const raw =
-      props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
-    const rc = Number.parseInt(String(raw ?? '').trim(), 10);
-    return rc === DOC_REGION_CODE ? riverDefaultImage.DOC : riverDefaultImage.FG;
-  }
-
-  ['images/Slide12.PNG', 'images/Slide13.PNG', 'images/Slide18.png', 'images/Slide19.png']
-    .forEach(src => {
-      const im = new Image();
-      im.src = src;
-    });
-
-  const pointTypeDefaultImages = {
-    'AccessPoint': 'images/Slide1.PNG',
-    'TrampingAccess': 'images/Slide2.PNG',
-    '4x4Access': 'images/Slide3.PNG',
-    'BoatRamp': 'images/Slide4.PNG',
-    'Trolling': 'images/Slide5.PNG',
-    'Toilet': 'images/Slide6.PNG',
-    'Jigging': 'images/Slide7.PNG',
-    'Hotspot': 'images/Slide8.PNG',
-    'Warning': 'images/Slide9.PNG',
-    'Hut': 'images/Slide10.PNG',
-    'Campsite': 'images/Slide11.PNG',
-    'LandmarkPole': 'images/Slide14.PNG',
-    'Parking': 'images/Slide15.PNG',
-    'Shop': 'images/Slide16.PNG',
-    'Lodge': 'images/Slide17.PNG',
-  };
-
-  // ===== NEW: Flow (and WT) side-panel card =====
-  function showFlowCard(feature) {
-    const props = feature.properties || {};
-
-    const site         = props.site_name ;
-    const station_name = props.station_name ;
-    const param        = props.parameter || 'Value';   // "Flow" or "Temperature"
-    const rawVal       = props.latest_value;
-    const whenRaw      = props.latest_datetime;
-    const unitProp     = props.unit;
-
-    // NEW: pick default image based on Flow vs Temperature
-    const defaultImage = flowTypeDefaultImages[param] || null;
-    window.__cardPhotos = defaultImage ? [defaultImage] : [];
+    window.__cardPhotos = [];
     window.__cardPhotoIndex = 0;
 
-    const unit = unitProp ||
-      (param === 'Flow'
-        ? 'm³/s'
-        : param === 'Temperature'
-          ? '°C'
-          : '');
+    function collectPhotoUrls(props) {
+      const candidates = [
+        props.image, props.images, props.photo, props.photos,
+        props.image1, props.image2, props.image3, props.image4,
+        props.Image1, props.Image2, props.Image3, props.Image4,
+        props.img1, props.img2, props.img3, props.img4
+      ];
 
-    const numVal = (typeof rawVal === 'number')
-      ? rawVal
-      : (rawVal !== null && rawVal !== undefined && rawVal !== ''
+      const out = [];
+      for (const c of candidates) {
+        if (!c) continue;
+        if (Array.isArray(c)) {
+          out.push(...c);
+        } else {
+          const s = String(c).trim();
+          if (!s) continue;
+          if (s.includes(',')) {
+            out.push(...s.split(',').map(x => x.trim()).filter(Boolean));
+          } else {
+            out.push(s);
+          }
+        }
+      }
+
+      const cleaned = [];
+      const seen = new Set();
+      for (const v of out) {
+        const n = normalizeUrl(v);
+        if (!n) continue;
+        if (!seen.has(n)) { seen.add(n); cleaned.push(n); }
+      }
+      return cleaned;
+    }
+
+    function nextImage() {
+      setCardImage(window.__cardPhotoIndex + 1);
+    }
+    function prevImage() {
+      setCardImage(window.__cardPhotoIndex - 1);
+    }
+
+    const card = document.getElementById('properties');
+
+    const DOC_REGION_CODE = 13;
+
+    const riverDefaultImage = {
+      FG: 'images/Slide12.PNG',
+      DOC: 'images/Slide13.PNG'
+    };
+
+    const flowTypeDefaultImages = {
+      Flow: 'images/Slide18.png',        // river flow
+      Temperature: 'images/Slide19.png', // river temp
+    };
+
+
+    function getRiverDefaultImage(props) {
+      const raw =
+        props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
+      const rc = Number.parseInt(String(raw ?? '').trim(), 10);
+      return rc === DOC_REGION_CODE ? riverDefaultImage.DOC : riverDefaultImage.FG;
+    }
+
+    ['images/Slide12.PNG', 'images/Slide13.PNG', 'images/Slide18.png', 'images/Slide19.png']
+      .forEach(src => {
+        const im = new Image();
+        im.src = src;
+      });
+
+    const pointTypeDefaultImages = {
+      'AccessPoint': 'images/Slide1.PNG',
+      'TrampingAccess': 'images/Slide2.PNG',
+      '4x4Access': 'images/Slide3.PNG',
+      'BoatRamp': 'images/Slide4.PNG',
+      'Trolling': 'images/Slide5.PNG',
+      'Toilet': 'images/Slide6.PNG',
+      'Jigging': 'images/Slide7.PNG',
+      'Hotspot': 'images/Slide8.PNG',
+      'Warning': 'images/Slide9.PNG',
+      'Hut': 'images/Slide10.PNG',
+      'Campsite': 'images/Slide11.PNG',
+      'LandmarkPole': 'images/Slide14.PNG',
+      'Parking': 'images/Slide15.PNG',
+      'Shop': 'images/Slide16.PNG',
+      'Lodge': 'images/Slide17.PNG',
+    };
+
+    // ===== NEW: Flow (and WT) side-panel card =====
+    function showFlowCard(feature) {
+      const props = feature.properties || {};
+
+      const site = props.site_name;
+      const station_name = props.station_name;
+      const param = props.parameter || 'Value';   // "Flow" or "Temperature"
+      const rawVal = props.latest_value;
+      const whenRaw = props.latest_datetime;
+      const unitProp = props.unit;
+
+      // NEW: pick default image based on Flow vs Temperature
+      const defaultImage = flowTypeDefaultImages[param] || null;
+      window.__cardPhotos = defaultImage ? [defaultImage] : [];
+      window.__cardPhotoIndex = 0;
+
+      const unit = unitProp ||
+        (param === 'Flow'
+          ? 'm³/s'
+          : param === 'Temperature'
+            ? '°C'
+            : '');
+
+      const numVal = (typeof rawVal === 'number')
+        ? rawVal
+        : (rawVal !== null && rawVal !== undefined && rawVal !== ''
           ? Number(rawVal)
           : NaN);
 
-    const isNumeric    = Number.isFinite(numVal);
-    const valFormatted = isNumeric ? numVal.toFixed(1) : (rawVal ?? 'NA');
+      const isNumeric = Number.isFinite(numVal);
+      const valFormatted = isNumeric ? numVal.toFixed(1) : (rawVal ?? 'NA');
 
-    let summaryText = 'Latest value not available';
-    if (whenRaw) {
-      try {
-        const d = new Date(whenRaw);
+      let summaryText = 'Latest value not available';
+      if (whenRaw) {
+        try {
+          const d = new Date(whenRaw);
 
-        const timeText = d.toLocaleString("en-NZ", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-          timeZone: "Pacific/Auckland"
-        }).replace(":00", "").toLowerCase();
+          const timeText = d.toLocaleString("en-NZ", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+            timeZone: "Pacific/Auckland"
+          }).replace(":00", "").toLowerCase();
 
-        const dateText = d.toLocaleDateString("en-NZ", {
-          day: "numeric",
-          month: "short",
-          timeZone: "Pacific/Auckland"
-        });
+          const dateText = d.toLocaleDateString("en-NZ", {
+            day: "numeric",
+            month: "short",
+            timeZone: "Pacific/Auckland"
+          });
 
-        summaryText = `${param} is ${valFormatted} ${unit || ''} as of ${timeText} ${dateText}`;
-      } catch {
-        summaryText = `${param} is ${valFormatted} ${unit || ''} (time: ${whenRaw})`;
+          summaryText = `${param} is ${valFormatted} ${unit || ''} as of ${timeText} ${dateText}`;
+        } catch {
+          summaryText = `${param} is ${valFormatted} ${unit || ''} (time: ${whenRaw})`;
+        }
       }
-    }
 
-    let times = [];
-    let values = [];
-    try {
-      if (props.times_json)  times  = JSON.parse(props.times_json);
-      if (props.values_json) values = JSON.parse(props.values_json);
-    } catch (err) {
-      console.error('Error parsing times_json / values_json', err);
-    }
+      let times = [];
+      let values = [];
+      try {
+        if (props.times_json) times = JSON.parse(props.times_json);
+        if (props.values_json) values = JSON.parse(props.values_json);
+      } catch (err) {
+        console.error('Error parsing times_json / values_json', err);
+      }
 
-    if (times.length !== values.length) {
-      const n = Math.min(times.length, values.length);
-      times  = times.slice(0, n);
-      values = values.slice(0, n);
-    }
+      if (times.length !== values.length) {
+        const n = Math.min(times.length, values.length);
+        times = times.slice(0, n);
+        values = values.slice(0, n);
+      }
 
-    const lineColor = param === 'Flow' ? '#3498db' : '#e67e22';
-    
-    const sourceURL = props.source_url || null;
+      const lineColor = param === 'Flow' ? '#3498db' : '#e67e22';
 
-    const cardHtml = `
+      const sourceURL = props.source_url || null;
+
+      const cardHtml = `
       <div class="map-overlay-inner">
         <button class="close-button" onclick="closeCard()">&times;</button>
         <div class="panel-scroll">
@@ -1292,16 +1294,14 @@ console.log("TODAY_UNIX:", TODAY_UNIX);
           <code class="card-title">${site}</code>
 
  <div class="card-subtitle subtitle-main">
-  ${
-    !isBlankish(station_name)
-      ? `${station_name}${sourceURL ? ' | ' : ''}`
-      : ''
-  }
-  ${
-    sourceURL
-      ? `<a href="${sourceURL}" target="_blank" rel="noopener" class="get-directions-link"> Source</a>`
-      : ''
-  }
+  ${!isBlankish(station_name)
+          ? `${station_name}${sourceURL ? ' | ' : ''}`
+          : ''
+        }
+  ${sourceURL
+          ? `<a href="${sourceURL}" target="_blank" rel="noopener" class="get-directions-link"> Source</a>`
+          : ''
+        }
 </div>
           <hr>
           <ul class="card-list">
@@ -1317,206 +1317,206 @@ console.log("TODAY_UNIX:", TODAY_UNIX);
     `;
 
 
-    card.innerHTML = cardHtml;
-    openPanel('card');
-const canvas = document.getElementById('flowDevChartCanvas');
-if (!canvas) return;
-const ctx = canvas.getContext('2d');
+      card.innerHTML = cardHtml;
+      openPanel('card');
+      const canvas = document.getElementById('flowDevChartCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
 
-if (canvas._chartInstance) {
-  canvas._chartInstance.destroy();
-}
+      if (canvas._chartInstance) {
+        canvas._chartInstance.destroy();
+      }
 
-const timeObjs = times.map(t => new Date(t));
+      const timeObjs = times.map(t => new Date(t));
 
-/**
- * Plugin: draw a red threshold line + shaded area above 20°C
- * and a warning message when param === "Temperature".
- */
-const tempThresholdPlugin = {
-  id: 'tempThreshold',
-  afterDraw(chart) {
-    // Only run if this is a temperature chart
-    if (param !== 'Temperature') return;
+      /**
+       * Plugin: draw a red threshold line + shaded area above 20°C
+       * and a warning message when param === "Temperature".
+       */
+      const tempThresholdPlugin = {
+        id: 'tempThreshold',
+        afterDraw(chart) {
+          // Only run if this is a temperature chart
+          if (param !== 'Temperature') return;
 
-    const { ctx, chartArea, scales } = chart;
-    const yScale = scales.y;
-    if (!yScale) return;
+          const { ctx, chartArea, scales } = chart;
+          const yScale = scales.y;
+          if (!yScale) return;
 
-    const threshold = 20; // 20°C
-    const yPixel = yScale.getPixelForValue(threshold);
+          const threshold = 20; // 20°C
+          const yPixel = yScale.getPixelForValue(threshold);
 
-    // If threshold is outside the visible range, skip
-    if (yPixel < chartArea.top || yPixel > chartArea.bottom) return;
+          // If threshold is outside the visible range, skip
+          if (yPixel < chartArea.top || yPixel > chartArea.bottom) return;
 
-    ctx.save();
+          ctx.save();
 
-    const { left, right, top } = chartArea;
-    const width = right - left;
+          const { left, right, top } = chartArea;
+          const width = right - left;
 
-    // --- 1) Shaded area ABOVE the 20°C line ---
-    ctx.fillStyle = 'rgba(220, 53, 69, 0.08)'; // faint red
-    ctx.fillRect(left, top, width, yPixel - top);
+          // --- 1) Shaded area ABOVE the 20°C line ---
+          ctx.fillStyle = 'rgba(220, 53, 69, 0.08)'; // faint red
+          ctx.fillRect(left, top, width, yPixel - top);
 
-    // --- 2) Red dashed threshold line at 20°C ---
-    ctx.strokeStyle = 'rgba(220, 53, 69, 0.9)';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 3]);
-    ctx.beginPath();
-    ctx.moveTo(left, yPixel);
-    ctx.lineTo(right, yPixel);
-    ctx.stroke();
-    ctx.setLineDash([]);
+          // --- 2) Red dashed threshold line at 20°C ---
+          ctx.strokeStyle = 'rgba(220, 53, 69, 0.9)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([4, 3]);
+          ctx.beginPath();
+          ctx.moveTo(left, yPixel);
+          ctx.lineTo(right, yPixel);
+          ctx.stroke();
+          ctx.setLineDash([]);
 
-    // --- 3) Warning text ---
-    const text =
-      'Trout released above 20°C have much lower survival – consider fishing another time';
-    ctx.fillStyle = 'rgba(139, 0, 0, 0.95)';
-    ctx.font = '10px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
+          // --- 3) Warning text ---
+          const text =
+            'Trout released above 20°C have much lower survival – consider fishing another time';
+          ctx.fillStyle = 'rgba(139, 0, 0, 0.95)';
+          ctx.font = '10px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'top';
 
-    const textX = (left + right) / 2;
-    const textY = top + 4;
-    const maxWidth = width - 10;
+          const textX = (left + right) / 2;
+          const textY = top + 4;
+          const maxWidth = width - 10;
 
-    ctx.fillText(text, textX, textY, maxWidth);
+          ctx.fillText(text, textX, textY, maxWidth);
 
-    ctx.restore();
-  }
-};
-
-// Only attach plugin when needed
-const plugins = [];
-if (param === 'Temperature') {
-  plugins.push(tempThresholdPlugin);
-}
-
-canvas._chartInstance = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: timeObjs,
-    datasets: [{
-      label: `${param} (${unit || ''})`,
-      data: values,
-      borderColor: lineColor,
-      backgroundColor: lineColor,
-      tension: 0.2,
-      pointRadius: 0,
-      borderWidth: 1.5
-    }]
-  },
-  options: {
-    responsive: false,
-    interaction: {
-      mode: 'index',
-      intersect: false
-    },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        mode: 'index',
-        intersect: false,
-        displayColors: false,
-        callbacks: {
-          label: (ctx) => {
-            const d = new Date(ctx.parsed.x);
-            const v = ctx.parsed.y;
-
-            const timeText = d.toLocaleString("en-NZ", {
-              timeZone: "Pacific/Auckland",
-              hour: "numeric",
-              hour12: true
-            }).replace(":00", "").toLowerCase();
-
-            const dateText = d.toLocaleDateString("en-NZ", {
-              timeZone: "Pacific/Auckland",
-              day: "numeric",
-              month: "short"
-            });
-
-            const valueText = v.toFixed(1);
-            return `${valueText} ${unit || ''} at ${timeText} ${dateText}`;
-          },
-          title: () => ''
+          ctx.restore();
         }
+      };
+
+      // Only attach plugin when needed
+      const plugins = [];
+      if (param === 'Temperature') {
+        plugins.push(tempThresholdPlugin);
       }
-    },
-    scales: {
-      x: {
-        type: 'time',
-        time: {
-          unit: 'day',
-          stepSize: 1,
-          displayFormats: { day: 'd MMM' }
+
+      canvas._chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: timeObjs,
+          datasets: [{
+            label: `${param} (${unit || ''})`,
+            data: values,
+            borderColor: lineColor,
+            backgroundColor: lineColor,
+            tension: 0.2,
+            pointRadius: 0,
+            borderWidth: 1.5
+          }]
         },
-        ticks: { maxRotation: 45 }
-      },
-      y: {
-        title: {
-          display: true,
-          text: `${param} (${unit || ''})`,
-          font: { size: 11 }
+        options: {
+          responsive: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              displayColors: false,
+              callbacks: {
+                label: (ctx) => {
+                  const d = new Date(ctx.parsed.x);
+                  const v = ctx.parsed.y;
+
+                  const timeText = d.toLocaleString("en-NZ", {
+                    timeZone: "Pacific/Auckland",
+                    hour: "numeric",
+                    hour12: true
+                  }).replace(":00", "").toLowerCase();
+
+                  const dateText = d.toLocaleDateString("en-NZ", {
+                    timeZone: "Pacific/Auckland",
+                    day: "numeric",
+                    month: "short"
+                  });
+
+                  const valueText = v.toFixed(1);
+                  return `${valueText} ${unit || ''} at ${timeText} ${dateText}`;
+                },
+                title: () => ''
+              }
+            }
+          },
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                unit: 'day',
+                stepSize: 1,
+                displayFormats: { day: 'd MMM' }
+              },
+              ticks: { maxRotation: 45 }
+            },
+            y: {
+              title: {
+                display: true,
+                text: `${param} (${unit || ''})`,
+                font: { size: 11 }
+              },
+              ticks: { maxTicksLimit: 5 }
+            }
+          },
+          elements: {
+            line: { stepped: false }
+          }
         },
-        ticks: { maxTicksLimit: 5 }
-      }
-    },
-    elements: {
-      line: { stepped: false }
-    }
-  },
-  plugins // 👈 add our threshold plugin (only for Temperature)
-});
+        plugins // 👈 add our threshold plugin (only for Temperature)
+      });
 
-  }
-
-  // ===== Existing showCard for waterways/points (unchanged) =====
-  const showCard = (feature) => {
-    const props = feature.properties;
-    const displayFields = {
-      methods: 'Method',
-      open_season: 'Open',
-      daily_bag_limit: 'Daily bag limit',
-      size_limit: 'Size limit',
-      hours_of_fishing: 'Hours of fishing',
-      description: "Description",
-      additional_requirements: "Additional Requirements",
-      more_info_url: "More Info",
-      //bearing: "Bearing",
-    };
-
-    let typeImage = null;
-    const looksLikeRiver =
-      !!(props.Water || props.water_type || props.open_date_unix || props.close_date_unix);
-    const looksLikePoint =
-      !!(props.point_type || feature.geometry?.type === 'Point');
-
-    if (feature.layer && feature.layer.id === 'data-points-all') {
-      if (props.point_type && props.point_type.toLowerCase() !== 'na') {
-        typeImage = pointTypeDefaultImages[props.point_type] || null;
-      }
-    } else if (
-      (feature.layer && (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill')) ||
-      (looksLikeRiver && !looksLikePoint)
-    ) {
-      typeImage = getRiverDefaultImage(props);
     }
 
-    const extraPhotos = collectPhotoUrls(props);
-    const photoList = (typeImage ? [typeImage] : []).concat(extraPhotos);
+    // ===== Existing showCard for waterways/points (unchanged) =====
+    const showCard = (feature) => {
+      const props = feature.properties;
+      const displayFields = {
+        methods: 'Method',
+        open_season: 'Open',
+        daily_bag_limit: 'Daily bag limit',
+        size_limit: 'Size limit',
+        hours_of_fishing: 'Hours of fishing',
+        description: "Description",
+        additional_requirements: "Additional Requirements",
+        more_info_url: "More Info",
+        //bearing: "Bearing",
+      };
 
-    window.__cardPhotos = photoList;
-    window.__cardPhotoIndex = 0;
+      let typeImage = null;
+      const looksLikeRiver =
+        !!(props.Water || props.water_type || props.open_date_unix || props.close_date_unix);
+      const looksLikePoint =
+        !!(props.point_type || feature.geometry?.type === 'Point');
 
-    let content = `
+      if (feature.layer && feature.layer.id === 'data-points-all') {
+        if (props.point_type && props.point_type.toLowerCase() !== 'na') {
+          typeImage = pointTypeDefaultImages[props.point_type] || null;
+        }
+      } else if (
+        (feature.layer && (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill')) ||
+        (looksLikeRiver && !looksLikePoint)
+      ) {
+        typeImage = getRiverDefaultImage(props);
+      }
+
+      const extraPhotos = collectPhotoUrls(props);
+      const photoList = (typeImage ? [typeImage] : []).concat(extraPhotos);
+
+      window.__cardPhotos = photoList;
+      window.__cardPhotoIndex = 0;
+
+      let content = `
       <div class="map-overlay-inner">
         <div class="map-overlay-drag-handle"></div>
         <button class="close-button" onclick="closeCard()">&times;</button>
         <div class="panel-scroll">
     `;
 
-    if (photoList.length > 0) {
-      content += `
+      if (photoList.length > 0) {
+        content += `
         <div class="card-image-wrap">
           <img id="cardMainImage" src="${photoList[0]}" alt="Location Photo" onclick="openImageModal()" />
           ${photoList.length > 1 ? `
@@ -1526,20 +1526,20 @@ canvas._chartInstance = new Chart(ctx, {
         </div>
         ${photoList.length > 1 ? `<div class="carousel-meta">${1} / ${photoList.length}</div>` : ``}
       `;
-    }
+      }
 
-    content += `
+      content += `
       <code class="card-title">${props.Water || props.name || props.title || 'No Title'}</code>
     `;
 
-    if (props.subtitle || (typeof props.Section === 'string' && props.Section.trim() !== '')) {
-      const subtitleText = props.subtitle || props.Section;
-      content += `<div class="card-subtitle subtitle-main">${subtitleText}`;
+      if (props.subtitle || (typeof props.Section === 'string' && props.Section.trim() !== '')) {
+        const subtitleText = props.subtitle || props.Section;
+        content += `<div class="card-subtitle subtitle-main">${subtitleText}`;
 
-      if (feature.geometry?.type === 'Point' && Array.isArray(feature.geometry.coordinates)) {
-        const [lng, lat] = feature.geometry.coordinates;
-        const googleMapsLink = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-        content += `<br>  
+        if (feature.geometry?.type === 'Point' && Array.isArray(feature.geometry.coordinates)) {
+          const [lng, lat] = feature.geometry.coordinates;
+          const googleMapsLink = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+          content += `<br>  
  <a href="${googleMapsLink}"
      class="get-directions-link"
      target="_blank"
@@ -1548,36 +1548,36 @@ canvas._chartInstance = new Chart(ctx, {
     (Get Directions in Google Maps)
   </a>
 `;
+        }
+        content += `</div>`;
       }
-      content += `</div>`;
-    }
 
-    if (props.region || props.Region) {
-      const regionName = props.Region || props.region;
-      const label = (props.RegionCode == 13) ? "Fishing District" : "Fish & Game Region 2025/2026";
-      content += `<div class="card-subtitle subtitle-region">${regionName} ${label}</div>`;
-    }
-
-    content += `<hr><ul class="card-list">`;
-
-    for (const [key, label] of Object.entries(displayFields)) {
-      const raw = props[key];
-      if (isBlankish(raw)) continue;
-
-      if (key === 'more_info_url') {
-        content += renderMultiLinks(props, label);
-      } else {
-        content += `<li><b>${label}</b>: ${raw}</li>`;
+      if (props.region || props.Region) {
+        const regionName = props.Region || props.region;
+        const label = (props.RegionCode == 13) ? "Fishing District" : "Fish & Game Region 2025/2026";
+        content += `<div class="card-subtitle subtitle-region">${regionName} ${label}</div>`;
       }
-    }
 
-    content += `</ul>`;
+      content += `<hr><ul class="card-list">`;
 
-    const regsHref = getRegionRegUrlFromProps(props);
+      for (const [key, label] of Object.entries(displayFields)) {
+        const raw = props[key];
+        if (isBlankish(raw)) continue;
 
-    if (regsHref) {
-  const rc = getRegionCode(props); // you already have this helper above
-  content += `
+        if (key === 'more_info_url') {
+          content += renderMultiLinks(props, label);
+        } else {
+          content += `<li><b>${label}</b>: ${raw}</li>`;
+        }
+      }
+
+      content += `</ul>`;
+
+      const regsHref = getRegionRegUrlFromProps(props);
+
+      if (regsHref) {
+        const rc = getRegionCode(props); // you already have this helper above
+        content += `
     <div class="regs-cta">
       <a href="${regsHref}"
          target="_blank"
@@ -1588,17 +1588,17 @@ canvas._chartInstance = new Chart(ctx, {
       </a>
     </div>
   `;
-}
+      }
 
 
 
-    
-// NEW: Licence CTA based on Region Code
-const rc = getRegionCode(props);
-if (rc !== null) {
-  if (rc < 13) {
-    // Standard Fish & Game licence
-    content += `
+
+      // NEW: Licence CTA based on Region Code
+      const rc = getRegionCode(props);
+      if (rc !== null) {
+        if (rc < 13) {
+          // Standard Fish & Game licence
+          content += `
       <div class="regs-cta">
         <a href="${FG_LICENCE_URL}"
            target="_blank"
@@ -1609,9 +1609,9 @@ if (rc !== null) {
         </a>
       </div>
     `;
-  } else if (rc === 13) {
-    // Taupō DOC licence
-    content += `
+        } else if (rc === 13) {
+          // Taupō DOC licence
+          content += `
       <div class="regs-cta">
         <a href="${DOC_TAUPO_LICENCE_URL}"
            target="_blank"
@@ -1622,1369 +1622,1369 @@ if (rc !== null) {
         </a>
       </div>
     `;
-  }
-}
+        }
+      }
 
 
 
 
-    content += `</div></div>`;
+      content += `</div></div>`;
 
-    card.innerHTML = content;
-    if (photoList.length) setCardImage(0);
+      card.innerHTML = content;
+      if (photoList.length) setCardImage(0);
 
-    openPanel('card');
-  };
+      openPanel('card');
+    };
 
-  // ===== Custom icons, icon sizing, etc. (unchanged) =====
-  const customImages = [
-    { name: 'AccessPoint-icon',   url: 'images/FGAccess.png' },
-    { name: 'TrampingAccess-icon', url: 'images/WalkingAccess.png' },
-    { name: '4x4Access-icon',    url: 'images/4x4Access.png' },
-    { name: 'BoatRamp-icon',     url: 'images/BoatRamp.png' },
-    { name: 'Toilet-icon',       url: 'images/Toilet.png' },
-    { name: 'Warning-icon',      url: 'images/Warning.png' },
-    { name: 'Parking-icon',      url: 'images/Parking.png' },
-    { name: 'LandmarkPole-icon', url: 'images/LandmarkPole.png' },
-    { name: 'Shop-icon',         url: 'images/Store.png' },
-    { name: 'Lodge-icon',        url: 'images/Lodge.png' },
-    { name: 'RegBoundary-icon',  url: 'images/RegBoundary.png' },
-    { name: 'BuyDW-icon',        url: 'images/BuyDW.png' },
-    { name: 'Hotspot-icon',      url: 'images/Hotspot.png' },
-    { name: 'Trolling-icon',     url: 'images/Trolling.png' },
-    { name: 'Jigging-icon',      url: 'images/Jigging.png' },
-    { name: 'Hut-icon',          url: 'images/DOC Hut.png' },
-    { name: 'Campsite-icon',     url: 'images/DOC Camp.png' },
-    { name: 'BeatYR-icon',       url: 'images/BeatYR.png' },
-    { name: 'BeatBY-icon',       url: 'images/BeatBY.png' },
-    { name: 'BeatBR-icon',       url: 'images/BeatBR.png' },
-    { name: 'BeatR-icon',        url: 'images/BeatR.png' },
-    { name: 'BeatB-icon',        url: 'images/BeatB.png' },
-    { name: 'BeatY-icon',        url: 'images/BeatY.png' },
-  ];
-
-  function loadCustomImages(map, callback) {
-    let imagesLoaded = 0;
-    customImages.forEach(({ name, url }) => {
-      map.loadImage(url, (error, image) => {
-        if (error) { console.error(`Error loading image "${name}" from ${url}:`, error); return; }
-        if (!map.hasImage(name)) { map.addImage(name, image); }
-        imagesLoaded++;
-        if (imagesLoaded === customImages.length && typeof callback === 'function') callback();
-      });
-    });
-  }
-
-  let selectedFeatureId = null;
-  let hoverFeatureId = null;
-
-
-  // ===== Hover for flow-dev circles (Flow + Temperature) =====
-let flowHoverId = null;
-let selectedFlowId = null;
-
-function setFlowHover(id) {
-  if (id === flowHoverId) return;
-  if (flowHoverId !== null) {
-    // clear previous
-    map.setFeatureState(
-      { source: 'flow-dev', id: flowHoverId },
-      { hover: false }
-    );
-  }
-  flowHoverId = id;
-  if (flowHoverId !== null) {
-    map.setFeatureState(
-      { source: 'flow-dev', id: flowHoverId },
-      { hover: true }
-    );
-  }
-}
-
-// Flow hover
-map.on('mousemove', 'flow-dev-flow-circles', (e) => {
-  map.getCanvas().style.cursor = 'pointer';
-  const f = e.features && e.features[0];
-  if (f && typeof f.id !== 'undefined') {
-    setFlowHover(f.id);
-  }
-});
-
-map.on('mouseleave', 'flow-dev-flow-circles', () => {
-  map.getCanvas().style.cursor = '';
-  setFlowHover(null);
-});
-
-// Temperature hover
-map.on('mousemove', 'flow-dev-wt-circles', (e) => {
-  map.getCanvas().style.cursor = 'pointer';
-  const f = e.features && e.features[0];
-  if (f && typeof f.id !== 'undefined') {
-    setFlowHover(f.id);
-  }
-});
-
-map.on('mouseleave', 'flow-dev-wt-circles', () => {
-  map.getCanvas().style.cursor = '';
-  setFlowHover(null);
-});
-
-  function getIconSizeExpr(selectedId, hoverId) {
-    return [
-      'interpolate', ['linear'], ['zoom'],
-      7, 0.01,
-      12, [
-        'case',
-        ['all', ['==', ['id'], hoverId ?? -1], ['!=', ['id'], selectedId ?? -2]], 0.25,
-        ['==', ['id'], selectedId ?? -2], 0.30,
-        0.20
-      ]
+    // ===== Custom icons, icon sizing, etc. (unchanged) =====
+    const customImages = [
+      { name: 'AccessPoint-icon', url: 'images/FGAccess.png' },
+      { name: 'TrampingAccess-icon', url: 'images/WalkingAccess.png' },
+      { name: '4x4Access-icon', url: 'images/4x4Access.png' },
+      { name: 'BoatRamp-icon', url: 'images/BoatRamp.png' },
+      { name: 'Toilet-icon', url: 'images/Toilet.png' },
+      { name: 'Warning-icon', url: 'images/Warning.png' },
+      { name: 'Parking-icon', url: 'images/Parking.png' },
+      { name: 'LandmarkPole-icon', url: 'images/LandmarkPole.png' },
+      { name: 'Shop-icon', url: 'images/Store.png' },
+      { name: 'Lodge-icon', url: 'images/Lodge.png' },
+      { name: 'RegBoundary-icon', url: 'images/RegBoundary.png' },
+      { name: 'BuyDW-icon', url: 'images/BuyDW.png' },
+      { name: 'Hotspot-icon', url: 'images/Hotspot.png' },
+      { name: 'Trolling-icon', url: 'images/Trolling.png' },
+      { name: 'Jigging-icon', url: 'images/Jigging.png' },
+      { name: 'Hut-icon', url: 'images/DOC Hut.png' },
+      { name: 'Campsite-icon', url: 'images/DOC Camp.png' },
+      { name: 'BeatYR-icon', url: 'images/BeatYR.png' },
+      { name: 'BeatBY-icon', url: 'images/BeatBY.png' },
+      { name: 'BeatBR-icon', url: 'images/BeatBR.png' },
+      { name: 'BeatR-icon', url: 'images/BeatR.png' },
+      { name: 'BeatB-icon', url: 'images/BeatB.png' },
+      { name: 'BeatY-icon', url: 'images/BeatY.png' },
     ];
-  }
 
-  function updateIconSize() {
-    if (!map.getLayer('data-points-all')) return;
-    map.setLayoutProperty('data-points-all', 'icon-size', getIconSizeExpr(selectedFeatureId, hoverFeatureId));
-  }
-
-  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  if (isTouch) {
-    hoverFeatureId = null;
-    if (map.getLayer('data-points-all')) updateIconSize();
-  }
-
-  map.on('styledata', () => {
-    loadCustomImages(map, () => { addCustomDataAndLayers(); });
-  });
-// ===== Basemap switching =====
-let currentBasemap = null;
-
-// ===== Basemap switching =====
-function setBasemap(type) {
-
-  if (type === "Satellite") {
-    const aerial_style = {
-      id: "st_aerial",
-      name: "aerial",
-      version: 8,
-      glyphs: "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-      sources: {
-        "basemaps-aerial": {
-          type: "raster",
-          tiles: [
-            "https://basemaps.linz.govt.nz/v1/tiles/aerial/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
-          ],
-          tileSize: 256,
-          attribution: "© CC BY 4.0 LINZ"
-        },
-        "LINZ-Terrain": {
-          type: "raster-dem",
-          tileSize: 256,
-          maxzoom: 18,
-          tiles: [
-            "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
-          ]
-        }
-      },
-      layers: [
-        { id: "basemaps-aerial", type: "raster", source: "basemaps-aerial" }
-      ],
-      terrain: { source: "LINZ-Terrain", exaggeration: 1.0 }
-    };
-    map.setStyle(aerial_style);
-
-  } else if (type === "TopoLite") {
-    map.setStyle(
-      "https://basemaps.linz.govt.nz/v1/styles/topolite.json?api=d01hep5551e30kxb7w85hck49tp"
-    );
-
-  } else if (type === "Topo") {
-    const TopoStyle = {
-      id: "st_topo-raster",
-      name: "st_topo-raster",
-      version: 8,
-      glyphs: "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-      sources: {
-        "LINZ-Elevation-Hillshade": {
-          maxzoom: 18,
-          minzoom: 0,
-          tileSize: 256,
-          tiles: [
-            "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?pipeline=terrain-rgb&api=d01hep5551e30kxb7w85hck49tp"
-          ],
-          type: "raster-dem"
-        },
-        "LINZ-Topo-Raster": {
-          attribution: "© 2024 Toitū Te Whenua - CC BY 4.0",
-          maxzoom: 28,
-          minzoom: 0,
-          tileSize: 192,
-          tiles: [
-            "https://basemaps.linz.govt.nz/v1/tiles/topo-raster/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
-          ],
-          type: "raster"
-        },
-        "LINZ-Terrain": {
-          type: "raster-dem",
-          tileSize: 256,
-          maxzoom: 18,
-          tiles: [
-            "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
-          ]
-        }
-      },
-      layers: [
-        {
-          id: "Topo-Raster",
-          type: "raster",
-          source: "LINZ-Topo-Raster",
-          layout: { visibility: "visible" }
-        },
-        {
-          id: "Hillshade",
-          type: "hillshade",
-          source: "LINZ-Elevation-Hillshade",
-          layout: { visibility: "visible" },
-          paint: {
-            "hillshade-accent-color": [
-              "interpolate", ["linear"], ["zoom"],
-              0, "rgb(100, 100, 100)",
-              3, "rgba(100, 100, 100, 0.400)",
-              10, "rgba(100, 100, 100, 0.333)",
-              11, "rgba(100, 100, 100, 0.267)"
-            ],
-            "hillshade-exaggeration": 0.4,
-            "hillshade-highlight-color": [
-              "interpolate", ["linear"], ["zoom"],
-              0, "rgb(225, 229, 224)",
-              3, "rgba(225, 229, 224, 0.400)",
-              10, "rgba(225, 229, 224, 0.333)",
-              11, "rgba(225, 229, 224, 0.0667)"
-            ],
-            "hillshade-illumination-anchor": "map",
-            "hillshade-illumination-direction": 315,
-            "hillshade-shadow-color": [
-              "interpolate", ["linear"], ["zoom"],
-              0, "rgb(12, 12, 12)",
-              3, "rgba(12, 12, 12, 0.400)",
-              10, "rgba(12, 12, 12, 0.400)",
-              16, "rgba(12, 12, 12, 1.00)"
-            ]
-          }
-        }
-      ],
-      sky: {
-        "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 10, 1, 12, 0],
-        "fog-color": "#e8e8e8",
-        "fog-ground-blend": 0.8,
-        "horizon-color": "#ecffff",
-        "horizon-fog-blend": 0.65,
-        "sky-color": "#77b5fe",
-        "sky-horizon-blend": 0.5
-      }
-    };
-
-    map.setStyle(TopoStyle);
-  }
-
- 
-  currentBasemap = type;
-  document.querySelectorAll(".basemap-btn").forEach(btn => {
-    const isActive = btn.dataset.basemap === type;
-    btn.classList.toggle("active", isActive);
-    btn.setAttribute("aria-pressed", isActive ? "true" : "false");
-  });
-}
-
-// ===== Wire buttons ONCE =====
-document.querySelectorAll(".basemap-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const type = btn.dataset.basemap;
-    if (type === currentBasemap) return; // no tracking spam
-    setBasemap(type);
-    if (window.umami) {
-      umami.track("basemap-change", { basemap: type });
-    }
-  });
-});
-
-// ===== Set initial map without tracking =====
-window.addEventListener("load", () => {
-  setBasemap("Topo");
-});
-
-
-const crosshairEl = document.getElementById('center-crosshair');
-const accessBannerEl = document.getElementById('public-access-banner');
-
-// Mobile UI = touch device AND narrow screen
-let isMobileUI = isTouch && window.innerWidth < 768;
-console.log('isTouch:', isTouch, 'isMobileUI:', isMobileUI, 'width:', window.innerWidth);
-
-window.addEventListener('resize', () => {
-  isMobileUI = isTouch && window.innerWidth < 768;
-  updateCenterPublicAccess();
-});
-
-
-function updateCenterPublicAccess() {
-  if (!isMobileUI) {
-    crosshairEl.style.display = 'none';
-    accessBannerEl.style.display = 'none';
-    return;
-  }
-
-  if (map.getZoom() < 12) {
-    crosshairEl.style.display = 'none';
-    accessBannerEl.style.display = 'none';
-    return;
-  }
-
-  crosshairEl.style.display = 'block';
-
-  const point = map.project(map.getCenter());
-  const features = map.queryRenderedFeatures(point, {
-    layers: ['PublicAccessAreas-fill']
-  });
-
-  if (!features.length) {
-    accessBannerEl.style.display = 'none';
-    return;
-  }
-
-  const type = features[0]?.properties?.DataType || 'Public Access';
-  accessBannerEl.textContent = type;
-  accessBannerEl.style.display = 'block';
-}
-
-map.on('move', updateCenterPublicAccess);
-map.on('moveend', updateCenterPublicAccess);
-map.on('load', updateCenterPublicAccess);
-
-
-
-
-
-
-
-
-
-
-  
-  function updateLayerFilter() {
-    const container = document.getElementById('point-type-filter');
-    if (!container) return;
-    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-    const selectedTypes = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
-    const filter = ['in', ['get', 'point_type'], ['literal', selectedTypes]];
-    if (map.getLayer('data-points-all')) map.setFilter('data-points-all', filter);
-  }
-
-  const clearSelection = () => {
-    unselectFeatures();
-    const input = document.getElementById('search');
-    const suggestions = document.getElementById('suggestions');
-    input.value = '';
-    suggestions.innerHTML = '';
-    suggestions.style.display = 'none';
-    card.innerHTML = '';
-    card.style.display = 'none';
-  };
-
-  function closeCard() {
-    unselectFeatures();
-    openPanel(null);
-  }
-
-  const selectFeature = (feature) => {
-  if (!feature) return;
-
-  const props = feature.properties || {};
-  clearSelection();
-
-  if (feature.layer.id === 'data-points-all') {
-    // ===== POINTS =====
-    selectedPoint = feature;
-    map.setFeatureState({ source: 'data-points', id: feature.id }, { selected: true });
-    selectedFeatureId = feature.id;
-    hoverFeatureId = null;
-    updateIconSize();
-
-  } else if (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill') {
-    // ===== WATERWAYS =====
-    selectedRiver = feature;
-    map.setFeatureState(
-      { source: 'Waterways', sourceLayer: 'waterways', id: feature.id },
-      { selected: true }
-    );
-    selectedRiverId = feature.id;
-    updateSelectedRiverLayers();
-
-    // 📊 Umami analytics: waterway selection by region
-    if (window.umami) {
-      const rc = getRegionCode(props);   // uses your existing helper
-      umami.track('waterway-select', {
-        region_name: props.Region || props.region || null,
-        water_name: props.Water || props.name || null,
-        water_type: props.water_type || null
-      });
-    }
-  }
-
-  showCard(feature);
-};
-
- function unselectFeatures() {
-  if (selectedRiver) {
-    try {
-      map.setFeatureState(
-        { source: 'Waterways', sourceLayer: 'waterways', id: selectedRiver.id },
-        { selected: false, highlight: false }
-      );
-    } catch (e) { }
-    selectedRiver = null;
-  }
-
-  selectedRiverId = null;
-  updateSelectedRiverLayers();
-
-  if (selectedPoint) {
-    try {
-      map.setFeatureState(
-        { source: 'data-points', id: selectedPoint.id },
-        { selected: false }
-      );
-    } catch (e) { }
-    selectedPoint = null;
-  }
-
-  // NEW: clear selected flow/temp station
-  if (selectedFlowId !== null) {
-    try {
-      map.setFeatureState(
-        { source: 'flow-dev', id: selectedFlowId },
-        { selected: false, hover: false }
-      );
-    } catch (e) { }
-    selectedFlowId = null;
-    flowHoverId = null;
-  }
-
-  selectedFeatureId = null;
-  hoverFeatureId = null;
-  updateIconSize();
-}
-
-
-  let allFeatures = [];
-  let allPointsFeatures = [];
-
-  const zoomLevel = document.getElementById('zoom-level');
-  zoomLevel.textContent = `Zoom: ${map.getZoom().toFixed(2)}`;
-  map.on('zoom', () => { zoomLevel.textContent = `Zoom: ${map.getZoom().toFixed(2)}`; });
-
-  const legacyCheckboxes = document.querySelectorAll('#point-type-filter input[type="checkbox"]');
-  legacyCheckboxes.forEach(cb => cb.addEventListener('change', updateLayerFilter));
-
-  const host = url.hostname;
-  const dataQ = (url.searchParams.get('data') || '').trim().toLowerCase();
-  const isDev = dataQ === 'dev';
-
-  const TILES_BASE = 'https://data.fishandgameaccessmap.org';
-  const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson';
-
-  const WATERWAYS_NAME = isDev ? 'all_waters_dev' : 'all_waters';
-  const POINTS_FILE = isDev ? 'AccessPoints.geojson?token=fish-access-2025'
-    : 'AccessPoints.geojson?token=fish-access-2025';
-  const SEARCH_FILE = isDev ? 'waterway_search_index_dev.geojson?token=fish-access-2025'
-    : 'waterway_search_index.geojson?token=fish-access-2025';
-
-  const URL_WATERWAYS_TILES = `${TILES_BASE}/${WATERWAYS_NAME}/{z}/{x}/{y}`;
-  const URL_POINTS_GEOJSON = `${GEOJSON_BASE}/${POINTS_FILE}`;
-  const URL_SEARCH_INDEX = `${GEOJSON_BASE}/${SEARCH_FILE}`;
-
-  fetch(URL_SEARCH_INDEX)
-    .then(res => res.json()).then(d => { allFeatures = d.features; })
-    .catch(err => console.error('Failed to load search index:', err));
-
-  fetch(URL_POINTS_GEOJSON)
-    .then(res => res.json()).then(d => { allPointsFeatures = d.features; })
-    .catch(err => console.error('Failed to load points data:', err));
-
-  function addCustomDataAndLayers() {
-    const sources = map.getStyle().sources;
-
-    let firstSymbolId = null;
-    let insertBeforeLayer = null;
-    for (const layer of map.getStyle().layers) {
-      if (!firstSymbolId && layer.type === 'symbol') firstSymbolId = layer.id;
-      if (layer.id === 'Housenumber') { insertBeforeLayer = 'Poi-SportsField'; break; }
-    }
-    if (!insertBeforeLayer) insertBeforeLayer = firstSymbolId;
-
-    if (!sources['PublicAccessAreas']) {
-      map.addSource('PublicAccessAreas', {
-        type: 'vector',
-        tiles: ['https://data.fishandgameaccessmap.org/combined_public_access_layers/{z}/{x}/{y}'],
-        minzoom: 0, maxzoom: 13
-      });
-    }
-
-    if (!map.getLayer('PublicAccessAreas-fill')) {
-      map.addLayer({
-        id: 'PublicAccessAreas-fill',
-        type: 'fill',
-        source: 'PublicAccessAreas',
-        'source-layer': 'mylayer',
-        minzoom: 12,
-        paint: {
-          'fill-color': [
-            'match', ['get', 'DataType'],
-            'DOC Conservation Area', '#2d6c3e',
-            'Esplanade Reserve', '#66f0cb',
-            'Esplanade Strip', '#ff66dc',
-            'Hydro Parcel', '#abecff',
-            'Non-Primary Parcel', '#ffcc66',
-            'Public Access Easement', '#ffd8f1',
-            'Reserve Land', '#a9cb66',
-            'Road Parcel', '#cca3e1',
-            'Walkway Easement', '#ffb2b2',
-            '#cccccc'
-          ],
-          'fill-opacity': [
-            'interpolate', ['linear'], ['zoom'],
-            12, [
-              'match', ['get', 'DataType'],
-              'Non-Primary Parcel', 0.10,
-              0.80
-            ],
-            16, [
-              '*',
-              [
-                'match', ['get', 'DataType'],
-                'Non-Primary Parcel', 0.10,
-                0.80
-              ],
-              0.4
-            ],
-            17, [
-              '*',
-              [
-                'match', ['get', 'DataType'],
-                'Non-Primary Parcel', 0.10,
-                0.80
-              ],
-              0.3
-            ]
-          ]
-        }
-      }, insertBeforeLayer);
-    }
-
-    if (!sources['Waterways']) {
-      map.addSource('Waterways', {
-        type: 'vector',
-        tiles: [URL_WATERWAYS_TILES],
-        minzoom: 0, maxzoom: 13
-      });
-    }
-
-    if (!map.getLayer('Waterways-line')) {
-      map.addLayer({
-        id: 'Waterways-line',
-        type: 'line',
-        minzoom: 7,
-        source: 'Waterways',
-        'source-layer': 'waterways',
-        layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: {
-          'line-color': [
-            'case',
-            ['any',
-              ['<', TODAY_UNIX, ['get', 'open_date_unix']],
-              ['>', TODAY_UNIX, ['get', 'close_date_unix']]
-            ],
-            ['case',
-              ['boolean', ['feature-state', 'selected'], false], '#ac261f',
-              ['boolean', ['feature-state', 'highlight'], false], '#DE0125',
-              '#DE0125'
-            ],
-            ['case',
-              ['boolean', ['feature-state', 'selected'], false], '#3949ab',
-              ['boolean', ['feature-state', 'highlight'], false], '#093476',
-              '#0c4194'
-            ]
-          ],
-          'line-width': [
-            'case',
-            ['boolean', ['feature-state', 'selected'], false], 5,
-            ['boolean', ['feature-state', 'highlight'], false], 4,
-            1.5
-          ],
-          'line-opacity': .7
-        }
-      }, insertBeforeLayer);
-    }
-
-    if (!map.getLayer('Waterways-fill')) {
-      map.addLayer({
-        id: 'Waterways-fill',
-        type: 'fill',
-        minzoom: 7,
-        source: 'Waterways',
-        'source-layer': 'waterways',
-        paint: {
-          'fill-color': [
-            'case',
-            ['any',
-              ['<', TODAY_UNIX, ['get', 'open_date_unix']],
-              ['>', TODAY_UNIX, ['get', 'close_date_unix']]
-            ],
-            ['case',
-              ['boolean', ['feature-state', 'selected'], false], '#DE0125',
-              ['boolean', ['feature-state', 'highlight'], false], '#DE0125',
-              '#f7022a'
-            ],
-            ['case',
-              ['boolean', ['feature-state', 'selected'], false], '#0b46a1',
-              ['boolean', ['feature-state', 'highlight'], false], '#0b46a1',
-              '#0F52BA'
-            ]
-          ],
-          'fill-opacity': [
-            'interpolate', ['linear'], ['zoom'],
-            12, .5,
-            15.01, .1,
-            18, .01
-          ]
-        }
-      }, insertBeforeLayer);
-    }
-
-    if (!map.getLayer('Waterways-selected-halo')) {
-      map.addLayer({
-        id: 'Waterways-selected-halo',
-        type: 'line',
-        source: 'Waterways',
-        'source-layer': 'waterways',
-        minzoom: 7,
-        layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: {
-          'line-color': [
-            'case',
-            ['any',
-              ['<', TODAY_UNIX, ['get', 'open_date_unix']],
-              ['>', TODAY_UNIX, ['get', 'close_date_unix']]
-            ],
-            ['case',
-              ['boolean', ['feature-state', 'selected'], false], '#9B0019',
-              ['boolean', ['feature-state', 'highlight'], false], '#f42f58',
-              '#f42f58'
-            ],
-            ['case',
-              ['boolean', ['feature-state', 'selected'], false], '#002366',
-              ['boolean', ['feature-state', 'highlight'], false], '#4ca6e6',
-              '#4ca6e6'
-            ]
-          ],
-          'line-width': [
-            'case',
-            ['boolean', ['feature-state', 'selected'], false], 5,
-            ['boolean', ['feature-state', 'highlight'], false], 5,
-            3
-          ],
-          'line-opacity': 1
-        },
-        filter: ['==', ['id'], -1]
-      });
-    }
-
-    if (isTouch && !map.getLayer('Waterways-touch')) {
-      map.addLayer({
-        id: 'Waterways-touch',
-        type: 'line',
-        source: 'Waterways',
-        'source-layer': 'waterways',
-        minzoom: 7,
-        layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: {
-          'line-width': 10,
-          'line-opacity': 0,
-          'line-color': '#000000'
-        }
-      });
-    }
-
-    if (!sources['FG Regions']) {
-      map.addSource('FG Regions', {
-        type: 'vector',
-        tiles: ['https://data.fishandgameaccessmap.org/fg_regions/{z}/{x}/{y}'],
-        minzoom: 0, maxzoom: 10
-      });
-    }
-
-    if (!map.getLayer('FG Regions-linebackground')) {
-      map.addLayer({
-        id: 'FG Regions-linebackground',
-        type: 'line',
-        source: 'FG Regions',
-        'source-layer': 'fg_regions',
-        layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: {
-          'line-color': '#fff',
-          'line-width': [
-            'interpolate', ['linear'], ['zoom'],
-            5, 3,
-            10, 4,
-            14, 8,
-            18, 12
-          ],
-          'line-opacity': 1
-        }
-      }, insertBeforeLayer);
-    }
-
-    if (!map.getLayer('FG Regions-line')) {
-      map.addLayer({
-        id: 'FG Regions-line',
-        type: 'line',
-        source: 'FG Regions',
-        'source-layer': 'fg_regions',
-        layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: {
-          'line-color': '#008678',
-          'line-width': [
-            'interpolate', ['linear'], ['zoom'],
-            5, 1.5,
-            10, 2,
-            14, 4,
-            18, 8
-          ],
-          'line-opacity': 1
-        }
-      }, insertBeforeLayer);
-    }
-
-    if (!sources['Routes']) {
-      map.addSource('Routes', {
-        type: 'geojson',
-        data: 'https://data.fishandgameaccessmap.org/secure-geojson/Routes.geojson?token=fish-access-2025'
-      });
-    }
-
-    if (!map.getLayer('Routes-line')) {
-      map.addLayer({
-        id: 'Routes-line',
-        type: 'line',
-        source: 'Routes',
-        minzoom: 9.5,
-        paint: { 'line-width': 3.5, 'line-color': ['get', 'line_color'], 'line-dasharray': [2, 1] }
-      });
-    }
-
-    // ---- DEV: flow-dev source + layers ----
-    if (isDev) {
-      const FLOW_DEV_URL = `${GEOJSON_BASE}/flow_combined_dev.geojson?token=fish-access-2025`;
-
-      if (!sources['flow-dev']) {
-        map.addSource('flow-dev', {
-          type: 'geojson',
-          data: FLOW_DEV_URL,
-          generateId: true   
+    function loadCustomImages(map, callback) {
+      let imagesLoaded = 0;
+      customImages.forEach(({ name, url }) => {
+        map.loadImage(url, (error, image) => {
+          if (error) { console.error(`Error loading image "${name}" from ${url}:`, error); return; }
+          if (!map.hasImage(name)) { map.addImage(name, image); }
+          imagesLoaded++;
+          if (imagesLoaded === customImages.length && typeof callback === 'function') callback();
         });
-      }
-
-      if (!map.getLayer('flow-dev-flow-circles')) {
-        map.addLayer({
-          id: 'flow-dev-flow-circles',
-          type: 'circle',
-          source: 'flow-dev',
-          minzoom: 7,
-          filter: ['==', ['get', 'parameter'], 'Flow'],
-          paint: {
-            'circle-radius': [
-  'interpolate', ['linear'], ['zoom'],
-  7, [
-    'case',
-    ['boolean', ['feature-state', 'selected'], false], 3,    // 🔹 selected
-    ['boolean', ['feature-state', 'hover'], false], 2.5,       // hover
-    2                                                        // default
-  ],
-  11, [
-    'case',
-    ['boolean', ['feature-state', 'selected'], false], 7,
-    ['boolean', ['feature-state', 'hover'], false], 6,
-    5
-  ],
-  14, [
-    'case',
-    ['boolean', ['feature-state', 'selected'], false], 12,
-    ['boolean', ['feature-state', 'hover'], false], 11,
-    10
-  ]
-],
-
-
-            'circle-color': '#3498db',
-            'circle-opacity': 0.85,
-            'circle-stroke-color': '#ffffff',
-            'circle-stroke-width': [
-              'interpolate', ['linear'], ['zoom'],
-              6, 0.5,
-              11, 2
-            ],
-            'circle-translate': [
-              'interpolate', ['linear'], ['zoom'],
-              6, ['literal', [-2, 0]],
-              11, ['literal', [-7, 0]],
-              14, ['literal', [-14, 0]]
-            ]
-          }
-        }, insertBeforeLayer);
-      }
-
-      if (!map.getLayer('flow-dev-wt-circles')) {
-        map.addLayer({
-          id: 'flow-dev-wt-circles',
-          type: 'circle',
-          source: 'flow-dev',
-          minzoom: 7,
-          filter: ['==', ['get', 'parameter'], 'Temperature'],
-          paint: {
-            'circle-radius': [
-  'interpolate', ['linear'], ['zoom'],
-  7, [
-    'case',
-    ['boolean', ['feature-state', 'selected'], false], 3,    // 🔹 selected
-    ['boolean', ['feature-state', 'hover'], false], 2.5,       // hover
-    2                                                        // default
-  ],
-  11, [
-    'case',
-    ['boolean', ['feature-state', 'selected'], false], 7,
-    ['boolean', ['feature-state', 'hover'], false], 6,
-    5
-  ],
-  14, [
-    'case',
-    ['boolean', ['feature-state', 'selected'], false], 12,
-    ['boolean', ['feature-state', 'hover'], false], 11,
-    10
-  ]
-],
-
-
-            'circle-color': '#e67e22',
-            'circle-opacity': 0.85,
-            'circle-stroke-color': '#ffffff',
-            'circle-stroke-width': [
-              'interpolate', ['linear'], ['zoom'],
-              6, 0.5,
-              11, 2
-            ],
-            'circle-translate': [
-              'interpolate', ['linear'], ['zoom'],
-              6, ['literal', [1, 0]],
-              11, ['literal', [7, 0]],
-              14, ['literal', [14, 0]]
-            ]
-          }
-        }, insertBeforeLayer);
-      }
-
-      if (!map.getLayer('flow-dev-flow-labels')) {
-        map.addLayer({
-          id: 'flow-dev-flow-labels',
-          type: 'symbol',
-          source: 'flow-dev',
-          minzoom: 12,
-          filter: ['==', ['get', 'parameter'], 'Flow'],
-          layout: {
-            'text-field': [
-              'concat',
-              ['to-string', ['/', ['round', ['*', ['get', 'latest_value'], 10]], 10]],
-              ' ',
-              ['coalesce', ['get', 'unit'], '']
-            ],
-            'text-font': ['Noto Sans Regular'],
-            'text-size': 11,
-            'text-anchor': 'right',
-            'text-offset': [-1.5, 0],
-            'text-allow-overlap': false
-          },
-          paint: {
-            'text-color': '#0b4870',
-            'text-halo-color': '#ffffff',
-            'text-halo-width': 3,
-            'text-translate': [
-              'interpolate', ['linear'], ['zoom'],
-              6, ['literal', [0, 0]],
-              11, ['literal', [0, 0]],
-              14, ['literal', [-10, 0]]
-            ]
-          }
-        }, insertBeforeLayer);
-      }
-
-      if (!map.getLayer('flow-dev-wt-labels')) {
-        map.addLayer({
-          id: 'flow-dev-wt-labels',
-          type: 'symbol',
-          source: 'flow-dev',
-          minzoom: 12,
-          filter: ['==', ['get', 'parameter'], 'Temperature'],
-          layout: {
-            'text-field': [
-              'concat',
-              ['to-string', ['/', ['round', ['*', ['get', 'latest_value'], 10]], 10]],
-              ' ',
-              ['coalesce', ['get', 'unit'], '']
-            ],
-            'text-font': ['Noto Sans Regular'],
-            'text-size': 11,
-            'text-anchor': 'left',
-            'text-offset': [1.5, 0],
-            'text-allow-overlap': false
-          },
-          paint: {
-            'text-color': '#0b4870',
-            'text-halo-color': '#ffffff',
-            'text-halo-width': 4,
-            'text-translate': [
-              'interpolate', ['linear'], ['zoom'],
-              6, ['literal', [0, 0]],
-              11, ['literal', [0, 0]],
-              14, ['literal', [10, 0]]
-            ]
-          }
-        }, insertBeforeLayer);
-      }
-    }
-
-    if (!sources['data-points']) {
-      map.addSource('data-points', {
-        type: 'geojson',
-        data: URL_POINTS_GEOJSON,
-        generateId: true
       });
     }
 
-    if (!map.getLayer('data-points-all')) {
-      map.addLayer({
-        id: 'data-points-all',
-        type: 'symbol',
-        source: 'data-points',
-        minzoom: 7,
-        layout: {
-          'icon-image': ['concat', ['get', 'point_type'], '-icon'],
-          'icon-size': getIconSizeExpr(selectedFeatureId, hoverFeatureId),
-          'icon-anchor': ['get', 'anchor'],
-          'icon-allow-overlap': true,
-          'icon-rotate': ['get', 'bearing']
-        }
-      });
-    }
-
-    if (!sources['search']) {
-      map.addSource('search', { type: 'geojson', data: URL_SEARCH_INDEX });
-    }
-
-    if (!map.getLayer('search-points-all')) {
-      map.addLayer({
-        id: 'search-points-all',
-        type: 'circle',
-        source: 'search',
-        paint: { 'circle-radius': 5, 'circle-color': '#FF5733', 'circle-opacity': 0.0 }
-      });
-    }
-
-    if (!sources['FG Region Centroids']) {
-      map.addSource('FG Region Centroids', {
-        type: 'geojson',
-        data: 'https://data.fishandgameaccessmap.org/secure-geojson/fg_regions_centroid.geojson?token=fish-access-2025'
-      });
-    }
-
-    if (!map.getLayer('FG Region Labels')) {
-      map.addLayer({
-        id: 'FG Region Labels',
-        type: 'symbol',
-        source: 'FG Region Centroids',
-        maxzoom: 7,
-        layout: {
-          'text-field': ['get', 'region'],
-          'text-font': ['Noto Sans Medium'],
-          'text-size': 12,
-          'text-anchor': 'center',
-          'text-allow-overlap': true
-        },
-        paint: {
-          'text-color': '#008678',
-          'text-halo-color': '#ffffff',
-          'text-halo-width': 2
-        }
-      });
-    }
-
-    if (window.setupAWFilters) window.setupAWFilters(map);
-  }
-
-  // ===== NEW: flow-dev click → side panel (no popup) =====
-  
-  // == Region label click, hover popups etc (unchanged) ==
-  map.on('mouseenter', 'FG Region Labels', () => { map.getCanvas().style.cursor = 'pointer'; });
-  map.on('mouseleave', 'FG Region Labels', () => { map.getCanvas().style.cursor = ''; });
-
-  map.on('click', 'FG Region Labels', (e) => {
-    const f = e.features && e.features[0];
-    if (!f || !f.geometry || f.geometry.type !== 'Point') return;
-
-    const [lng, lat] = f.geometry.coordinates;
-
-    const leftPad = (window.activePanel === 'card' || window.activePanel === 'filters' || window.activePanel === 'basemaps')
-      ? 420 : 10;
-
-    map.easeTo({
-      center: [lng, lat],
-      zoom: Math.max(map.getZoom(), 8),
-      duration: 800,
-      padding: { top: 80, right: 10, bottom: 10, left: leftPad }
-    });
-  });
-
-  const hoverPopup = document.createElement('div');
-  hoverPopup.style.position = 'absolute';
-  hoverPopup.style.pointerEvents = 'none';
-  hoverPopup.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
-  hoverPopup.style.color = '#fff';
-  hoverPopup.style.fontFamily = 'Arial, sans-serif';
-  hoverPopup.style.padding = '4px 8px';
-  hoverPopup.style.borderRadius = '4px';
-  hoverPopup.style.fontSize = '12px';
-  hoverPopup.style.display = 'none';
-  document.body.appendChild(hoverPopup);
-
-map.on('mousemove', 'PublicAccessAreas-fill', (e) => {
-  // 🔒 No hover tooltip on touch devices – crosshair + banner handles this
-  if (isTouch) return;
-
-  const feature = e.features?.[0];
-  if (feature) {
-    hoverPopup.style.display = 'block';
-    hoverPopup.textContent = feature.properties.DataType || 'Public Access';
-    hoverPopup.style.left = e.originalEvent.pageX + 10 + 'px';
-    hoverPopup.style.top = e.originalEvent.pageY + 10 + 'px';
-  }
-});
-
-map.on('mouseleave', 'PublicAccessAreas-fill', () => {
-  if (isTouch) return; // nothing to do on touch
-  hoverPopup.style.display = 'none';
-});
+    let selectedFeatureId = null;
+    let hoverFeatureId = null;
 
 
-map.on('click', 'data-points-all', e => {
-  const feature = e.features && e.features[0];
-  if (!feature) return;
+    // ===== Hover for flow-dev circles (Flow + Temperature) =====
+    let flowHoverId = null;
+    let selectedFlowId = null;
 
-  const props = feature.properties || {};
-
-  // 📊 Analytics Event — Track region + point selection
-  if (window.umami) {
-    umami.track('access-point-select', {
-      region_code: props.region || '',
-      point_type: props.point_type || '',
-      point_title: props.title || '',
-      point_subtitle: props.subtitle || ''
-      
-    });
-  }
-
-  selectedFeatureId = feature.id;
-  hoverFeatureId = null;
-  updateIconSize();
-});
-
-map.on('click', (e) => {
-  const riverTapLayers = isTouch
-    ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
-    : ['Waterways-line', 'Waterways-fill'];
-
-  const layersToQuery = ['data-points-all', ...riverTapLayers];
-  if (isDev) {
-    layersToQuery.push('flow-dev-flow-circles', 'flow-dev-wt-circles');
-  }
-
-  const features = map.queryRenderedFeatures(e.point, {
-    layers: layersToQuery
-  });
-
-  // Nothing under the cursor → clear everything
-  if (!features.length) {
-    clearSelection();
-    card.style.display = 'none';
-    return;
-  }
-
-  // Flow / Temperature first
-  const flowFeature = features.find(f =>
-    f.layer.id === 'flow-dev-flow-circles' ||
-    f.layer.id === 'flow-dev-wt-circles'
-  );
-
-  // Access points
-  const pointFeature = features.find(f => f.layer.id === 'data-points-all');
-
-  // Rivers
-  const riverFeature =
-    features.find(f => f.layer.id === 'Waterways-line') ||
-    features.find(f => f.layer.id === 'Waterways-fill');
-
-  if (flowFeature) {
-    // Clear any previous selection (points, rivers, other flow)
-    clearSelection();
-
-    const id = flowFeature.id;
-    const props = flowFeature.properties || {};
-
-    // Mark this flow/temp station as selected
-    selectedFlowId = id;
-    try {
-      map.setFeatureState(
-        { source: 'flow-dev', id },
-        { selected: true }
-      );
-    } catch (e) {}
-
-    // Optional: also clear hover state
-    if (flowHoverId !== null) {
-      try {
+    function setFlowHover(id) {
+      if (id === flowHoverId) return;
+      if (flowHoverId !== null) {
+        // clear previous
         map.setFeatureState(
           { source: 'flow-dev', id: flowHoverId },
           { hover: false }
         );
-      } catch (e) {}
-      flowHoverId = null;
+      }
+      flowHoverId = id;
+      if (flowHoverId !== null) {
+        map.setFeatureState(
+          { source: 'flow-dev', id: flowHoverId },
+          { hover: true }
+        );
+      }
     }
 
-    // analytics
-    if (window.umami) {
-      const rc = getRegionCode(props);
-      umami.track('station-select', {
-        region_code: rc ?? null,
-        region_name: props.Region || props.region || null,
-        site_name: props.site_name || null,
-        parameter: props.parameter || null,
-        source: props.source || props.source_name || null
+    // Flow hover
+    map.on('mousemove', 'flow-dev-flow-circles', (e) => {
+      map.getCanvas().style.cursor = 'pointer';
+      const f = e.features && e.features[0];
+      if (f && typeof f.id !== 'undefined') {
+        setFlowHover(f.id);
+      }
+    });
+
+    map.on('mouseleave', 'flow-dev-flow-circles', () => {
+      map.getCanvas().style.cursor = '';
+      setFlowHover(null);
+    });
+
+    // Temperature hover
+    map.on('mousemove', 'flow-dev-wt-circles', (e) => {
+      map.getCanvas().style.cursor = 'pointer';
+      const f = e.features && e.features[0];
+      if (f && typeof f.id !== 'undefined') {
+        setFlowHover(f.id);
+      }
+    });
+
+    map.on('mouseleave', 'flow-dev-wt-circles', () => {
+      map.getCanvas().style.cursor = '';
+      setFlowHover(null);
+    });
+
+    function getIconSizeExpr(selectedId, hoverId) {
+      return [
+        'interpolate', ['linear'], ['zoom'],
+        7, 0.01,
+        12, [
+          'case',
+          ['all', ['==', ['id'], hoverId ?? -1], ['!=', ['id'], selectedId ?? -2]], 0.25,
+          ['==', ['id'], selectedId ?? -2], 0.30,
+          0.20
+        ]
+      ];
+    }
+
+    function updateIconSize() {
+      if (!map.getLayer('data-points-all')) return;
+      map.setLayoutProperty('data-points-all', 'icon-size', getIconSizeExpr(selectedFeatureId, hoverFeatureId));
+    }
+
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isTouch) {
+      hoverFeatureId = null;
+      if (map.getLayer('data-points-all')) updateIconSize();
+    }
+
+    map.on('styledata', () => {
+      loadCustomImages(map, () => { addCustomDataAndLayers(); });
+    });
+    // ===== Basemap switching =====
+    let currentBasemap = null;
+
+    // ===== Basemap switching =====
+    function setBasemap(type) {
+
+      if (type === "Satellite") {
+        const aerial_style = {
+          id: "st_aerial",
+          name: "aerial",
+          version: 8,
+          glyphs: "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+          sources: {
+            "basemaps-aerial": {
+              type: "raster",
+              tiles: [
+                "https://basemaps.linz.govt.nz/v1/tiles/aerial/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
+              ],
+              tileSize: 256,
+              attribution: "© CC BY 4.0 LINZ"
+            },
+            "LINZ-Terrain": {
+              type: "raster-dem",
+              tileSize: 256,
+              maxzoom: 18,
+              tiles: [
+                "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
+              ]
+            }
+          },
+          layers: [
+            { id: "basemaps-aerial", type: "raster", source: "basemaps-aerial" }
+          ],
+          terrain: { source: "LINZ-Terrain", exaggeration: 1.0 }
+        };
+        map.setStyle(aerial_style);
+
+      } else if (type === "TopoLite") {
+        map.setStyle(
+          "https://basemaps.linz.govt.nz/v1/styles/topolite.json?api=d01hep5551e30kxb7w85hck49tp"
+        );
+
+      } else if (type === "Topo") {
+        const TopoStyle = {
+          id: "st_topo-raster",
+          name: "st_topo-raster",
+          version: 8,
+          glyphs: "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+          sources: {
+            "LINZ-Elevation-Hillshade": {
+              maxzoom: 18,
+              minzoom: 0,
+              tileSize: 256,
+              tiles: [
+                "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?pipeline=terrain-rgb&api=d01hep5551e30kxb7w85hck49tp"
+              ],
+              type: "raster-dem"
+            },
+            "LINZ-Topo-Raster": {
+              attribution: "© 2024 Toitū Te Whenua - CC BY 4.0",
+              maxzoom: 28,
+              minzoom: 0,
+              tileSize: 192,
+              tiles: [
+                "https://basemaps.linz.govt.nz/v1/tiles/topo-raster/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01hep5551e30kxb7w85hck49tp"
+              ],
+              type: "raster"
+            },
+            "LINZ-Terrain": {
+              type: "raster-dem",
+              tileSize: 256,
+              maxzoom: 18,
+              tiles: [
+                "https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?api=d01hep5551e30kxb7w85hck49tp&pipeline=terrain-rgb"
+              ]
+            }
+          },
+          layers: [
+            {
+              id: "Topo-Raster",
+              type: "raster",
+              source: "LINZ-Topo-Raster",
+              layout: { visibility: "visible" }
+            },
+            {
+              id: "Hillshade",
+              type: "hillshade",
+              source: "LINZ-Elevation-Hillshade",
+              layout: { visibility: "visible" },
+              paint: {
+                "hillshade-accent-color": [
+                  "interpolate", ["linear"], ["zoom"],
+                  0, "rgb(100, 100, 100)",
+                  3, "rgba(100, 100, 100, 0.400)",
+                  10, "rgba(100, 100, 100, 0.333)",
+                  11, "rgba(100, 100, 100, 0.267)"
+                ],
+                "hillshade-exaggeration": 0.4,
+                "hillshade-highlight-color": [
+                  "interpolate", ["linear"], ["zoom"],
+                  0, "rgb(225, 229, 224)",
+                  3, "rgba(225, 229, 224, 0.400)",
+                  10, "rgba(225, 229, 224, 0.333)",
+                  11, "rgba(225, 229, 224, 0.0667)"
+                ],
+                "hillshade-illumination-anchor": "map",
+                "hillshade-illumination-direction": 315,
+                "hillshade-shadow-color": [
+                  "interpolate", ["linear"], ["zoom"],
+                  0, "rgb(12, 12, 12)",
+                  3, "rgba(12, 12, 12, 0.400)",
+                  10, "rgba(12, 12, 12, 0.400)",
+                  16, "rgba(12, 12, 12, 1.00)"
+                ]
+              }
+            }
+          ],
+          sky: {
+            "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 10, 1, 12, 0],
+            "fog-color": "#e8e8e8",
+            "fog-ground-blend": 0.8,
+            "horizon-color": "#ecffff",
+            "horizon-fog-blend": 0.65,
+            "sky-color": "#77b5fe",
+            "sky-horizon-blend": 0.5
+          }
+        };
+
+        map.setStyle(TopoStyle);
+      }
+
+
+      currentBasemap = type;
+      document.querySelectorAll(".basemap-btn").forEach(btn => {
+        const isActive = btn.dataset.basemap === type;
+        btn.classList.toggle("active", isActive);
+        btn.setAttribute("aria-pressed", isActive ? "true" : "false");
       });
     }
 
-    // Show side panel
-    showFlowCard(flowFeature);
-    return;
-  }
-
-  // If no flow/temp clicked, let your existing logic handle points/rivers.
-  if (pointFeature) {
-    selectFeature(pointFeature);
-  } else if (riverFeature) {
-    selectFeature(riverFeature);
-  } else {
-    clearSelection();
-    card.style.display = 'none';
-  }
-});
-
-  let hoverDirty = false;
-  map.on('mousemove', 'data-points-all', e => {
-    map.getCanvas().style.cursor = 'pointer';
-    const hoveredId = e.features[0].id;
-    if (hoveredId !== selectedFeatureId && hoveredId !== hoverFeatureId) {
-      hoverFeatureId = hoveredId;
-      if (!hoverDirty) {
-        hoverDirty = true;
-        requestAnimationFrame(() => { hoverDirty = false; updateIconSize(); });
-      }
-    }
-  });
-  map.on('mouseleave', 'data-points-all', () => {
-    map.getCanvas().style.cursor = '';
-    if (hoverFeatureId !== null) {
-      hoverFeatureId = null;
-      requestAnimationFrame(updateIconSize);
-    }
-  });
-
-  let hoveredRiverId = null;
-  let hoveringLayers = new Set();
-  function updateCursor() {
-    map.getCanvas().style.cursor = (hoveringLayers.size > 0) ? 'pointer' : '';
-  }
-
-  let nextHoverId = null, hoverScheduled = false;
-  function setRiverHover(id) {
-    nextHoverId = id;
-    if (hoverScheduled) return;
-    hoverScheduled = true;
-    requestAnimationFrame(() => {
-      hoverScheduled = false;
-      if (hoveredRiverId !== nextHoverId) {
-        if (hoveredRiverId != null) {
-          map.setFeatureState({ source: 'Waterways', sourceLayer: 'waterways', id: hoveredRiverId }, { highlight: false });
+    // ===== Wire buttons ONCE =====
+    document.querySelectorAll(".basemap-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const type = btn.dataset.basemap;
+        if (type === currentBasemap) return; // no tracking spam
+        setBasemap(type);
+        if (window.umami) {
+          umami.track("basemap-change", { basemap: type });
         }
-        hoveredRiverId = nextHoverId;
-        if (hoveredRiverId != null) {
-          map.setFeatureState({ source: 'Waterways', sourceLayer: 'waterways', id: hoveredRiverId }, { highlight: true });
+      });
+    });
+
+    // ===== Set initial map without tracking =====
+    window.addEventListener("load", () => {
+      setBasemap("Topo");
+    });
+
+
+    const crosshairEl = document.getElementById('center-crosshair');
+    const accessBannerEl = document.getElementById('public-access-banner');
+
+    // Mobile UI = touch device AND narrow screen
+    let isMobileUI = isTouch && window.innerWidth < 768;
+    console.log('isTouch:', isTouch, 'isMobileUI:', isMobileUI, 'width:', window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      isMobileUI = isTouch && window.innerWidth < 768;
+      updateCenterPublicAccess();
+    });
+
+
+    function updateCenterPublicAccess() {
+      if (!isMobileUI) {
+        crosshairEl.style.display = 'none';
+        accessBannerEl.style.display = 'none';
+        return;
+      }
+
+      if (map.getZoom() < 12) {
+        crosshairEl.style.display = 'none';
+        accessBannerEl.style.display = 'none';
+        return;
+      }
+
+      crosshairEl.style.display = 'block';
+
+      const point = map.project(map.getCenter());
+      const features = map.queryRenderedFeatures(point, {
+        layers: ['PublicAccessAreas-fill']
+      });
+
+      if (!features.length) {
+        accessBannerEl.style.display = 'none';
+        return;
+      }
+
+      const type = features[0]?.properties?.DataType || 'Public Access';
+      accessBannerEl.textContent = type;
+      accessBannerEl.style.display = 'block';
+    }
+
+    map.on('move', updateCenterPublicAccess);
+    map.on('moveend', updateCenterPublicAccess);
+    map.on('load', updateCenterPublicAccess);
+
+
+
+
+
+
+
+
+
+
+
+    function updateLayerFilter() {
+      const container = document.getElementById('point-type-filter');
+      if (!container) return;
+      const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+      const selectedTypes = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+      const filter = ['in', ['get', 'point_type'], ['literal', selectedTypes]];
+      if (map.getLayer('data-points-all')) map.setFilter('data-points-all', filter);
+    }
+
+    const clearSelection = () => {
+      unselectFeatures();
+      const input = document.getElementById('search');
+      const suggestions = document.getElementById('suggestions');
+      input.value = '';
+      suggestions.innerHTML = '';
+      suggestions.style.display = 'none';
+      card.innerHTML = '';
+      card.style.display = 'none';
+    };
+
+    function closeCard() {
+      unselectFeatures();
+      openPanel(null);
+    }
+
+    const selectFeature = (feature) => {
+      if (!feature) return;
+
+      const props = feature.properties || {};
+      clearSelection();
+
+      if (feature.layer.id === 'data-points-all') {
+        // ===== POINTS =====
+        selectedPoint = feature;
+        map.setFeatureState({ source: 'data-points', id: feature.id }, { selected: true });
+        selectedFeatureId = feature.id;
+        hoverFeatureId = null;
+        updateIconSize();
+
+      } else if (feature.layer.id === 'Waterways-line' || feature.layer.id === 'Waterways-fill') {
+        // ===== WATERWAYS =====
+        selectedRiver = feature;
+        map.setFeatureState(
+          { source: 'Waterways', sourceLayer: 'waterways', id: feature.id },
+          { selected: true }
+        );
+        selectedRiverId = feature.id;
+        updateSelectedRiverLayers();
+
+        // 📊 Umami analytics: waterway selection by region
+        if (window.umami) {
+          const rc = getRegionCode(props);   // uses your existing helper
+          umami.track('waterway-select', {
+            region_name: props.Region || props.region || null,
+            water_name: props.Water || props.name || null,
+            water_type: props.water_type || null
+          });
+        }
+      }
+
+      showCard(feature);
+    };
+
+    function unselectFeatures() {
+      if (selectedRiver) {
+        try {
+          map.setFeatureState(
+            { source: 'Waterways', sourceLayer: 'waterways', id: selectedRiver.id },
+            { selected: false, highlight: false }
+          );
+        } catch (e) { }
+        selectedRiver = null;
+      }
+
+      selectedRiverId = null;
+      updateSelectedRiverLayers();
+
+      if (selectedPoint) {
+        try {
+          map.setFeatureState(
+            { source: 'data-points', id: selectedPoint.id },
+            { selected: false }
+          );
+        } catch (e) { }
+        selectedPoint = null;
+      }
+
+      // NEW: clear selected flow/temp station
+      if (selectedFlowId !== null) {
+        try {
+          map.setFeatureState(
+            { source: 'flow-dev', id: selectedFlowId },
+            { selected: false, hover: false }
+          );
+        } catch (e) { }
+        selectedFlowId = null;
+        flowHoverId = null;
+      }
+
+      selectedFeatureId = null;
+      hoverFeatureId = null;
+      updateIconSize();
+    }
+
+
+    let allFeatures = [];
+    let allPointsFeatures = [];
+
+    const zoomLevel = document.getElementById('zoom-level');
+    zoomLevel.textContent = `Zoom: ${map.getZoom().toFixed(2)}`;
+    map.on('zoom', () => { zoomLevel.textContent = `Zoom: ${map.getZoom().toFixed(2)}`; });
+
+    const legacyCheckboxes = document.querySelectorAll('#point-type-filter input[type="checkbox"]');
+    legacyCheckboxes.forEach(cb => cb.addEventListener('change', updateLayerFilter));
+
+    const host = url.hostname;
+    const dataQ = (url.searchParams.get('data') || '').trim().toLowerCase();
+    const isDev = dataQ === 'dev';
+
+    const TILES_BASE = 'https://data.fishandgameaccessmap.org';
+    const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson';
+
+    const WATERWAYS_NAME = isDev ? 'all_waters_dev' : 'all_waters';
+    const POINTS_FILE = isDev ? 'AccessPoints.geojson?token=fish-access-2025'
+      : 'AccessPoints.geojson?token=fish-access-2025';
+    const SEARCH_FILE = isDev ? 'waterway_search_index_dev.geojson?token=fish-access-2025'
+      : 'waterway_search_index.geojson?token=fish-access-2025';
+
+    const URL_WATERWAYS_TILES = `${TILES_BASE}/${WATERWAYS_NAME}/{z}/{x}/{y}`;
+    const URL_POINTS_GEOJSON = `${GEOJSON_BASE}/${POINTS_FILE}`;
+    const URL_SEARCH_INDEX = `${GEOJSON_BASE}/${SEARCH_FILE}`;
+
+    fetch(URL_SEARCH_INDEX)
+      .then(res => res.json()).then(d => { allFeatures = d.features; })
+      .catch(err => console.error('Failed to load search index:', err));
+
+    fetch(URL_POINTS_GEOJSON)
+      .then(res => res.json()).then(d => { allPointsFeatures = d.features; })
+      .catch(err => console.error('Failed to load points data:', err));
+
+    function addCustomDataAndLayers() {
+      const sources = map.getStyle().sources;
+
+      let firstSymbolId = null;
+      let insertBeforeLayer = null;
+      for (const layer of map.getStyle().layers) {
+        if (!firstSymbolId && layer.type === 'symbol') firstSymbolId = layer.id;
+        if (layer.id === 'Housenumber') { insertBeforeLayer = 'Poi-SportsField'; break; }
+      }
+      if (!insertBeforeLayer) insertBeforeLayer = firstSymbolId;
+
+      if (!sources['PublicAccessAreas']) {
+        map.addSource('PublicAccessAreas', {
+          type: 'vector',
+          tiles: ['https://data.fishandgameaccessmap.org/combined_public_access_layers/{z}/{x}/{y}'],
+          minzoom: 0, maxzoom: 13
+        });
+      }
+
+      if (!map.getLayer('PublicAccessAreas-fill')) {
+        map.addLayer({
+          id: 'PublicAccessAreas-fill',
+          type: 'fill',
+          source: 'PublicAccessAreas',
+          'source-layer': 'mylayer',
+          minzoom: 12,
+          paint: {
+            'fill-color': [
+              'match', ['get', 'DataType'],
+              'DOC Conservation Area', '#2d6c3e',
+              'Esplanade Reserve', '#66f0cb',
+              'Esplanade Strip', '#ff66dc',
+              'Hydro Parcel', '#abecff',
+              'Non-Primary Parcel', '#ffcc66',
+              'Public Access Easement', '#ffd8f1',
+              'Reserve Land', '#a9cb66',
+              'Road Parcel', '#cca3e1',
+              'Walkway Easement', '#ffb2b2',
+              '#cccccc'
+            ],
+            'fill-opacity': [
+              'interpolate', ['linear'], ['zoom'],
+              12, [
+                'match', ['get', 'DataType'],
+                'Non-Primary Parcel', 0.10,
+                0.80
+              ],
+              16, [
+                '*',
+                [
+                  'match', ['get', 'DataType'],
+                  'Non-Primary Parcel', 0.10,
+                  0.80
+                ],
+                0.4
+              ],
+              17, [
+                '*',
+                [
+                  'match', ['get', 'DataType'],
+                  'Non-Primary Parcel', 0.10,
+                  0.80
+                ],
+                0.3
+              ]
+            ]
+          }
+        }, insertBeforeLayer);
+      }
+
+      if (!sources['Waterways']) {
+        map.addSource('Waterways', {
+          type: 'vector',
+          tiles: [URL_WATERWAYS_TILES],
+          minzoom: 0, maxzoom: 13
+        });
+      }
+
+      if (!map.getLayer('Waterways-line')) {
+        map.addLayer({
+          id: 'Waterways-line',
+          type: 'line',
+          minzoom: 7,
+          source: 'Waterways',
+          'source-layer': 'waterways',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: {
+            'line-color': [
+              'case',
+              ['any',
+                ['<', TODAY_UNIX, ['get', 'open_date_unix']],
+                ['>', TODAY_UNIX, ['get', 'close_date_unix']]
+              ],
+              ['case',
+                ['boolean', ['feature-state', 'selected'], false], '#ac261f',
+                ['boolean', ['feature-state', 'highlight'], false], '#DE0125',
+                '#DE0125'
+              ],
+              ['case',
+                ['boolean', ['feature-state', 'selected'], false], '#3949ab',
+                ['boolean', ['feature-state', 'highlight'], false], '#093476',
+                '#0c4194'
+              ]
+            ],
+            'line-width': [
+              'case',
+              ['boolean', ['feature-state', 'selected'], false], 5,
+              ['boolean', ['feature-state', 'highlight'], false], 4,
+              1.5
+            ],
+            'line-opacity': .7
+          }
+        }, insertBeforeLayer);
+      }
+
+      if (!map.getLayer('Waterways-fill')) {
+        map.addLayer({
+          id: 'Waterways-fill',
+          type: 'fill',
+          minzoom: 7,
+          source: 'Waterways',
+          'source-layer': 'waterways',
+          paint: {
+            'fill-color': [
+              'case',
+              ['any',
+                ['<', TODAY_UNIX, ['get', 'open_date_unix']],
+                ['>', TODAY_UNIX, ['get', 'close_date_unix']]
+              ],
+              ['case',
+                ['boolean', ['feature-state', 'selected'], false], '#DE0125',
+                ['boolean', ['feature-state', 'highlight'], false], '#DE0125',
+                '#f7022a'
+              ],
+              ['case',
+                ['boolean', ['feature-state', 'selected'], false], '#0b46a1',
+                ['boolean', ['feature-state', 'highlight'], false], '#0b46a1',
+                '#0F52BA'
+              ]
+            ],
+            'fill-opacity': [
+              'interpolate', ['linear'], ['zoom'],
+              12, .5,
+              15.01, .1,
+              18, .01
+            ]
+          }
+        }, insertBeforeLayer);
+      }
+
+      if (!map.getLayer('Waterways-selected-halo')) {
+        map.addLayer({
+          id: 'Waterways-selected-halo',
+          type: 'line',
+          source: 'Waterways',
+          'source-layer': 'waterways',
+          minzoom: 7,
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: {
+            'line-color': [
+              'case',
+              ['any',
+                ['<', TODAY_UNIX, ['get', 'open_date_unix']],
+                ['>', TODAY_UNIX, ['get', 'close_date_unix']]
+              ],
+              ['case',
+                ['boolean', ['feature-state', 'selected'], false], '#9B0019',
+                ['boolean', ['feature-state', 'highlight'], false], '#f42f58',
+                '#f42f58'
+              ],
+              ['case',
+                ['boolean', ['feature-state', 'selected'], false], '#002366',
+                ['boolean', ['feature-state', 'highlight'], false], '#4ca6e6',
+                '#4ca6e6'
+              ]
+            ],
+            'line-width': [
+              'case',
+              ['boolean', ['feature-state', 'selected'], false], 5,
+              ['boolean', ['feature-state', 'highlight'], false], 5,
+              3
+            ],
+            'line-opacity': 1
+          },
+          filter: ['==', ['id'], -1]
+        });
+      }
+
+      if (isTouch && !map.getLayer('Waterways-touch')) {
+        map.addLayer({
+          id: 'Waterways-touch',
+          type: 'line',
+          source: 'Waterways',
+          'source-layer': 'waterways',
+          minzoom: 7,
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: {
+            'line-width': 10,
+            'line-opacity': 0,
+            'line-color': '#000000'
+          }
+        });
+      }
+
+      if (!sources['FG Regions']) {
+        map.addSource('FG Regions', {
+          type: 'vector',
+          tiles: ['https://data.fishandgameaccessmap.org/fg_regions/{z}/{x}/{y}'],
+          minzoom: 0, maxzoom: 10
+        });
+      }
+
+      if (!map.getLayer('FG Regions-linebackground')) {
+        map.addLayer({
+          id: 'FG Regions-linebackground',
+          type: 'line',
+          source: 'FG Regions',
+          'source-layer': 'fg_regions',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: {
+            'line-color': '#fff',
+            'line-width': [
+              'interpolate', ['linear'], ['zoom'],
+              5, 3,
+              10, 4,
+              14, 8,
+              18, 12
+            ],
+            'line-opacity': 1
+          }
+        }, insertBeforeLayer);
+      }
+
+      if (!map.getLayer('FG Regions-line')) {
+        map.addLayer({
+          id: 'FG Regions-line',
+          type: 'line',
+          source: 'FG Regions',
+          'source-layer': 'fg_regions',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: {
+            'line-color': '#008678',
+            'line-width': [
+              'interpolate', ['linear'], ['zoom'],
+              5, 1.5,
+              10, 2,
+              14, 4,
+              18, 8
+            ],
+            'line-opacity': 1
+          }
+        }, insertBeforeLayer);
+      }
+
+      if (!sources['Routes']) {
+        map.addSource('Routes', {
+          type: 'geojson',
+          data: 'https://data.fishandgameaccessmap.org/secure-geojson/Routes.geojson?token=fish-access-2025'
+        });
+      }
+
+      if (!map.getLayer('Routes-line')) {
+        map.addLayer({
+          id: 'Routes-line',
+          type: 'line',
+          source: 'Routes',
+          minzoom: 9.5,
+          paint: { 'line-width': 3.5, 'line-color': ['get', 'line_color'], 'line-dasharray': [2, 1] }
+        });
+      }
+
+      // ---- DEV: flow-dev source + layers ----
+      if (isDev) {
+        const FLOW_DEV_URL = `${GEOJSON_BASE}/flow_combined_dev.geojson?token=fish-access-2025`;
+
+        if (!sources['flow-dev']) {
+          map.addSource('flow-dev', {
+            type: 'geojson',
+            data: FLOW_DEV_URL,
+            generateId: true
+          });
+        }
+
+        if (!map.getLayer('flow-dev-flow-circles')) {
+          map.addLayer({
+            id: 'flow-dev-flow-circles',
+            type: 'circle',
+            source: 'flow-dev',
+            minzoom: 7,
+            filter: ['==', ['get', 'parameter'], 'Flow'],
+            paint: {
+              'circle-radius': [
+                'interpolate', ['linear'], ['zoom'],
+                7, [
+                  'case',
+                  ['boolean', ['feature-state', 'selected'], false], 3,    // 🔹 selected
+                  ['boolean', ['feature-state', 'hover'], false], 2.5,       // hover
+                  2                                                        // default
+                ],
+                11, [
+                  'case',
+                  ['boolean', ['feature-state', 'selected'], false], 7,
+                  ['boolean', ['feature-state', 'hover'], false], 6,
+                  5
+                ],
+                14, [
+                  'case',
+                  ['boolean', ['feature-state', 'selected'], false], 12,
+                  ['boolean', ['feature-state', 'hover'], false], 11,
+                  10
+                ]
+              ],
+
+
+              'circle-color': '#3498db',
+              'circle-opacity': 0.85,
+              'circle-stroke-color': '#ffffff',
+              'circle-stroke-width': [
+                'interpolate', ['linear'], ['zoom'],
+                6, 0.5,
+                11, 2
+              ],
+              'circle-translate': [
+                'interpolate', ['linear'], ['zoom'],
+                6, ['literal', [-2, 0]],
+                11, ['literal', [-7, 0]],
+                14, ['literal', [-14, 0]]
+              ]
+            }
+          }, insertBeforeLayer);
+        }
+
+        if (!map.getLayer('flow-dev-wt-circles')) {
+          map.addLayer({
+            id: 'flow-dev-wt-circles',
+            type: 'circle',
+            source: 'flow-dev',
+            minzoom: 7,
+            filter: ['==', ['get', 'parameter'], 'Temperature'],
+            paint: {
+              'circle-radius': [
+                'interpolate', ['linear'], ['zoom'],
+                7, [
+                  'case',
+                  ['boolean', ['feature-state', 'selected'], false], 1.5,    // 🔹 selected
+                  ['boolean', ['feature-state', 'hover'], false], 1,       // hover
+                  .5                                                        // default
+                ],
+                11, [
+                  'case',
+                  ['boolean', ['feature-state', 'selected'], false], 7,
+                  ['boolean', ['feature-state', 'hover'], false], 6,
+                  5
+                ],
+                14, [
+                  'case',
+                  ['boolean', ['feature-state', 'selected'], false], 12,
+                  ['boolean', ['feature-state', 'hover'], false], 11,
+                  10
+                ]
+              ],
+
+
+              'circle-color': '#e67e22',
+              'circle-opacity': 0.85,
+              'circle-stroke-color': '#ffffff',
+              'circle-stroke-width': [
+                'interpolate', ['linear'], ['zoom'],
+                6, 0.5,
+                11, 2
+              ],
+              'circle-translate': [
+                'interpolate', ['linear'], ['zoom'],
+                6, ['literal', [1, 0]],
+                11, ['literal', [7, 0]],
+                14, ['literal', [14, 0]]
+              ]
+            }
+          }, insertBeforeLayer);
+        }
+
+        if (!map.getLayer('flow-dev-flow-labels')) {
+          map.addLayer({
+            id: 'flow-dev-flow-labels',
+            type: 'symbol',
+            source: 'flow-dev',
+            minzoom: 12,
+            filter: ['==', ['get', 'parameter'], 'Flow'],
+            layout: {
+              'text-field': [
+                'concat',
+                ['to-string', ['/', ['round', ['*', ['get', 'latest_value'], 10]], 10]],
+                ' ',
+                ['coalesce', ['get', 'unit'], '']
+              ],
+              'text-font': ['Noto Sans Regular'],
+              'text-size': 11,
+              'text-anchor': 'right',
+              'text-offset': [-1.5, 0],
+              'text-allow-overlap': false
+            },
+            paint: {
+              'text-color': '#0b4870',
+              'text-halo-color': '#ffffff',
+              'text-halo-width': 3,
+              'text-translate': [
+                'interpolate', ['linear'], ['zoom'],
+                6, ['literal', [0, 0]],
+                11, ['literal', [0, 0]],
+                14, ['literal', [-10, 0]]
+              ]
+            }
+          }, insertBeforeLayer);
+        }
+
+        if (!map.getLayer('flow-dev-wt-labels')) {
+          map.addLayer({
+            id: 'flow-dev-wt-labels',
+            type: 'symbol',
+            source: 'flow-dev',
+            minzoom: 12,
+            filter: ['==', ['get', 'parameter'], 'Temperature'],
+            layout: {
+              'text-field': [
+                'concat',
+                ['to-string', ['/', ['round', ['*', ['get', 'latest_value'], 10]], 10]],
+                ' ',
+                ['coalesce', ['get', 'unit'], '']
+              ],
+              'text-font': ['Noto Sans Regular'],
+              'text-size': 11,
+              'text-anchor': 'left',
+              'text-offset': [1.5, 0],
+              'text-allow-overlap': false
+            },
+            paint: {
+              'text-color': '#0b4870',
+              'text-halo-color': '#ffffff',
+              'text-halo-width': 4,
+              'text-translate': [
+                'interpolate', ['linear'], ['zoom'],
+                6, ['literal', [0, 0]],
+                11, ['literal', [0, 0]],
+                14, ['literal', [10, 0]]
+              ]
+            }
+          }, insertBeforeLayer);
+        }
+      }
+
+      if (!sources['data-points']) {
+        map.addSource('data-points', {
+          type: 'geojson',
+          data: URL_POINTS_GEOJSON,
+          generateId: true
+        });
+      }
+
+      if (!map.getLayer('data-points-all')) {
+        map.addLayer({
+          id: 'data-points-all',
+          type: 'symbol',
+          source: 'data-points',
+          minzoom: 7,
+          layout: {
+            'icon-image': ['concat', ['get', 'point_type'], '-icon'],
+            'icon-size': getIconSizeExpr(selectedFeatureId, hoverFeatureId),
+            'icon-anchor': ['get', 'anchor'],
+            'icon-allow-overlap': true,
+            'icon-rotate': ['get', 'bearing']
+          }
+        });
+      }
+
+      if (!sources['search']) {
+        map.addSource('search', { type: 'geojson', data: URL_SEARCH_INDEX });
+      }
+
+      if (!map.getLayer('search-points-all')) {
+        map.addLayer({
+          id: 'search-points-all',
+          type: 'circle',
+          source: 'search',
+          paint: { 'circle-radius': 5, 'circle-color': '#FF5733', 'circle-opacity': 0.0 }
+        });
+      }
+
+      if (!sources['FG Region Centroids']) {
+        map.addSource('FG Region Centroids', {
+          type: 'geojson',
+          data: 'https://data.fishandgameaccessmap.org/secure-geojson/fg_regions_centroid.geojson?token=fish-access-2025'
+        });
+      }
+
+      if (!map.getLayer('FG Region Labels')) {
+        map.addLayer({
+          id: 'FG Region Labels',
+          type: 'symbol',
+          source: 'FG Region Centroids',
+          maxzoom: 7,
+          layout: {
+            'text-field': ['get', 'region'],
+            'text-font': ['Noto Sans Medium'],
+            'text-size': 12,
+            'text-anchor': 'center',
+            'text-allow-overlap': true
+          },
+          paint: {
+            'text-color': '#008678',
+            'text-halo-color': '#ffffff',
+            'text-halo-width': 2
+          }
+        });
+      }
+
+      if (window.setupAWFilters) window.setupAWFilters(map);
+    }
+
+    // ===== NEW: flow-dev click → side panel (no popup) =====
+
+    // == Region label click, hover popups etc (unchanged) ==
+    map.on('mouseenter', 'FG Region Labels', () => { map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', 'FG Region Labels', () => { map.getCanvas().style.cursor = ''; });
+
+    map.on('click', 'FG Region Labels', (e) => {
+      const f = e.features && e.features[0];
+      if (!f || !f.geometry || f.geometry.type !== 'Point') return;
+
+      const [lng, lat] = f.geometry.coordinates;
+
+      const leftPad = (window.activePanel === 'card' || window.activePanel === 'filters' || window.activePanel === 'basemaps')
+        ? 420 : 10;
+
+      map.easeTo({
+        center: [lng, lat],
+        zoom: Math.max(map.getZoom(), 8),
+        duration: 800,
+        padding: { top: 80, right: 10, bottom: 10, left: leftPad }
+      });
+    });
+
+    const hoverPopup = document.createElement('div');
+    hoverPopup.style.position = 'absolute';
+    hoverPopup.style.pointerEvents = 'none';
+    hoverPopup.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+    hoverPopup.style.color = '#fff';
+    hoverPopup.style.fontFamily = 'Arial, sans-serif';
+    hoverPopup.style.padding = '4px 8px';
+    hoverPopup.style.borderRadius = '4px';
+    hoverPopup.style.fontSize = '12px';
+    hoverPopup.style.display = 'none';
+    document.body.appendChild(hoverPopup);
+
+    map.on('mousemove', 'PublicAccessAreas-fill', (e) => {
+      // 🔒 No hover tooltip on touch devices – crosshair + banner handles this
+      if (isTouch) return;
+
+      const feature = e.features?.[0];
+      if (feature) {
+        hoverPopup.style.display = 'block';
+        hoverPopup.textContent = feature.properties.DataType || 'Public Access';
+        hoverPopup.style.left = e.originalEvent.pageX + 10 + 'px';
+        hoverPopup.style.top = e.originalEvent.pageY + 10 + 'px';
+      }
+    });
+
+    map.on('mouseleave', 'PublicAccessAreas-fill', () => {
+      if (isTouch) return; // nothing to do on touch
+      hoverPopup.style.display = 'none';
+    });
+
+
+    map.on('click', 'data-points-all', e => {
+      const feature = e.features && e.features[0];
+      if (!feature) return;
+
+      const props = feature.properties || {};
+
+      // 📊 Analytics Event — Track region + point selection
+      if (window.umami) {
+        umami.track('access-point-select', {
+          region_code: props.region || '',
+          point_type: props.point_type || '',
+          point_title: props.title || '',
+          point_subtitle: props.subtitle || ''
+
+        });
+      }
+
+      selectedFeatureId = feature.id;
+      hoverFeatureId = null;
+      updateIconSize();
+    });
+
+    map.on('click', (e) => {
+      const riverTapLayers = isTouch
+        ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
+        : ['Waterways-line', 'Waterways-fill'];
+
+      const layersToQuery = ['data-points-all', ...riverTapLayers];
+      if (isDev) {
+        layersToQuery.push('flow-dev-flow-circles', 'flow-dev-wt-circles');
+      }
+
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: layersToQuery
+      });
+
+      // Nothing under the cursor → clear everything
+      if (!features.length) {
+        clearSelection();
+        card.style.display = 'none';
+        return;
+      }
+
+      // Flow / Temperature first
+      const flowFeature = features.find(f =>
+        f.layer.id === 'flow-dev-flow-circles' ||
+        f.layer.id === 'flow-dev-wt-circles'
+      );
+
+      // Access points
+      const pointFeature = features.find(f => f.layer.id === 'data-points-all');
+
+      // Rivers
+      const riverFeature =
+        features.find(f => f.layer.id === 'Waterways-line') ||
+        features.find(f => f.layer.id === 'Waterways-fill');
+
+      if (flowFeature) {
+        // Clear any previous selection (points, rivers, other flow)
+        clearSelection();
+
+        const id = flowFeature.id;
+        const props = flowFeature.properties || {};
+
+        // Mark this flow/temp station as selected
+        selectedFlowId = id;
+        try {
+          map.setFeatureState(
+            { source: 'flow-dev', id },
+            { selected: true }
+          );
+        } catch (e) { }
+
+        // Optional: also clear hover state
+        if (flowHoverId !== null) {
+          try {
+            map.setFeatureState(
+              { source: 'flow-dev', id: flowHoverId },
+              { hover: false }
+            );
+          } catch (e) { }
+          flowHoverId = null;
+        }
+
+        // analytics
+        if (window.umami) {
+          const rc = getRegionCode(props);
+          umami.track('station-select', {
+            region_code: rc ?? null,
+            region_name: props.Region || props.region || null,
+            site_name: props.site_name || null,
+            parameter: props.parameter || null,
+            source: props.source || props.source_name || null
+          });
+        }
+
+        // Show side panel
+        showFlowCard(flowFeature);
+        return;
+      }
+
+      // If no flow/temp clicked, let your existing logic handle points/rivers.
+      if (pointFeature) {
+        selectFeature(pointFeature);
+      } else if (riverFeature) {
+        selectFeature(riverFeature);
+      } else {
+        clearSelection();
+        card.style.display = 'none';
+      }
+    });
+
+    let hoverDirty = false;
+    map.on('mousemove', 'data-points-all', e => {
+      map.getCanvas().style.cursor = 'pointer';
+      const hoveredId = e.features[0].id;
+      if (hoveredId !== selectedFeatureId && hoveredId !== hoverFeatureId) {
+        hoverFeatureId = hoveredId;
+        if (!hoverDirty) {
+          hoverDirty = true;
+          requestAnimationFrame(() => { hoverDirty = false; updateIconSize(); });
         }
       }
     });
-  }
+    map.on('mouseleave', 'data-points-all', () => {
+      map.getCanvas().style.cursor = '';
+      if (hoverFeatureId !== null) {
+        hoverFeatureId = null;
+        requestAnimationFrame(updateIconSize);
+      }
+    });
 
-  map.on('mouseenter', 'Waterways-line', () => { hoveringLayers.add('line'); updateCursor(); });
-  map.on('mouseleave', 'Waterways-line', () => { hoveringLayers.delete('line'); updateCursor(); if (hoveringLayers.size === 0) setRiverHover(null); });
-  map.on('mousemove', 'Waterways-line', (e) => { const f = e.features?.[0]; setRiverHover(f ? f.id : null); });
+    let hoveredRiverId = null;
+    let hoveringLayers = new Set();
+    function updateCursor() {
+      map.getCanvas().style.cursor = (hoveringLayers.size > 0) ? 'pointer' : '';
+    }
 
-  map.on('mouseenter', 'Waterways-fill', () => { hoveringLayers.add('fill'); updateCursor(); });
-  map.on('mouseleave', 'Waterways-fill', () => { hoveringLayers.delete('fill'); updateCursor(); if (hoveringLayers.size === 0) setRiverHover(null); });
-  map.on('mousemove', 'Waterways-fill', (e) => { const f = e.features?.[0]; setRiverHover(f ? f.id : null); });
+    let nextHoverId = null, hoverScheduled = false;
+    function setRiverHover(id) {
+      nextHoverId = id;
+      if (hoverScheduled) return;
+      hoverScheduled = true;
+      requestAnimationFrame(() => {
+        hoverScheduled = false;
+        if (hoveredRiverId !== nextHoverId) {
+          if (hoveredRiverId != null) {
+            map.setFeatureState({ source: 'Waterways', sourceLayer: 'waterways', id: hoveredRiverId }, { highlight: false });
+          }
+          hoveredRiverId = nextHoverId;
+          if (hoveredRiverId != null) {
+            map.setFeatureState({ source: 'Waterways', sourceLayer: 'waterways', id: hoveredRiverId }, { highlight: true });
+          }
+        }
+      });
+    }
 
-  // ===== Search (unchanged) =====
-  const inputEl = document.getElementById('search');
-  const suggestions = document.getElementById('suggestions');
-  inputEl.addEventListener('input', () => {
-    const query = inputEl.value.trim().toLowerCase();
-     if (window.umami && query.length === 1) {
-    // fire once per new search (cheap heuristic)
-    umami.track('search-typing-start');
-  }
-    suggestions.innerHTML = '';
-    if (!query) { suggestions.style.display = 'none'; return; }
+    map.on('mouseenter', 'Waterways-line', () => { hoveringLayers.add('line'); updateCursor(); });
+    map.on('mouseleave', 'Waterways-line', () => { hoveringLayers.delete('line'); updateCursor(); if (hoveringLayers.size === 0) setRiverHover(null); });
+    map.on('mousemove', 'Waterways-line', (e) => { const f = e.features?.[0]; setRiverHover(f ? f.id : null); });
 
-    const riverMatches = allFeatures.filter(f => f.properties.Water.toLowerCase().includes(query));
-    const pointMatches = allPointsFeatures.filter(f => f.properties.title && f.properties.title.toLowerCase().includes(query));
+    map.on('mouseenter', 'Waterways-fill', () => { hoveringLayers.add('fill'); updateCursor(); });
+    map.on('mouseleave', 'Waterways-fill', () => { hoveringLayers.delete('fill'); updateCursor(); if (hoveringLayers.size === 0) setRiverHover(null); });
+    map.on('mousemove', 'Waterways-fill', (e) => { const f = e.features?.[0]; setRiverHover(f ? f.id : null); });
 
-    if (riverMatches.length) {
-      const header = document.createElement('div');
-      header.className = 'suggestion-header river-header';
-      header.innerHTML = `<span>WATERWAYS</span>`;
-      suggestions.appendChild(header);
-      riverMatches.forEach(f => {
-        const div = document.createElement('div');
-        div.className = 'suggestion river';
-        div.innerHTML = `
+    // ===== Search (unchanged) =====
+    const inputEl = document.getElementById('search');
+    const suggestions = document.getElementById('suggestions');
+    inputEl.addEventListener('input', () => {
+      const query = inputEl.value.trim().toLowerCase();
+      if (window.umami && query.length === 1) {
+        // fire once per new search (cheap heuristic)
+        umami.track('search-typing-start');
+      }
+      suggestions.innerHTML = '';
+      if (!query) { suggestions.style.display = 'none'; return; }
+
+      const riverMatches = allFeatures.filter(f => f.properties.Water.toLowerCase().includes(query));
+      const pointMatches = allPointsFeatures.filter(f => f.properties.title && f.properties.title.toLowerCase().includes(query));
+
+      if (riverMatches.length) {
+        const header = document.createElement('div');
+        header.className = 'suggestion-header river-header';
+        header.innerHTML = `<span>WATERWAYS</span>`;
+        suggestions.appendChild(header);
+        riverMatches.forEach(f => {
+          const div = document.createElement('div');
+          div.className = 'suggestion river';
+          div.innerHTML = `
           <strong>${f.properties.Water}</strong><br>
           ${typeof f.properties.Section === 'string' && f.properties.Section ? `<div class="section">${f.properties.Section}</div>` : ''}
           <div class="region">${f.properties.Region || ''}</div>`;
-        div.style.cursor = 'pointer';
-        div.onclick = () => selectFeatureFromSearch(f);
-        suggestions.appendChild(div);
-      });
-    }
+          div.style.cursor = 'pointer';
+          div.onclick = () => selectFeatureFromSearch(f);
+          suggestions.appendChild(div);
+        });
+      }
 
-    if (pointMatches.length) {
-      const header = document.createElement('div');
-      header.className = 'suggestion-header point-header';
-      header.innerHTML = `<span> ACCESS POINTS</span>`;
-      suggestions.appendChild(header);
-      pointMatches.forEach(f => {
-        const div = document.createElement('div');
-        div.className = 'suggestion point';
-        div.innerHTML = `
+      if (pointMatches.length) {
+        const header = document.createElement('div');
+        header.className = 'suggestion-header point-header';
+        header.innerHTML = `<span> ACCESS POINTS</span>`;
+        suggestions.appendChild(header);
+        pointMatches.forEach(f => {
+          const div = document.createElement('div');
+          div.className = 'suggestion point';
+          div.innerHTML = `
           <strong>${f.properties.title}</strong><br>
           <div class="region">${f.properties.Region || ''}</div>`;
-        div.style.cursor = 'pointer';
-        div.onclick = () => selectFeatureFromSearch(f);
-        suggestions.appendChild(div);
-      });
-    }
-
-    suggestions.style.display = (riverMatches.length || pointMatches.length) ? 'block' : 'none';
-  });
-
-  function selectFeatureFromSearch(f) {
-    const isRiver = typeof f.properties.Water !== 'undefined';
-    const coords = f.geometry.coordinates;
-
-    clearSelection();
-    map.flyTo({ center: coords, zoom: Math.max(map.getZoom(), 12) });
-
-    map.once('moveend', () => {
-      const pt = map.project(coords);
-      const bbox = [
-        { x: pt.x - 10, y: pt.y - 10 },
-        { x: pt.x + 10, y: pt.y + 10 }
-      ];
-
-      let found = null;
-      if (isRiver) {
-        const rivers = map.queryRenderedFeatures([bbox[0], bbox[1]], {
-          layers: (isTouch
-            ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
-            : ['Waterways-line', 'Waterways-fill'])
+          div.style.cursor = 'pointer';
+          div.onclick = () => selectFeatureFromSearch(f);
+          suggestions.appendChild(div);
         });
-        found = rivers.find(r =>
-          (r.properties?.Water === f.properties.Water) &&
-          (isBlankish(f.properties.Section) || r.properties?.Section === f.properties.Section)
-        ) || rivers[0];
-
-        if (found) {
-          selectFeature(found);
-          return;
-        }
-
-        found = {
-          type: 'Feature',
-          geometry: f.geometry,
-          properties: f.properties,
-          layer: { id: 'Waterways-line' },
-          id: f.id
-        };
-        showCard(found);
-        return;
-      } else {
-        const points = map.queryRenderedFeatures([bbox[0], bbox[1]], {
-          layers: ['data-points-all']
-        });
-        found = points.find(p =>
-          (p.properties?.title && f.properties?.title && p.properties.title === f.properties.title) ||
-          (p.properties?.Region && f.properties?.Region && p.properties.Region === f.properties.Region)
-        ) || points[0];
-
-        if (found) {
-          selectFeature(found);
-          return;
-        }
-
-        found = {
-          type: 'Feature',
-          geometry: f.geometry,
-          properties: f.properties,
-          layer: { id: 'data-points-all' },
-          id: f.id
-        };
-        showCard(found);
-        return;
       }
+
+      suggestions.style.display = (riverMatches.length || pointMatches.length) ? 'block' : 'none';
     });
 
-    inputEl.value = isRiver ? (f.properties.Water || '') : (f.properties.title || '');
-    suggestions.style.display = 'none';
-  }
+    function selectFeatureFromSearch(f) {
+      const isRiver = typeof f.properties.Water !== 'undefined';
+      const coords = f.geometry.coordinates;
 
-  if (window.setupAWFilters) window.setupAWFilters(map);
-  window.__TODAY_UNIX__ = TODAY_UNIX;
+      clearSelection();
+      map.flyTo({ center: coords, zoom: Math.max(map.getZoom(), 12) });
 
-  proj4.defs("EPSG:2193",
-    "+proj=tmerc +lat_0=0 +lon_0=173 +k=0.9996 " +
-    "+x_0=1600000 +y_0=10000000 +datum=NZGD2000 +units=m +no_defs"
-  );
+      map.once('moveend', () => {
+        const pt = map.project(coords);
+        const bbox = [
+          { x: pt.x - 10, y: pt.y - 10 },
+          { x: pt.x + 10, y: pt.y + 10 }
+        ];
 
-  map.getCanvas().addEventListener("contextmenu", (ev) => ev.preventDefault());
+        let found = null;
+        if (isRiver) {
+          const rivers = map.queryRenderedFeatures([bbox[0], bbox[1]], {
+            layers: (isTouch
+              ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
+              : ['Waterways-line', 'Waterways-fill'])
+          });
+          found = rivers.find(r =>
+            (r.properties?.Water === f.properties.Water) &&
+            (isBlankish(f.properties.Section) || r.properties?.Section === f.properties.Section)
+          ) || rivers[0];
 
-  map.on("contextmenu", (e) => {
-    const { lat, lng } = e.lngLat.wrap();
+          if (found) {
+            selectFeature(found);
+            return;
+          }
 
-    const html = `
+          found = {
+            type: 'Feature',
+            geometry: f.geometry,
+            properties: f.properties,
+            layer: { id: 'Waterways-line' },
+            id: f.id
+          };
+          showCard(found);
+          return;
+        } else {
+          const points = map.queryRenderedFeatures([bbox[0], bbox[1]], {
+            layers: ['data-points-all']
+          });
+          found = points.find(p =>
+            (p.properties?.title && f.properties?.title && p.properties.title === f.properties.title) ||
+            (p.properties?.Region && f.properties?.Region && p.properties.Region === f.properties.Region)
+          ) || points[0];
+
+          if (found) {
+            selectFeature(found);
+            return;
+          }
+
+          found = {
+            type: 'Feature',
+            geometry: f.geometry,
+            properties: f.properties,
+            layer: { id: 'data-points-all' },
+            id: f.id
+          };
+          showCard(found);
+          return;
+        }
+      });
+
+      inputEl.value = isRiver ? (f.properties.Water || '') : (f.properties.title || '');
+      suggestions.style.display = 'none';
+    }
+
+    if (window.setupAWFilters) window.setupAWFilters(map);
+    window.__TODAY_UNIX__ = TODAY_UNIX;
+
+    proj4.defs("EPSG:2193",
+      "+proj=tmerc +lat_0=0 +lon_0=173 +k=0.9996 " +
+      "+x_0=1600000 +y_0=10000000 +datum=NZGD2000 +units=m +no_defs"
+    );
+
+    map.getCanvas().addEventListener("contextmenu", (ev) => ev.preventDefault());
+
+    map.on("contextmenu", (e) => {
+      const { lat, lng } = e.lngLat.wrap();
+
+      const html = `
       <div style="
         font: 13px 'Segoe UI', Arial, sans-serif;
         min-width: 160px;
@@ -3010,67 +3010,67 @@ map.on('click', (e) => {
       </div>
     `;
 
-    document.querySelectorAll(".maplibregl-popup").forEach(p => p.remove());
+      document.querySelectorAll(".maplibregl-popup").forEach(p => p.remove());
 
-    const menu = new maplibregl.Popup({
-      closeButton: true,
-      closeOnClick: true,
-      anchor: "bottom",
-      offset: 8
-    })
-      .setLngLat(e.lngLat)
-      .setHTML(html)
-      .addTo(map);
+      const menu = new maplibregl.Popup({
+        closeButton: true,
+        closeOnClick: true,
+        anchor: "bottom",
+        offset: 8
+      })
+        .setLngLat(e.lngLat)
+        .setHTML(html)
+        .addTo(map);
 
-    const el = menu.getElement();
+      const el = menu.getElement();
 
-    const styleHover = (btn, on) => {
-      btn.style.background = on ? "#f6f8fa" : "#fff";
-    };
-    const hookHover = (btn) => {
-      btn.addEventListener("mouseenter", () => styleHover(btn, true));
-      btn.addEventListener("mouseleave", () => styleHover(btn, false));
-      btn.addEventListener("focus", () => styleHover(btn, true));
-      btn.addEventListener("blur", () => styleHover(btn, false));
-    };
+      const styleHover = (btn, on) => {
+        btn.style.background = on ? "#f6f8fa" : "#fff";
+      };
+      const hookHover = (btn) => {
+        btn.addEventListener("mouseenter", () => styleHover(btn, true));
+        btn.addEventListener("mouseleave", () => styleHover(btn, false));
+        btn.addEventListener("focus", () => styleHover(btn, true));
+        btn.addEventListener("blur", () => styleHover(btn, false));
+      };
 
-    const btnCopy = el.querySelector("#copyCoords");
-    const btnWams = el.querySelector("#openWAMS");
-    hookHover(btnCopy);
-    hookHover(btnWams);
+      const btnCopy = el.querySelector("#copyCoords");
+      const btnWams = el.querySelector("#openWAMS");
+      hookHover(btnCopy);
+      hookHover(btnWams);
 
-    btnCopy.addEventListener("click", async (ev) => {
-      ev.preventDefault();
-      try {
-        await navigator.clipboard.writeText(`${lat.toFixed(6)}\t${lng.toFixed(6)}`);
-      } catch (err) {
-        const ta = document.createElement("textarea");
-        ta.value = `${lat.toFixed(6)}\t${lng.toFixed(6)}`;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        ta.remove();
-      }
-      menu.remove();
+      btnCopy.addEventListener("click", async (ev) => {
+        ev.preventDefault();
+        try {
+          await navigator.clipboard.writeText(`${lat.toFixed(6)}\t${lng.toFixed(6)}`);
+        } catch (err) {
+          const ta = document.createElement("textarea");
+          ta.value = `${lat.toFixed(6)}\t${lng.toFixed(6)}`;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+        }
+        menu.remove();
+      });
+
+      btnWams.addEventListener("click", (ev) => {
+        ev.preventDefault();
+
+        const [E, N] = proj4("EPSG:4326", "EPSG:2193", [lng, lat]);
+        const Ee = E.toFixed(4);
+        const Nn = N.toFixed(4);
+        const level = Math.max(0, Math.min(20, Math.round(map.getZoom())));
+
+        const base = "https://maps.herengaanuku.govt.nz/Viewer/";
+        const mapId = "9cd99517a0db4d18a894c3839df4d3a3";
+        const url = `${base}?map=${mapId}&center=${Ee},${Nn},2193&level=${level}`;
+
+        window.open(url, "_blank", "noopener");
+        menu.remove();
+      });
     });
-
-    btnWams.addEventListener("click", (ev) => {
-      ev.preventDefault();
-
-      const [E, N] = proj4("EPSG:4326", "EPSG:2193", [lng, lat]);
-      const Ee = E.toFixed(4);
-      const Nn = N.toFixed(4);
-      const level = Math.max(0, Math.min(20, Math.round(map.getZoom())));
-
-      const base = "https://maps.herengaanuku.govt.nz/Viewer/";
-      const mapId = "9cd99517a0db4d18a894c3839df4d3a3";
-      const url = `${base}?map=${mapId}&center=${Ee},${Nn},2193&level=${level}`;
-
-      window.open(url, "_blank", "noopener");
-      menu.remove();
-    });
-  });
-</script>
+  </script>
 
 </body>
 
