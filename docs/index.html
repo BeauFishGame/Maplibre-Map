@@ -176,6 +176,15 @@
                 <label class="option"><input type="checkbox" value="Campsite" checked> DOC Campgrounds</label>
                 <label class="option"> <input type="checkbox" value="Beat"
                     data-values='["BeatYR","BeatBY","BeatBR", "BeatB", "BeatR", "BeatY"]' checked> Beat markers </label>
+                    <label class="option">
+  <input type="checkbox" value="Flow" checked>
+  Live river flow stations
+</label>
+
+<label class="option">
+  <input type="checkbox" value="Temp" checked>
+  Live water temperature stations
+</label>
 
               </div>
             </div>
@@ -328,12 +337,8 @@
             if (window.__filtersWired) return;
             window.__filtersWired = true;
 
-            const LAYERS = {
-              waterways: ['Waterways-line', 'Waterways-fill'],
-              points: ['data-points-all'],
-              publicAccess: ['PublicAccessAreas-fill'],
-              regions: ['FG Regions-line', 'FG Regions-linebackground', 'FG Region Labels']
-            };
+     
+
 
             const PROPS = {
               waterways: {
@@ -495,18 +500,6 @@
               (LAYERS.waterways || []).forEach(id => safeSetFilter(id, finalExpr));
             }
 
-            function applyPointFilters() {
-              const selected = getChecks('p-type'); // null=all; []=none; otherwise list
-              let expr = true;
-              if (selected === null) {
-                expr = true;
-              } else if (selected.length === 0) {
-                expr = ['==', ['get', 'point_type'], '__NONE__']; // hide all
-              } else {
-                expr = ['in', ['get', PROPS.points.type], ['literal', selected]];
-              }
-              (LAYERS.points || []).forEach(id => safeSetFilter(id, expr));
-            }
 
 
             // One change handler for all groups, debounced
@@ -832,12 +825,12 @@
       if (window.__filtersWired) return;
       window.__filtersWired = true;
 
-      const LAYERS = {
-        waterways: ['Waterways-line', 'Waterways-fill'],
-        points: ['data-points-all'],
-        publicAccess: ['PublicAccessAreas-fill'],
-        regions: ['FG Regions-line', 'FG Regions-linebackground', 'FG Region Labels']
-      };
+        const LAYERS = {
+  waterways: ['Waterways-line', 'Waterways-fill'],
+  points: [ 'data-points-all', 'env-flow-icons',  'env-wt-icons'],
+  publicAccess: ['PublicAccessAreas-fill'],
+  regions: ['FG Regions-line', 'FG Regions-linebackground', 'FG Region Labels']
+};
 
       const PROPS = {
         waterways: {
@@ -977,18 +970,71 @@
         (LAYERS.waterways || []).forEach(id => safeSetFilter(id, finalExpr));
       }
 
-      function applyPointFilters() {
-        const selected = getChecks('p-type');
-        let expr = true;
-        if (selected === null) {
-          expr = true;
-        } else if (selected.length === 0) {
-          expr = ['==', ['get', 'point_type'], '__NONE__'];
-        } else {
-          expr = ['in', ['get', PROPS.points.type], ['literal', selected]];
-        }
-        (LAYERS.points || []).forEach(id => safeSetFilter(id, expr));
-      }
+    function applyPointFilters() {
+  const selected = getChecks('p-type'); // null=all; []=none; otherwise list
+
+  // --- 1) Work out which special options are on ---
+  const FLOW_KEY = 'Flow';
+  const TEMP_KEY = 'Temp';
+
+  let flowOn = true;
+  let tempOn = true;
+  let pointTypesForData = null;  // what we send to data-points-all
+
+  if (selected === null) {
+    // "Select all" checked → all point types, flow + temp all on
+    flowOn = true;
+    tempOn = true;
+    pointTypesForData = null; // means "no filter" for data-points-all
+  } else {
+    // Make a copy so we can mutate safely
+    const sel = [...selected];
+
+    flowOn = sel.includes(FLOW_KEY);
+    tempOn = sel.includes(TEMP_KEY);
+
+    // Remove the special ones so they don't get used as point_type values
+    const filteredSel = sel.filter(v => v !== FLOW_KEY && v !== TEMP_KEY);
+
+    if (filteredSel.length === 0) {
+      pointTypesForData = [];   // means "hide all normal points"
+    } else {
+      pointTypesForData = filteredSel;
+    }
+  }
+
+  // --- 2) Apply filter to normal point layer (data-points-all) ---
+  let expr = true;
+  if (pointTypesForData === null) {
+    expr = true; // all
+  } else if (pointTypesForData.length === 0) {
+    expr = ['==', ['get', PROPS.points.type], '__NONE__']; // hide all
+  } else {
+    expr = ['in', ['get', PROPS.points.type], ['literal', pointTypesForData]];
+  }
+
+  if (map.getLayer('data-points-all')) {
+    safeSetFilter('data-points-all', expr);
+  }
+
+  // --- 3) Toggle visibility of flow / temp layers ---
+  const visFlow = flowOn ? 'visible' : 'none';
+  const visTemp = tempOn ? 'visible' : 'none';
+
+  // Flow layers
+  ['env-flow-icons'].forEach(id => {
+    if (map.getLayer(id)) {
+      map.setLayoutProperty(id, 'visibility', visFlow);
+    }
+  });
+
+  // Temp layers
+  ['env-wt-icons'].forEach(id => {
+    if (map.getLayer(id)) {
+      map.setLayoutProperty(id, 'visibility', visTemp);
+    }
+  });
+}
 
       let filterTimer = null;
       function scheduleApply(fn) {
@@ -1205,98 +1251,97 @@
     };
 
     // ===== NEW: Flow (and WT) side-panel card =====
-    // ===== NEW: Flow (and WT) side-panel card =====
-function showFlowCard(feature) {
-  const props = feature.properties || {};
+    function showFlowCard(feature) {
+      const props = feature.properties || {};
 
-  const site = props.site_name;
-  const station_name = props.station_name;
-  const param = props.parameter || 'Value';   // "Flow" or "Temperature"
-  const rawVal = props.latest_value;
-  const whenRaw = props.latest_datetime;
-  const unitProp = props.unit;
+      const site = props.site_name;
+      const station_name = props.station_name;
+      const param = props.parameter || 'Value';   // "Flow" or "Temperature"
+      const rawVal = props.latest_value;
+      const whenRaw = props.latest_datetime;
+      const unitProp = props.unit;
 
-  // NEW: read flow thresholds (if present)
-  const worthwhileUpperRaw = props.worthwhile_upper;
-  const worthwhileLowerRaw = props.worthwhile_lower;
+      // NEW: read flow thresholds (if present)
+      const worthwhileUpperRaw = props.worthwhile_upper;
+      const worthwhileLowerRaw = props.worthwhile_lower;
 
-  const worthwhileUpper = (worthwhileUpperRaw !== null &&
-                           worthwhileUpperRaw !== undefined &&
-                           worthwhileUpperRaw !== '')
-    ? Number(worthwhileUpperRaw)
-    : NaN;
+      const worthwhileUpper = (worthwhileUpperRaw !== null &&
+        worthwhileUpperRaw !== undefined &&
+        worthwhileUpperRaw !== '')
+        ? Number(worthwhileUpperRaw)
+        : NaN;
 
-  const worthwhileLower = (worthwhileLowerRaw !== null &&
-                           worthwhileLowerRaw !== undefined &&
-                           worthwhileLowerRaw !== '')
-    ? Number(worthwhileLowerRaw)
-    : NaN;
+      const worthwhileLower = (worthwhileLowerRaw !== null &&
+        worthwhileLowerRaw !== undefined &&
+        worthwhileLowerRaw !== '')
+        ? Number(worthwhileLowerRaw)
+        : NaN;
 
-  // NEW: pick default image based on Flow vs Temperature
-  const defaultImage = flowTypeDefaultImages[param] || null;
-  window.__cardPhotos = defaultImage ? [defaultImage] : [];
-  window.__cardPhotoIndex = 0;
+      // NEW: pick default image based on Flow vs Temperature
+      const defaultImage = flowTypeDefaultImages[param] || null;
+      window.__cardPhotos = defaultImage ? [defaultImage] : [];
+      window.__cardPhotoIndex = 0;
 
-  const unit = unitProp ||
-    (param === 'Flow'
-      ? 'm³/s'
-      : param === 'Temperature'
-        ? '°C'
-        : '');
+      const unit = unitProp ||
+        (param === 'Flow'
+          ? 'm³/s'
+          : param === 'Temperature'
+            ? '°C'
+            : '');
 
-  const numVal = (typeof rawVal === 'number')
-    ? rawVal
-    : (rawVal !== null && rawVal !== undefined && rawVal !== ''
-      ? Number(rawVal)
-      : NaN);
+      const numVal = (typeof rawVal === 'number')
+        ? rawVal
+        : (rawVal !== null && rawVal !== undefined && rawVal !== ''
+          ? Number(rawVal)
+          : NaN);
 
-  const isNumeric = Number.isFinite(numVal);
-  const valFormatted = isNumeric ? numVal.toFixed(1) : (rawVal ?? 'NA');
+      const isNumeric = Number.isFinite(numVal);
+      const valFormatted = isNumeric ? numVal.toFixed(1) : (rawVal ?? 'NA');
 
-  let summaryText = 'Latest value not available';
-  if (whenRaw) {
-    try {
-      const d = new Date(whenRaw);
+      let summaryText = 'Latest value not available';
+      if (whenRaw) {
+        try {
+          const d = new Date(whenRaw);
 
-      const timeText = d.toLocaleString("en-NZ", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-        timeZone: "Pacific/Auckland"
-      }).replace(":00", "").toLowerCase();
+          const timeText = d.toLocaleString("en-NZ", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+            timeZone: "Pacific/Auckland"
+          }).replace(":00", "").toLowerCase();
 
-      const dateText = d.toLocaleDateString("en-NZ", {
-        day: "numeric",
-        month: "short",
-        timeZone: "Pacific/Auckland"
-      });
+          const dateText = d.toLocaleDateString("en-NZ", {
+            day: "numeric",
+            month: "short",
+            timeZone: "Pacific/Auckland"
+          });
 
-      summaryText = `${param} is ${valFormatted} ${unit || ''} as of ${timeText} ${dateText}`;
-    } catch {
-      summaryText = `${param} is ${valFormatted} ${unit || ''} (time: ${whenRaw})`;
-    }
-  }
+          summaryText = `${param} is ${valFormatted} ${unit || ''} as of ${timeText} ${dateText}`;
+        } catch {
+          summaryText = `${param} is ${valFormatted} ${unit || ''} (time: ${whenRaw})`;
+        }
+      }
 
-  let times = [];
-  let values = [];
-  try {
-    if (props.times_json) times = JSON.parse(props.times_json);
-    if (props.values_json) values = JSON.parse(props.values_json);
-  } catch (err) {
-    console.error('Error parsing times_json / values_json', err);
-  }
+      let times = [];
+      let values = [];
+      try {
+        if (props.times_json) times = JSON.parse(props.times_json);
+        if (props.values_json) values = JSON.parse(props.values_json);
+      } catch (err) {
+        console.error('Error parsing times_json / values_json', err);
+      }
 
-  if (times.length !== values.length) {
-    const n = Math.min(times.length, values.length);
-    times = times.slice(0, n);
-    values = values.slice(0, n);
-  }
+      if (times.length !== values.length) {
+        const n = Math.min(times.length, values.length);
+        times = times.slice(0, n);
+        values = values.slice(0, n);
+      }
 
-  const lineColor = param === 'Flow' ? '#3498db' : '#e67e22';
+      const lineColor = param === 'Flow' ? '#3498db' : '#e67e22';
 
-  const sourceURL = props.source_url || null;
+      const sourceURL = props.source_url || null;
 
-  const cardHtml = `
+      const cardHtml = `
     <div class="map-overlay-inner">
       <button class="close-button" onclick="closeCard()">&times;</button>
       <div class="panel-scroll">
@@ -1311,16 +1356,14 @@ function showFlowCard(feature) {
         <code class="card-title">${site}</code>
 
         <div class="card-subtitle subtitle-main">
-          ${
-            !isBlankish(station_name)
-              ? `${station_name}${sourceURL ? ' | ' : ''}`
-              : ''
-          }
-          ${
-            sourceURL
-              ? `<a href="${sourceURL}" target="_blank" rel="noopener" class="get-directions-link"> Source</a>`
-              : ''
-          }
+          ${!isBlankish(station_name)
+          ? `${station_name}${sourceURL ? ' | ' : ''}`
+          : ''
+        }
+          ${sourceURL
+          ? `<a href="${sourceURL}" target="_blank" rel="noopener" class="get-directions-link"> Source</a>`
+          : ''
+        }
         </div>
         <hr>
         <ul class="card-list">
@@ -1334,232 +1377,161 @@ function showFlowCard(feature) {
     </div>
   `;
 
-  card.innerHTML = cardHtml;
-  openPanel('card');
-  const canvas = document.getElementById('flowDevChartCanvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
+      card.innerHTML = cardHtml;
+      openPanel('card');
+      const canvas = document.getElementById('flowDevChartCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
 
-  if (canvas._chartInstance) {
-    canvas._chartInstance.destroy();
-  }
-
-  const timeObjs = times.map(t => new Date(t));
-
-  /**
-   * Plugin: draw a red threshold line + shaded area above 20°C
-   * and a warning message when param === "Temperature".
-   */
-  const tempThresholdPlugin = {
-    id: 'tempThreshold',
-    afterDraw(chart) {
-      // Only run if this is a temperature chart
-      if (param !== 'Temperature') return;
-
-      const { ctx, chartArea, scales } = chart;
-      const yScale = scales.y;
-      if (!yScale) return;
-
-      const threshold = 20; // 20°C
-      const yPixel = yScale.getPixelForValue(threshold);
-
-      // If threshold is outside the visible range, skip
-      if (yPixel < chartArea.top || yPixel > chartArea.bottom) return;
-
-      ctx.save();
-
-      const { left, right, top } = chartArea;
-      const width = right - left;
-
-      // --- 1) Shaded area ABOVE the 20°C line ---
-      ctx.fillStyle = 'rgba(220, 53, 69, 0.08)'; // faint red
-      ctx.fillRect(left, top, width, yPixel - top);
-
-      // --- 2) Red dashed threshold line at 20°C ---
-      ctx.strokeStyle = 'rgba(220, 53, 69, 0.9)';
-      ctx.lineWidth = 1;
-      ctx.setLineDash([4, 3]);
-      ctx.beginPath();
-      ctx.moveTo(left, yPixel);
-      ctx.lineTo(right, yPixel);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      // --- 3) Warning text ---
-      const text =
-        'Trout released above 20°C have much lower survival – consider fishing another time';
-      ctx.fillStyle = 'rgba(139, 0, 0, 0.95)';
-      ctx.font = '10px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'top';
-
-      const textX = (left + right) / 2;
-      const textY = top + 4;
-      const maxWidth = width - 10;
-
-      ctx.fillText(text, textX, textY, maxWidth);
-
-      ctx.restore();
-    }
-  };
-
-  // NEW: Flow threshold plugin (uses worthwhile_upper / worthwhile_lower)
-  // UPDATED: Flow worthwhile threshold plugin
-const flowThresholdPlugin = {
-  id: 'flowThreshold',
-  afterDraw(chart) {
-    if (param !== 'Flow') return;
-
-    const { ctx, chartArea, scales } = chart;
-    const yScale = scales.y;
-    if (!yScale) return;
-
-    if (!Number.isFinite(worthwhileUpper)) return;
-
-    const { left, right, top, bottom } = chartArea;
-    const width = right - left;
-
-    const yLimit = yScale.getPixelForValue(worthwhileUpper);
-
-    ctx.save();
-
-    // 🔹 Shaded "Worthwhile" area BELOW threshold
-    if (yLimit <= bottom) {
-      const shadeTop = Math.max(yLimit, top);
-      ctx.fillStyle = 'rgba(0, 123, 255, 0.10)'; // blue
-      ctx.fillRect(left, shadeTop, width, bottom - shadeTop);
-    }
-
-    // 🔺 Shaded "Not worthwhile" area ABOVE threshold
-    if (yLimit >= top) {
-      const shadeBottom = Math.min(yLimit, bottom);
-      ctx.fillStyle = 'rgba(220, 53, 69, 0.10)'; // red
-      ctx.fillRect(left, top, width, shadeBottom - top);
-    }
-
-    // ——— Draw threshold line ———
-    ctx.setLineDash([4, 3]);
-    ctx.strokeStyle = 'rgba(0,0,0,0.8)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(left, yLimit);
-    ctx.lineTo(right, yLimit);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // ——— Labels ———
-    ctx.font = '11px system-ui, sans-serif';
-    ctx.fillStyle = 'rgba(0, 123, 255, 0.95)'; // blue
-    ctx.textAlign = 'left';
-
-    // Worthwhile label (below line)
-    if (yLimit + 14 <= bottom) {
-      ctx.textBaseline = 'top';
-      ctx.fillText('Worthwhile', left + 4, yLimit + 4);
-    }
-
-    // Not worthwhile label (above line)
-    if (yLimit - 14 >= top) {
-      ctx.fillStyle = 'rgba(220, 53, 69, 0.95)'; // red
-      ctx.textBaseline = 'bottom';
-      ctx.fillText('Not worthwhile', left + 4, yLimit - 4);
-    }
-
-    ctx.restore();
-  }
-};
-
-
-  // Only attach plugins when needed
-  const plugins = [];
-  if (param === 'Temperature') {
-    plugins.push(tempThresholdPlugin);
-  }
-
-  // NEW: add flow plugin only when at least one threshold exists
-  if (
-    param === 'Flow' &&
-    (Number.isFinite(worthwhileUpper) || Number.isFinite(worthwhileLower))
-  ) {
-    plugins.push(flowThresholdPlugin);
-  }
-
-  canvas._chartInstance = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: timeObjs,
-      datasets: [{
-        label: `${param} (${unit || ''})`,
-        data: values,
-        borderColor: lineColor,
-        backgroundColor: lineColor,
-        tension: 0.2,
-        pointRadius: 0,
-        borderWidth: 1.5
-      }]
-    },
-    options: {
-      responsive: false,
-      interaction: {
-        mode: 'index',
-        intersect: false
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          mode: 'index',
-          intersect: false,
-          displayColors: false,
-          callbacks: {
-            label: (ctx) => {
-              const d = new Date(ctx.parsed.x);
-              const v = ctx.parsed.y;
-
-              const timeText = d.toLocaleString("en-NZ", {
-                timeZone: "Pacific/Auckland",
-                hour: "numeric",
-                hour12: true
-              }).replace(":00", "").toLowerCase();
-
-              const dateText = d.toLocaleDateString("en-NZ", {
-                timeZone: "Pacific/Auckland",
-                day: "numeric",
-                month: "short"
-              });
-
-              const valueText = v.toFixed(1);
-              return `${valueText} ${unit || ''} at ${timeText} ${dateText}`;
-            },
-            title: () => ''
-          }
-        }
-      },
-      scales: {
-        x: {
-          type: 'time',
-          time: {
-            unit: 'day',
-            stepSize: 1,
-            displayFormats: { day: 'd MMM' }
-          },
-          ticks: { maxRotation: 45 }
-        },
-        y: {
-          title: {
-            display: true,
-            text: `${param} (${unit || ''})`,
-            font: { size: 11 }
-          },
-          ticks: { maxTicksLimit: 5 }
-        }
-      },
-      elements: {
-        line: { stepped: false }
+      if (canvas._chartInstance) {
+        canvas._chartInstance.destroy();
       }
-    },
-    plugins // 👈 temperature + flow threshold plugins
-  });
-}
+
+      const timeObjs = times.map(t => new Date(t));
+
+      /**
+       * Plugin: draw a red threshold line + shaded area above 20°C
+       * and a warning message when param === "Temperature".
+       */
+      const tempThresholdPlugin = {
+        id: 'tempThreshold',
+        afterDraw(chart) {
+          // Only run if this is a temperature chart
+          if (param !== 'Temperature') return;
+
+          const { ctx, chartArea, scales } = chart;
+          const yScale = scales.y;
+          if (!yScale) return;
+
+          const threshold = 20; // 20°C
+          const yPixel = yScale.getPixelForValue(threshold);
+
+          // If threshold is outside the visible range, skip
+          if (yPixel < chartArea.top || yPixel > chartArea.bottom) return;
+
+          ctx.save();
+
+          const { left, right, top } = chartArea;
+          const width = right - left;
+
+          // --- 1) Shaded area ABOVE the 20°C line ---
+          ctx.fillStyle = 'rgba(220, 53, 69, 0.08)'; // faint red
+          ctx.fillRect(left, top, width, yPixel - top);
+
+          // --- 2) Red dashed threshold line at 20°C ---
+          ctx.strokeStyle = 'rgba(220, 53, 69, 0.9)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([4, 3]);
+          ctx.beginPath();
+          ctx.moveTo(left, yPixel);
+          ctx.lineTo(right, yPixel);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // --- 3) Warning text ---
+          const text =
+            'Trout released above 20°C have much lower survival – consider fishing another time';
+          ctx.fillStyle = 'rgba(139, 0, 0, 0.95)';
+          ctx.font = '10px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'top';
+
+          const textX = (left + right) / 2;
+          const textY = top + 4;
+          const maxWidth = width - 10;
+
+          ctx.fillText(text, textX, textY, maxWidth);
+
+          ctx.restore();
+        }
+      };
+
+
+      // Only attach plugins when needed
+      const plugins = [];
+      if (param === 'Temperature') {
+        plugins.push(tempThresholdPlugin);
+      }
+
+      // NEW: add flow plugin only when at least one threshold exists
+
+
+      canvas._chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: timeObjs,
+          datasets: [{
+            label: `${param} (${unit || ''})`,
+            data: values,
+            borderColor: lineColor,
+            backgroundColor: lineColor,
+            tension: 0.2,
+            pointRadius: 0,
+            borderWidth: 1.5
+          }]
+        },
+        options: {
+          responsive: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              displayColors: false,
+              callbacks: {
+                label: (ctx) => {
+                  const d = new Date(ctx.parsed.x);
+                  const v = ctx.parsed.y;
+
+                  const timeText = d.toLocaleString("en-NZ", {
+                    timeZone: "Pacific/Auckland",
+                    hour: "numeric",
+                    hour12: true
+                  }).replace(":00", "").toLowerCase();
+
+                  const dateText = d.toLocaleDateString("en-NZ", {
+                    timeZone: "Pacific/Auckland",
+                    day: "numeric",
+                    month: "short"
+                  });
+
+                  const valueText = v.toFixed(1);
+                  return `${valueText} ${unit || ''} at ${timeText} ${dateText}`;
+                },
+                title: () => ''
+              }
+            }
+          },
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                unit: 'day',
+                stepSize: 1,
+                displayFormats: { day: 'd MMM' }
+              },
+              ticks: { maxRotation: 45 }
+            },
+            y: {
+              title: {
+                display: true,
+                text: `${param} (${unit || ''})`,
+                font: { size: 11 }
+              },
+              ticks: { maxTicksLimit: 5 }
+            }
+          },
+          elements: {
+            line: { stepped: false }
+          }
+        },
+        plugins // 👈 temperature + flow threshold plugins
+      });
+    }
 
     // ===== Existing showCard for waterways/points (unchanged) =====
     const showCard = (feature) => {
@@ -1752,6 +1724,8 @@ const flowThresholdPlugin = {
       { name: 'BeatR-icon', url: 'images/BeatR.png' },
       { name: 'BeatB-icon', url: 'images/BeatB.png' },
       { name: 'BeatY-icon', url: 'images/BeatY.png' },
+      { name: 'Flow-icon', url: 'images/Flow.png' },
+      { name: 'Temp-icon', url: 'images/Temp.png' },
     ];
 
     function loadCustomImages(map, callback) {
@@ -1770,7 +1744,7 @@ const flowThresholdPlugin = {
     let hoverFeatureId = null;
 
 
-    // ===== Hover for flow-dev circles (Flow + Temperature) =====
+    // ===== Hover for flow circles (Flow + Temperature) =====
     let flowHoverId = null;
     let selectedFlowId = null;
 
@@ -1779,21 +1753,23 @@ const flowThresholdPlugin = {
       if (flowHoverId !== null) {
         // clear previous
         map.setFeatureState(
-          { source: 'flow-dev', id: flowHoverId },
+          { source: 'flow', id: flowHoverId },
           { hover: false }
         );
       }
       flowHoverId = id;
       if (flowHoverId !== null) {
         map.setFeatureState(
-          { source: 'flow-dev', id: flowHoverId },
+          { source: 'flow', id: flowHoverId },
           { hover: true }
         );
       }
+
+      requestAnimationFrame(updateIconSize);
     }
 
     // Flow hover
-    map.on('mousemove', 'flow-dev-flow-circles', (e) => {
+    map.on('mousemove', 'env-flow-icons', (e) => {
       map.getCanvas().style.cursor = 'pointer';
       const f = e.features && e.features[0];
       if (f && typeof f.id !== 'undefined') {
@@ -1801,13 +1777,13 @@ const flowThresholdPlugin = {
       }
     });
 
-    map.on('mouseleave', 'flow-dev-flow-circles', () => {
+    map.on('mouseleave', 'env-flow-icons', () => {
       map.getCanvas().style.cursor = '';
       setFlowHover(null);
     });
 
     // Temperature hover
-    map.on('mousemove', 'flow-dev-wt-circles', (e) => {
+    map.on('mousemove', 'env-wt-icons', (e) => {
       map.getCanvas().style.cursor = 'pointer';
       const f = e.features && e.features[0];
       if (f && typeof f.id !== 'undefined') {
@@ -1815,7 +1791,7 @@ const flowThresholdPlugin = {
       }
     });
 
-    map.on('mouseleave', 'flow-dev-wt-circles', () => {
+    map.on('mouseleave', 'env-wt-icons', () => {
       map.getCanvas().style.cursor = '';
       setFlowHover(null);
     });
@@ -1834,9 +1810,26 @@ const flowThresholdPlugin = {
     }
 
     function updateIconSize() {
-      if (!map.getLayer('data-points-all')) return;
-      map.setLayoutProperty('data-points-all', 'icon-size', getIconSizeExpr(selectedFeatureId, hoverFeatureId));
+      // Access points
+      if (map.getLayer('data-points-all')) {
+        map.setLayoutProperty(
+          'data-points-all',
+          'icon-size',
+          getIconSizeExpr(selectedFeatureId, hoverFeatureId)
+        );
+      }
+
+      // Flow / temp stations (dev icons)
+      const flowExpr = getIconSizeExpr(selectedFlowId, flowHoverId);
+
+      if (map.getLayer('env-flow-icons')) {
+        map.setLayoutProperty('env-flow-icons', 'icon-size', flowExpr);
+      }
+      if (map.getLayer('env-wt-icons')) {
+        map.setLayoutProperty('env-wt-icons', 'icon-size', flowExpr);
+      }
     }
+
 
     const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     if (isTouch) {
@@ -2153,7 +2146,7 @@ const flowThresholdPlugin = {
       if (selectedFlowId !== null) {
         try {
           map.setFeatureState(
-            { source: 'flow-dev', id: selectedFlowId },
+            { source: 'flow', id: selectedFlowId },
             { selected: false, hover: false }
           );
         } catch (e) { }
@@ -2473,183 +2466,61 @@ const flowThresholdPlugin = {
         });
       }
 
-      // ---- DEV: flow-dev source + layers ----
+      // ---- DEV: flow source + layers ----
       if (isDev) {
         const FLOW_DEV_URL = `${GEOJSON_BASE}/flow_combined_dev.geojson?token=fish-access-2025`;
 
-        if (!sources['flow-dev']) {
-          map.addSource('flow-dev', {
+        if (!sources['flow']) {
+          map.addSource('flow', {
             type: 'geojson',
             data: FLOW_DEV_URL,
             generateId: true
           });
         }
 
-        if (!map.getLayer('flow-dev-flow-circles')) {
+        // NEW: icon layers for flow + temperature
+        if (!map.getLayer('env-flow-icons')) {
           map.addLayer({
-            id: 'flow-dev-flow-circles',
-            type: 'circle',
-            source: 'flow-dev',
+            id: 'env-flow-icons',
+            type: 'symbol',
+            source: 'flow',
             minzoom: 7,
             filter: ['==', ['get', 'parameter'], 'Flow'],
-            paint: {
-              'circle-radius': [
+            layout: {
+              'icon-image': 'Flow-icon',
+              'icon-size': getIconSizeExpr(selectedFlowId, flowHoverId),
+              'icon-anchor': 'center',
+              'icon-allow-overlap': true,
+              'icon-offset': [
                 'interpolate', ['linear'], ['zoom'],
-                7, [
-                  'case',
-                  ['boolean', ['feature-state', 'selected'], false], 1.5,    // 🔹 selected
-                  ['boolean', ['feature-state', 'hover'], false], 1,       // hover
-                  .5                                                        // default
-                ],
-                11, [
-                  'case',
-                  ['boolean', ['feature-state', 'selected'], false], 7,
-                  ['boolean', ['feature-state', 'hover'], false], 6,
-                  5
-                ],
-                14, [
-                  'case',
-                  ['boolean', ['feature-state', 'selected'], false], 12,
-                  ['boolean', ['feature-state', 'hover'], false], 11,
-                  10
-                ]
-              ],
-
-
-              'circle-color': '#3498db',
-              'circle-opacity': 0.85,
-              'circle-stroke-color': '#ffffff',
-              'circle-stroke-width': [
-                'interpolate', ['linear'], ['zoom'],
-                6, 0.5,
-                11, 2
-              ],
-              'circle-translate': [
-                'interpolate', ['linear'], ['zoom'],
-                6, ['literal', [-.3, 0]],
-                11, ['literal', [-7, 0]],
-                14, ['literal', [-14, 0]]
+                6, ['literal', [-50, 0]],   // small left shift
+                11, ['literal', [-60, 0]]
               ]
             }
           }, insertBeforeLayer);
         }
 
-        if (!map.getLayer('flow-dev-wt-circles')) {
+        if (!map.getLayer('env-wt-icons')) {
           map.addLayer({
-            id: 'flow-dev-wt-circles',
-            type: 'circle',
-            source: 'flow-dev',
+            id: 'env-wt-icons',
+            type: 'symbol',
+            source: 'flow',
             minzoom: 7,
             filter: ['==', ['get', 'parameter'], 'Temperature'],
-            paint: {
-              'circle-radius': [
-                'interpolate', ['linear'], ['zoom'],
-                7, [
-                  'case',
-                  ['boolean', ['feature-state', 'selected'], false], 1.5,    // 🔹 selected
-                  ['boolean', ['feature-state', 'hover'], false], 1,       // hover
-                  .5                                                        // default
-                ],
-                11, [
-                  'case',
-                  ['boolean', ['feature-state', 'selected'], false], 7,
-                  ['boolean', ['feature-state', 'hover'], false], 6,
-                  5
-                ],
-                14, [
-                  'case',
-                  ['boolean', ['feature-state', 'selected'], false], 12,
-                  ['boolean', ['feature-state', 'hover'], false], 11,
-                  10
-                ]
-              ],
-
-
-              'circle-color': '#e67e22',
-              'circle-opacity': 0.85,
-              'circle-stroke-color': '#ffffff',
-              'circle-stroke-width': [
-                'interpolate', ['linear'], ['zoom'],
-                6, 0.5,
-                11, 2
-              ],
-              'circle-translate': [
-                'interpolate', ['linear'], ['zoom'],
-                6, ['literal', [.3, 0]],
-                11, ['literal', [7, 0]],
-                14, ['literal', [14, 0]]
-              ]
-            }
-          }, insertBeforeLayer);
-        }
-
-        if (!map.getLayer('flow-dev-flow-labels')) {
-          map.addLayer({
-            id: 'flow-dev-flow-labels',
-            type: 'symbol',
-            source: 'flow-dev',
-            minzoom: 12,
-            filter: ['==', ['get', 'parameter'], 'Flow'],
             layout: {
-              'text-field': [
-                'concat',
-                ['to-string', ['/', ['round', ['*', ['get', 'latest_value'], 10]], 10]],
-                ' ',
-                ['coalesce', ['get', 'unit'], '']
-              ],
-              'text-font': ['Noto Sans Regular'],
-              'text-size': 11,
-              'text-anchor': 'right',
-              'text-offset': [-1.5, 0],
-              'text-allow-overlap': false
-            },
-            paint: {
-              'text-color': '#0b4870',
-              'text-halo-color': '#ffffff',
-              'text-halo-width': 3,
-              'text-translate': [
+              'icon-image': 'Temp-icon',
+              'icon-size': getIconSizeExpr(selectedFlowId, flowHoverId),
+              'icon-anchor': 'center',
+              'icon-allow-overlap': true,
+              'icon-offset': [
                 'interpolate', ['linear'], ['zoom'],
-                6, ['literal', [0, 0]],
-                11, ['literal', [0, 0]],
-                14, ['literal', [-10, 0]]
+                6, ['literal', [50, 0]],    // small right shift
+                11, ['literal', [60, 0]]
               ]
             }
           }, insertBeforeLayer);
         }
 
-        if (!map.getLayer('flow-dev-wt-labels')) {
-          map.addLayer({
-            id: 'flow-dev-wt-labels',
-            type: 'symbol',
-            source: 'flow-dev',
-            minzoom: 12,
-            filter: ['==', ['get', 'parameter'], 'Temperature'],
-            layout: {
-              'text-field': [
-                'concat',
-                ['to-string', ['/', ['round', ['*', ['get', 'latest_value'], 10]], 10]],
-                ' ',
-                ['coalesce', ['get', 'unit'], '']
-              ],
-              'text-font': ['Noto Sans Regular'],
-              'text-size': 11,
-              'text-anchor': 'left',
-              'text-offset': [1.5, 0],
-              'text-allow-overlap': false
-            },
-            paint: {
-              'text-color': '#0b4870',
-              'text-halo-color': '#ffffff',
-              'text-halo-width': 4,
-              'text-translate': [
-                'interpolate', ['linear'], ['zoom'],
-                6, ['literal', [0, 0]],
-                11, ['literal', [0, 0]],
-                14, ['literal', [10, 0]]
-              ]
-            }
-          }, insertBeforeLayer);
-        }
       }
 
       if (!sources['data-points']) {
@@ -2720,7 +2591,7 @@ const flowThresholdPlugin = {
       if (window.setupAWFilters) window.setupAWFilters(map);
     }
 
-    // ===== NEW: flow-dev click → side panel (no popup) =====
+    // ===== NEW: flow click → side panel (no popup) =====
 
     // == Region label click, hover popups etc (unchanged) ==
     map.on('mouseenter', 'FG Region Labels', () => { map.getCanvas().style.cursor = 'pointer'; });
@@ -2803,7 +2674,7 @@ const flowThresholdPlugin = {
 
       const layersToQuery = ['data-points-all', ...riverTapLayers];
       if (isDev) {
-        layersToQuery.push('flow-dev-flow-circles', 'flow-dev-wt-circles');
+        layersToQuery.push('env-flow-icons', 'env-wt-icons');
       }
 
       const features = map.queryRenderedFeatures(e.point, {
@@ -2819,8 +2690,8 @@ const flowThresholdPlugin = {
 
       // Flow / Temperature first
       const flowFeature = features.find(f =>
-        f.layer.id === 'flow-dev-flow-circles' ||
-        f.layer.id === 'flow-dev-wt-circles'
+        f.layer.id === 'env-flow-icons' ||
+        f.layer.id === 'env-wt-icons'
       );
 
       // Access points
@@ -2842,16 +2713,17 @@ const flowThresholdPlugin = {
         selectedFlowId = id;
         try {
           map.setFeatureState(
-            { source: 'flow-dev', id },
+            { source: 'flow', id },
             { selected: true }
           );
         } catch (e) { }
 
+        updateIconSize();
         // Optional: also clear hover state
         if (flowHoverId !== null) {
           try {
             map.setFeatureState(
-              { source: 'flow-dev', id: flowHoverId },
+              { source: 'flow', id: flowHoverId },
               { hover: false }
             );
           } catch (e) { }
