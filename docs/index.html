@@ -827,7 +827,7 @@
 
         const LAYERS = {
   waterways: ['Waterways-line', 'Waterways-fill'],
-  points: [ 'data-points-all', 'env-flow-icons',  'env-wt-icons'],
+  points: [ 'data-points-all', 'flow-flow-icons',  'flow-wt-icons'],
   publicAccess: ['PublicAccessAreas-fill'],
   regions: ['FG Regions-line', 'FG Regions-linebackground', 'FG Region Labels']
 };
@@ -1022,14 +1022,14 @@
   const visTemp = tempOn ? 'visible' : 'none';
 
   // Flow layers
-  ['env-flow-icons'].forEach(id => {
+  ['flow-flow-icons'].forEach(id => {
     if (map.getLayer(id)) {
       map.setLayoutProperty(id, 'visibility', visFlow);
     }
   });
 
   // Temp layers
-  ['env-wt-icons'].forEach(id => {
+  ['flow-wt-icons'].forEach(id => {
     if (map.getLayer(id)) {
       map.setLayoutProperty(id, 'visibility', visTemp);
     }
@@ -1769,7 +1769,7 @@
     }
 
     // Flow hover
-    map.on('mousemove', 'env-flow-icons', (e) => {
+    map.on('mousemove', 'flow-flow-icons', (e) => {
       map.getCanvas().style.cursor = 'pointer';
       const f = e.features && e.features[0];
       if (f && typeof f.id !== 'undefined') {
@@ -1777,13 +1777,13 @@
       }
     });
 
-    map.on('mouseleave', 'env-flow-icons', () => {
+    map.on('mouseleave', 'flow-flow-icons', () => {
       map.getCanvas().style.cursor = '';
       setFlowHover(null);
     });
 
     // Temperature hover
-    map.on('mousemove', 'env-wt-icons', (e) => {
+    map.on('mousemove', 'flow-wt-icons', (e) => {
       map.getCanvas().style.cursor = 'pointer';
       const f = e.features && e.features[0];
       if (f && typeof f.id !== 'undefined') {
@@ -1791,7 +1791,7 @@
       }
     });
 
-    map.on('mouseleave', 'env-wt-icons', () => {
+    map.on('mouseleave', 'flow-wt-icons', () => {
       map.getCanvas().style.cursor = '';
       setFlowHover(null);
     });
@@ -1822,11 +1822,11 @@
       // Flow / temp stations (dev icons)
       const flowExpr = getIconSizeExpr(selectedFlowId, flowHoverId);
 
-      if (map.getLayer('env-flow-icons')) {
-        map.setLayoutProperty('env-flow-icons', 'icon-size', flowExpr);
+      if (map.getLayer('flow-flow-icons')) {
+        map.setLayoutProperty('flow-flow-icons', 'icon-size', flowExpr);
       }
-      if (map.getLayer('env-wt-icons')) {
-        map.setLayoutProperty('env-wt-icons', 'icon-size', flowExpr);
+      if (map.getLayer('flow-wt-icons')) {
+        map.setLayoutProperty('flow-wt-icons', 'icon-size', flowExpr);
       }
     }
 
@@ -2187,6 +2187,11 @@
     const URL_POINTS_GEOJSON = `${GEOJSON_BASE}/${POINTS_FILE}`;
     const URL_SEARCH_INDEX = `${GEOJSON_BASE}/${SEARCH_FILE}`;
 
+          
+const FLOW_DEV_URL  = `${GEOJSON_BASE}/flow_combined_dev.geojson?token=fish-access-2025`;
+const FLOW_PROD_URL = `${GEOJSON_BASE}/flow_combined_dev.geojson?token=fish-access-2025`;
+const FLOW_URL = isDev ? FLOW_DEV_URL : FLOW_PROD_URL;
+
     fetch(URL_SEARCH_INDEX)
       .then(res => res.json()).then(d => { allFeatures = d.features; })
       .catch(err => console.error('Failed to load search index:', err));
@@ -2467,21 +2472,19 @@
       }
 
       // ---- DEV: flow source + layers ----
-      if (isDev) {
-        const FLOW_DEV_URL = `${GEOJSON_BASE}/flow_combined_dev.geojson?token=fish-access-2025`;
 
-        if (!sources['flow']) {
-          map.addSource('flow', {
-            type: 'geojson',
-            data: FLOW_DEV_URL,
-            generateId: true
-          });
-        }
+if (!map.getSource("flow")) {
+  map.addSource("flow", {
+    type: "geojson",
+    data: FLOW_URL,
+    generateId: true
+  });
+}
 
         // NEW: icon layers for flow + temperature
-        if (!map.getLayer('env-flow-icons')) {
+        if (!map.getLayer('flow-flow-icons')) {
           map.addLayer({
-            id: 'env-flow-icons',
+            id: 'flow-flow-icons',
             type: 'symbol',
             source: 'flow',
             minzoom: 7,
@@ -2500,9 +2503,9 @@
           }, insertBeforeLayer);
         }
 
-        if (!map.getLayer('env-wt-icons')) {
+        if (!map.getLayer('flow-wt-icons')) {
           map.addLayer({
-            id: 'env-wt-icons',
+            id: 'flow-wt-icons',
             type: 'symbol',
             source: 'flow',
             minzoom: 7,
@@ -2521,7 +2524,7 @@
           }, insertBeforeLayer);
         }
 
-      }
+      
 
       if (!sources['data-points']) {
         map.addSource('data-points', {
@@ -2587,9 +2590,9 @@
           }
         });
       }
-
-      if (window.setupAWFilters) window.setupAWFilters(map);
     }
+      if (window.setupAWFilters) window.setupAWFilters(map);
+    
 
     // ===== NEW: flow click → side panel (no popup) =====
 
@@ -2667,19 +2670,21 @@
       updateIconSize();
     });
 
-    map.on('click', (e) => {
-      const riverTapLayers = isTouch
-        ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
-        : ['Waterways-line', 'Waterways-fill'];
+   map.on('click', (e) => {
+  const riverTapLayers = isTouch
+    ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
+    : ['Waterways-line', 'Waterways-fill'];
 
-      const layersToQuery = ['data-points-all', ...riverTapLayers];
-      if (isDev) {
-        layersToQuery.push('env-flow-icons', 'env-wt-icons');
-      }
+  const layersToQuery = ['data-points-all', ...riverTapLayers];
 
-      const features = map.queryRenderedFeatures(e.point, {
-        layers: layersToQuery
-      });
+  // Include flow/temp layers in BOTH dev + prod, but only if they exist
+  ['flow-flow-icons', 'flow-wt-icons'].forEach(id => {
+    if (map.getLayer(id)) layersToQuery.push(id);
+  });
+
+  const features = map.queryRenderedFeatures(e.point, {
+    layers: layersToQuery
+  });
 
       // Nothing under the cursor → clear everything
       if (!features.length) {
@@ -2690,8 +2695,8 @@
 
       // Flow / Temperature first
       const flowFeature = features.find(f =>
-        f.layer.id === 'env-flow-icons' ||
-        f.layer.id === 'env-wt-icons'
+        f.layer.id === 'flow-flow-icons' ||
+        f.layer.id === 'flow-wt-icons'
       );
 
       // Access points
