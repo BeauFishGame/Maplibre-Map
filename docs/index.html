@@ -2045,16 +2045,6 @@
     map.on('moveend', updateCenterPublicAccess);
     map.on('load', updateCenterPublicAccess);
 
-
-
-
-
-
-
-
-
-
-
     function updateLayerFilter() {
       const container = document.getElementById('point-type-filter');
       if (!container) return;
@@ -3031,7 +3021,7 @@ if (!map.getSource("flow")) {
         const level = Math.max(0, Math.min(20, Math.round(map.getZoom())));
 
         const base = "https://maps.herengaanuku.govt.nz/Viewer/";
-        const mapId = "9cd99517a0db4d18a894c3839df4d3a3";
+        const mapId = "202d9deb4dfa4c82a13536e12c58d8fa";
         const url = `${base}?map=${mapId}&center=${Ee},${Nn},2193&level=${level}`;
 
         window.open(url, "_blank", "noopener");
