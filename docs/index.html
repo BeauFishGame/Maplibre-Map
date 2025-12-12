@@ -2484,7 +2484,8 @@ if (!map.getSource("flow")) {
               'icon-image': 'Flow-icon',
               'icon-size': getIconSizeExpr(selectedFlowId, flowHoverId),
               'icon-anchor': 'center',
-              'icon-allow-overlap': true,
+              'icon-allow-overlap': true, 
+              'icon-anchor': 'bottom',
               'icon-offset': [
                 'interpolate', ['linear'], ['zoom'],
                 6, ['literal', [-50, 0]],   // small left shift
@@ -2506,6 +2507,7 @@ if (!map.getSource("flow")) {
               'icon-size': getIconSizeExpr(selectedFlowId, flowHoverId),
               'icon-anchor': 'center',
               'icon-allow-overlap': true,
+              'icon-anchor': 'bottom',
               'icon-offset': [
                 'interpolate', ['linear'], ['zoom'],
                 6, ['literal', [50, 0]],    // small right shift
