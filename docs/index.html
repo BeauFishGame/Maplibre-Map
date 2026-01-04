@@ -2027,6 +2027,116 @@ function showFlowCard(feature) {
 
       crosshairEl.style.display = 'block';
 
+      function hoverPoint(f) {
+  if (hoverFeatureId !== f.id) {
+    hoverFeatureId = f.id;
+    updateIconSize();
+  }
+  clearRiverHover();
+  clearFlowHover();
+}
+
+function hoverRiver(f) {
+  setRiverHover(f.id);
+  clearPointHover();
+  clearFlowHover();
+}
+
+function hoverFlow(f) {
+  if (flowHoverId !== f.id) {
+    if (flowHoverId !== null) {
+      map.setFeatureState({ source: 'flow', id: flowHoverId }, { hover: false });
+    }
+    flowHoverId = f.id;
+    map.setFeatureState({ source: 'flow', id: f.id }, { hover: true });
+    updateIconSize();
+  }
+  clearPointHover();
+  setRiverHover(null);
+}
+
+function clearPointHover() {
+  if (hoverFeatureId !== null) {
+    hoverFeatureId = null;
+    updateIconSize();
+  }
+}
+
+function clearRiverHover() {
+  setRiverHover(null);
+}
+
+function clearFlowHover() {
+  if (flowHoverId !== null) {
+    map.setFeatureState({ source: 'flow', id: flowHoverId }, { hover: false });
+    flowHoverId = null;
+    updateIconSize();
+  }
+}
+
+let crosshairRAF = false;
+function scheduleCrosshairHover() {
+  if (!isTouch || crosshairRAF) return;
+  crosshairRAF = true;
+  requestAnimationFrame(() => {
+    crosshairRAF = false;
+    updateCrosshairHover();
+  });
+}
+
+map.on('move', scheduleCrosshairHover);
+map.on('moveend', updateCrosshairHover);
+map.on('load', updateCrosshairHover);
+
+function clearAllHover() {
+  clearPointHover();
+  clearRiverHover();
+  clearFlowHover();
+}
+
+function updateCrosshairHover() {
+  if (!isTouch) return;
+  if (map.getZoom() < 7) {
+    clearAllHover();
+    return;
+  }
+
+  // Don't hover-jitter while something is selected
+  if (selectedFeatureId || selectedRiverId || selectedFlowId) return;
+
+  const layers = [];
+
+  if (map.getLayer('flow-flow-icons')) layers.push('flow-flow-icons');
+  if (map.getLayer('flow-wt-icons')) layers.push('flow-wt-icons');
+  if (map.getLayer('data-points-all')) layers.push('data-points-all');
+  if (map.getLayer('Waterways-touch')) layers.push('Waterways-touch');
+  if (map.getLayer('Waterways-line')) layers.push('Waterways-line');
+  if (map.getLayer('Waterways-fill')) layers.push('Waterways-fill');
+
+  const hits = queryAtCrosshair(layers);
+
+  const flow   = hits.find(f => f.layer.id.startsWith('flow-'));
+  const point  = hits.find(f => f.layer.id === 'data-points-all');
+  const river  = hits.find(f => f.layer.id.startsWith('Waterways'));
+
+  if (flow)   return hoverFlow(flow);
+  if (point)  return hoverPoint(point);
+  if (river)  return hoverRiver(river);
+
+  clearAllHover();
+}
+
+function queryAtCrosshair(layers, radius = 1) {
+  const center = map.project(map.getCenter());
+  return map.queryRenderedFeatures(
+    [
+      { x: center.x - radius, y: center.y - radius },
+      { x: center.x + radius, y: center.y + radius }
+    ],
+    { layers }
+  );
+}
+
       const point = map.project(map.getCenter());
       const features = map.queryRenderedFeatures(point, {
         layers: ['PublicAccessAreas-fill']
