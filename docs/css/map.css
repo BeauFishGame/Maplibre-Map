@@ -853,7 +853,7 @@
 }
 
 /* Hide crosshair by default on large screens */
-@media (min-width: 768px) {
+@media (point: fine) {
   #center-crosshair {
     display: none !important;
   }
@@ -861,7 +861,7 @@
 
 #public-access-banner {
   position: fixed;
-  top: 60px;              /* just under the top bar */
+  top: 65px;              /* just under the top bar */
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
@@ -875,3 +875,4 @@
   display: none;          /* JS will turn this on/off */
   white-space: nowrap;
 }
+

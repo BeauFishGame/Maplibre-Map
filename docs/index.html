@@ -2002,12 +2002,12 @@ function showFlowCard(feature) {
     const crosshairEl = document.getElementById('center-crosshair');
     const accessBannerEl = document.getElementById('public-access-banner');
 
-    // Mobile UI = touch device AND narrow screen
-    let isMobileUI = isTouch && window.innerWidth < 768;
+    // Mobile UI = touch device 
+    let isMobileUI = isTouch ;
     console.log('isTouch:', isTouch, 'isMobileUI:', isMobileUI, 'width:', window.innerWidth);
 
     window.addEventListener('resize', () => {
-      isMobileUI = isTouch && window.innerWidth < 768;
+      isMobileUI = isTouch ;
       updateCenterPublicAccess();
     });
 
