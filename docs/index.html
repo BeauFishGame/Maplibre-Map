@@ -2013,68 +2013,50 @@ function showFlowCard(feature) {
 
 
     function updateCenterPublicAccess() {
-      if (!isMobileUI) {
-        crosshairEl.style.display = 'none';
-        accessBannerEl.style.display = 'none';
-        return;
-      }
-
-      if (map.getZoom() < 12) {
-        crosshairEl.style.display = 'none';
-        accessBannerEl.style.display = 'none';
-        return;
-      }
-
-      crosshairEl.style.display = 'block';
-
-      function hoverPoint(f) {
-  if (hoverFeatureId !== f.id) {
-    hoverFeatureId = f.id;
-    updateIconSize();
+  if (!isMobileUI) {
+    crosshairEl.style.display = 'none';
+    accessBannerEl.style.display = 'none';
+    return;
   }
-  clearRiverHover();
-  clearFlowHover();
-}
 
-function hoverRiver(f) {
-  setRiverHover(f.id);
-  clearPointHover();
-  clearFlowHover();
-}
-
-function hoverFlow(f) {
-  if (flowHoverId !== f.id) {
-    if (flowHoverId !== null) {
-      map.setFeatureState({ source: 'flow', id: flowHoverId }, { hover: false });
-    }
-    flowHoverId = f.id;
-    map.setFeatureState({ source: 'flow', id: f.id }, { hover: true });
-    updateIconSize();
+  if (map.getZoom() < 12) {
+    crosshairEl.style.display = 'none';
+    accessBannerEl.style.display = 'none';
+    return;
   }
-  clearPointHover();
-  setRiverHover(null);
-}
 
-function clearPointHover() {
-  if (hoverFeatureId !== null) {
-    hoverFeatureId = null;
-    updateIconSize();
+  crosshairEl.style.display = 'block';
+
+  const point = map.project(map.getCenter());
+  const features = map.queryRenderedFeatures(point, {
+    layers: ['PublicAccessAreas-fill']
+  });
+
+  if (!features.length) {
+    accessBannerEl.style.display = 'none';
+    return;
   }
+
+  const type = features[0]?.properties?.DataType || 'Public Access';
+  accessBannerEl.textContent = type;
+  accessBannerEl.style.display = 'block';
 }
 
-function clearRiverHover() {
-  setRiverHover(null);
-}
 
-function clearFlowHover() {
-  if (flowHoverId !== null) {
-    map.setFeatureState({ source: 'flow', id: flowHoverId }, { hover: false });
-    flowHoverId = null;
-    updateIconSize();
-  }
-}
+    map.on('move', updateCenterPublicAccess);
+    map.on('moveend', updateCenterPublicAccess);
+    map.on('load', updateCenterPublicAccess);
 
+    map.on('move', scheduleCrosshairHover);
+map.on('moveend', updateCrosshairHover);
+map.on('load', updateCrosshairHover);
+
+
+    // ===============================
+// Crosshair hover (TOUCH ONLY)
+// ===============================
 let crosshairRAF = false;
+
 function scheduleCrosshairHover() {
   if (!isTouch || crosshairRAF) return;
   crosshairRAF = true;
@@ -2084,47 +2066,46 @@ function scheduleCrosshairHover() {
   });
 }
 
-map.on('move', scheduleCrosshairHover);
-map.on('moveend', updateCrosshairHover);
-map.on('load', updateCrosshairHover);
+// Small wrappers so we reuse your existing hover systems
+function hoverFlowFeature(f) {
+  if (!f || typeof f.id === 'undefined') return;
+  setFlowHover(f.id);                 // uses your existing function
+}
 
-function clearAllHover() {
+function clearFlowHover() {
+  setFlowHover(null);
+}
+
+function hoverPointFeature(f) {
+  if (!f || typeof f.id === 'undefined') return;
+  const id = f.id;
+  if (id !== hoverFeatureId && id !== selectedFeatureId) {
+    hoverFeatureId = id;
+    requestAnimationFrame(updateIconSize);
+  }
+}
+
+function clearPointHover() {
+  if (hoverFeatureId !== null) {
+    hoverFeatureId = null;
+    requestAnimationFrame(updateIconSize);
+  }
+}
+
+// You already have setRiverHover(...) later in the file.
+// We'll call it if it exists.
+function hoverRiverFeature(f) {
+  if (!f || typeof f.id === 'undefined') return;
+  if (typeof setRiverHover === 'function') setRiverHover(f.id);
+}
+function clearRiverHover() {
+  if (typeof setRiverHover === 'function') setRiverHover(null);
+}
+
+function clearAllCrosshairHover() {
   clearPointHover();
   clearRiverHover();
   clearFlowHover();
-}
-
-function updateCrosshairHover() {
-  if (!isTouch) return;
-  if (map.getZoom() < 12) return; 
-  if (map.getZoom() < 12) {
-    clearAllHover();
-    return;
-  }
-
-  // Don't hover-jitter while something is selected
-  if (selectedFeatureId || selectedRiverId || selectedFlowId) return;
-
-  const layers = [];
-
-  if (map.getLayer('flow-flow-icons')) layers.push('flow-flow-icons');
-  if (map.getLayer('flow-wt-icons')) layers.push('flow-wt-icons');
-  if (map.getLayer('data-points-all')) layers.push('data-points-all');
-  if (map.getLayer('Waterways-touch')) layers.push('Waterways-touch');
-  if (map.getLayer('Waterways-line')) layers.push('Waterways-line');
-  if (map.getLayer('Waterways-fill')) layers.push('Waterways-fill');
-
-  const hits = queryAtCrosshair(layers);
-
-  const flow   = hits.find(f => f.layer.id.startsWith('flow-'));
-  const point  = hits.find(f => f.layer.id === 'data-points-all');
-  const river  = hits.find(f => f.layer.id.startsWith('Waterways'));
-
-  if (flow)   return hoverFlow(flow);
-  if (point)  return hoverPoint(point);
-  if (river)  return hoverRiver(river);
-
-  clearAllHover();
 }
 
 function queryAtCrosshair(layers, radius = 1) {
@@ -2138,24 +2119,55 @@ function queryAtCrosshair(layers, radius = 1) {
   );
 }
 
-      const point = map.project(map.getCenter());
-      const features = map.queryRenderedFeatures(point, {
-        layers: ['PublicAccessAreas-fill']
-      });
+function updateCrosshairHover() {
+  if (!isTouch) return;
 
-      if (!features.length) {
-        accessBannerEl.style.display = 'none';
-        return;
-      }
+  // You asked: don't run unless zoomed in enough
+  if (map.getZoom() < 12) {
+    clearAllCrosshairHover();
+    return;
+  }
 
-      const type = features[0]?.properties?.DataType || 'Public Access';
-      accessBannerEl.textContent = type;
-      accessBannerEl.style.display = 'block';
-    }
+  // Avoid “hover jitter” when something is selected
+  if (selectedFeatureId || selectedRiverId || selectedFlowId) return;
 
-    map.on('move', updateCenterPublicAccess);
-    map.on('moveend', updateCenterPublicAccess);
-    map.on('load', updateCenterPublicAccess);
+  const vis = (id) =>
+    map.getLayer(id) && map.getLayoutProperty(id, 'visibility') !== 'none';
+
+  const layers = [];
+
+  // Prefer flow + points first
+  if (vis('flow-flow-icons')) layers.push('flow-flow-icons');
+  if (vis('flow-wt-icons')) layers.push('flow-wt-icons');
+  if (vis('data-points-all')) layers.push('data-points-all');
+
+  // Prefer fat invisible touch layer when present
+  if (vis('Waterways-touch')) {
+    layers.push('Waterways-touch');
+  } else {
+    if (vis('Waterways-line')) layers.push('Waterways-line');
+    if (vis('Waterways-fill')) layers.push('Waterways-fill');
+  }
+
+  if (!layers.length) {
+    clearAllCrosshairHover();
+    return;
+  }
+
+  const hits = queryAtCrosshair(layers);
+
+  // Priority order (feel free to swap):
+  const flow = hits.find(f => f.layer.id === 'flow-flow-icons' || f.layer.id === 'flow-wt-icons');
+  const point = hits.find(f => f.layer.id === 'data-points-all');
+  const river = hits.find(f => f.layer.id.startsWith('Waterways'));
+
+  if (flow)  { hoverFlowFeature(flow);  clearPointHover(); clearRiverHover(); return; }
+  if (point) { hoverPointFeature(point); clearFlowHover(); clearRiverHover(); return; }
+  if (river) { hoverRiverFeature(river); clearFlowHover(); clearPointHover(); return; }
+
+  clearAllCrosshairHover();
+}
+
 
     function updateLayerFilter() {
       const container = document.getElementById('point-type-filter');
