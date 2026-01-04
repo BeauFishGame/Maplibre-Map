@@ -176,15 +176,15 @@
                 <label class="option"><input type="checkbox" value="Campsite" checked> DOC Campgrounds</label>
                 <label class="option"> <input type="checkbox" value="Beat"
                     data-values='["BeatYR","BeatBY","BeatBR", "BeatB", "BeatR", "BeatY"]' checked> Beat markers </label>
-                    <label class="option">
-  <input type="checkbox" value="Flow" checked>
-  Live river flow stations
-</label>
+                <label class="option">
+                  <input type="checkbox" value="Flow" checked>
+                  Live river flow stations
+                </label>
 
-<label class="option">
-  <input type="checkbox" value="Temp" checked>
-  Live water temperature stations
-</label>
+                <label class="option">
+                  <input type="checkbox" value="Temp" checked>
+                  Live water temperature stations
+                </label>
 
               </div>
             </div>
@@ -337,7 +337,7 @@
             if (window.__filtersWired) return;
             window.__filtersWired = true;
 
-     
+
 
 
             const PROPS = {
@@ -825,12 +825,12 @@
       if (window.__filtersWired) return;
       window.__filtersWired = true;
 
-        const LAYERS = {
-  waterways: ['Waterways-line', 'Waterways-fill'],
-  points: [ 'data-points-all', 'flow-flow-icons',  'flow-wt-icons'],
-  publicAccess: ['PublicAccessAreas-fill'],
-  regions: ['FG Regions-line', 'FG Regions-linebackground', 'FG Region Labels']
-};
+      const LAYERS = {
+        waterways: ['Waterways-line', 'Waterways-fill'],
+        points: ['data-points-all', 'flow-flow-icons', 'flow-wt-icons'],
+        publicAccess: ['PublicAccessAreas-fill'],
+        regions: ['FG Regions-line', 'FG Regions-linebackground', 'FG Region Labels']
+      };
 
       const PROPS = {
         waterways: {
@@ -970,71 +970,71 @@
         (LAYERS.waterways || []).forEach(id => safeSetFilter(id, finalExpr));
       }
 
-    function applyPointFilters() {
-  const selected = getChecks('p-type'); // null=all; []=none; otherwise list
+      function applyPointFilters() {
+        const selected = getChecks('p-type'); // null=all; []=none; otherwise list
 
-  // --- 1) Work out which special options are on ---
-  const FLOW_KEY = 'Flow';
-  const TEMP_KEY = 'Temp';
+        // --- 1) Work out which special options are on ---
+        const FLOW_KEY = 'Flow';
+        const TEMP_KEY = 'Temp';
 
-  let flowOn = true;
-  let tempOn = true;
-  let pointTypesForData = null;  // what we send to data-points-all
+        let flowOn = true;
+        let tempOn = true;
+        let pointTypesForData = null;  // what we send to data-points-all
 
-  if (selected === null) {
-    // "Select all" checked → all point types, flow + temp all on
-    flowOn = true;
-    tempOn = true;
-    pointTypesForData = null; // means "no filter" for data-points-all
-  } else {
-    // Make a copy so we can mutate safely
-    const sel = [...selected];
+        if (selected === null) {
+          // "Select all" checked → all point types, flow + temp all on
+          flowOn = true;
+          tempOn = true;
+          pointTypesForData = null; // means "no filter" for data-points-all
+        } else {
+          // Make a copy so we can mutate safely
+          const sel = [...selected];
 
-    flowOn = sel.includes(FLOW_KEY);
-    tempOn = sel.includes(TEMP_KEY);
+          flowOn = sel.includes(FLOW_KEY);
+          tempOn = sel.includes(TEMP_KEY);
 
-    // Remove the special ones so they don't get used as point_type values
-    const filteredSel = sel.filter(v => v !== FLOW_KEY && v !== TEMP_KEY);
+          // Remove the special ones so they don't get used as point_type values
+          const filteredSel = sel.filter(v => v !== FLOW_KEY && v !== TEMP_KEY);
 
-    if (filteredSel.length === 0) {
-      pointTypesForData = [];   // means "hide all normal points"
-    } else {
-      pointTypesForData = filteredSel;
-    }
-  }
+          if (filteredSel.length === 0) {
+            pointTypesForData = [];   // means "hide all normal points"
+          } else {
+            pointTypesForData = filteredSel;
+          }
+        }
 
-  // --- 2) Apply filter to normal point layer (data-points-all) ---
-  let expr = true;
-  if (pointTypesForData === null) {
-    expr = true; // all
-  } else if (pointTypesForData.length === 0) {
-    expr = ['==', ['get', PROPS.points.type], '__NONE__']; // hide all
-  } else {
-    expr = ['in', ['get', PROPS.points.type], ['literal', pointTypesForData]];
-  }
+        // --- 2) Apply filter to normal point layer (data-points-all) ---
+        let expr = true;
+        if (pointTypesForData === null) {
+          expr = true; // all
+        } else if (pointTypesForData.length === 0) {
+          expr = ['==', ['get', PROPS.points.type], '__NONE__']; // hide all
+        } else {
+          expr = ['in', ['get', PROPS.points.type], ['literal', pointTypesForData]];
+        }
 
-  if (map.getLayer('data-points-all')) {
-    safeSetFilter('data-points-all', expr);
-  }
+        if (map.getLayer('data-points-all')) {
+          safeSetFilter('data-points-all', expr);
+        }
 
-  // --- 3) Toggle visibility of flow / temp layers ---
-  const visFlow = flowOn ? 'visible' : 'none';
-  const visTemp = tempOn ? 'visible' : 'none';
+        // --- 3) Toggle visibility of flow / temp layers ---
+        const visFlow = flowOn ? 'visible' : 'none';
+        const visTemp = tempOn ? 'visible' : 'none';
 
-  // Flow layers
-  ['flow-flow-icons'].forEach(id => {
-    if (map.getLayer(id)) {
-      map.setLayoutProperty(id, 'visibility', visFlow);
-    }
-  });
+        // Flow layers
+        ['flow-flow-icons'].forEach(id => {
+          if (map.getLayer(id)) {
+            map.setLayoutProperty(id, 'visibility', visFlow);
+          }
+        });
 
-  // Temp layers
-  ['flow-wt-icons'].forEach(id => {
-    if (map.getLayer(id)) {
-      map.setLayoutProperty(id, 'visibility', visTemp);
-    }
-  });
-}
+        // Temp layers
+        ['flow-wt-icons'].forEach(id => {
+          if (map.getLayer(id)) {
+            map.setLayoutProperty(id, 'visibility', visTemp);
+          }
+        });
+      }
 
       let filterTimer = null;
       function scheduleApply(fn) {
@@ -1251,103 +1251,103 @@
     };
 
     // ===== NEW: Flow (and WT) side-panel card =====
-    
-// helper (define once, globally)
+
+    // helper (define once, globally)
 
 
 
-function showFlowCard(feature) {
-  const props = feature.properties || {};
+    function showFlowCard(feature) {
+      const props = feature.properties || {};
 
-  const site = props.site_name;
-  const station_name = props.station_name;
-  const param = props.parameter || 'Value';   // "Flow" or "Temperature"
-  const rawVal = props.latest_value;
-  const whenRaw = props.latest_datetime;
-  const unitProp = props.unit;
+      const site = props.site_name;
+      const station_name = props.station_name;
+      const param = props.parameter || 'Value';   // "Flow" or "Temperature"
+      const rawVal = props.latest_value;
+      const whenRaw = props.latest_datetime;
+      const unitProp = props.unit;
 
-  // optional links
-  const sourceURL = props.source_url || null;
+      // optional links
+      const sourceURL = props.source_url || null;
 
-  // graph image URL (Genesis GIF etc)
-  const graphURL = !isBlankish(props.graph) ? String(props.graph) : null;
-  // escape single quotes for inline onclick attribute
-  const graphURLEsc = graphURL ? graphURL.replace(/'/g, "\\'") : null;
+      // graph image URL (Genesis GIF etc)
+      const graphURL = !isBlankish(props.graph) ? String(props.graph) : null;
+      // escape single quotes for inline onclick attribute
+      const graphURLEsc = graphURL ? graphURL.replace(/'/g, "\\'") : null;
 
-  // default hero image (Flow vs Temperature)
-  const defaultImage = flowTypeDefaultImages[param] || null;
-  window.__cardPhotos = defaultImage ? [defaultImage] : [];
-  window.__cardPhotoIndex = 0;
+      // default hero image (Flow vs Temperature)
+      const defaultImage = flowTypeDefaultImages[param] || null;
+      window.__cardPhotos = defaultImage ? [defaultImage] : [];
+      window.__cardPhotoIndex = 0;
 
-  const unit = unitProp ||
-    (param === 'Flow' ? 'm³/s' :
-     param === 'Temperature' ? '°C' : '');
+      const unit = unitProp ||
+        (param === 'Flow' ? 'm³/s' :
+          param === 'Temperature' ? '°C' : '');
 
-  const numVal = (typeof rawVal === 'number')
-    ? rawVal
-    : (rawVal !== null && rawVal !== undefined && rawVal !== ''
-      ? Number(rawVal)
-      : NaN);
+      const numVal = (typeof rawVal === 'number')
+        ? rawVal
+        : (rawVal !== null && rawVal !== undefined && rawVal !== ''
+          ? Number(rawVal)
+          : NaN);
 
-  const isNumeric = Number.isFinite(numVal);
-  const valFormatted = isNumeric ? numVal.toFixed(1) : (rawVal ?? 'NA');
+      const isNumeric = Number.isFinite(numVal);
+      const valFormatted = isNumeric ? numVal.toFixed(1) : (rawVal ?? 'NA');
 
-  let summaryText = 'Latest value not available';
-  if (whenRaw) {
-    try {
-      const d = new Date(whenRaw);
+      let summaryText = 'Latest value not available';
+      if (whenRaw) {
+        try {
+          const d = new Date(whenRaw);
 
-      const timeText = d.toLocaleString("en-NZ", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-        timeZone: "Pacific/Auckland"
-      }).replace(":00", "").toLowerCase();
+          const timeText = d.toLocaleString("en-NZ", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+            timeZone: "Pacific/Auckland"
+          }).replace(":00", "").toLowerCase();
 
-      const dateText = d.toLocaleDateString("en-NZ", {
-        day: "numeric",
-        month: "short",
-        timeZone: "Pacific/Auckland"
-      });
+          const dateText = d.toLocaleDateString("en-NZ", {
+            day: "numeric",
+            month: "short",
+            timeZone: "Pacific/Auckland"
+          });
 
-      summaryText = `${param} is ${valFormatted} ${unit || ''} as of ${timeText} ${dateText}`;
-    } catch {
-      summaryText = `${param} is ${valFormatted} ${unit || ''} (time: ${whenRaw})`;
-    }
-  }
+          summaryText = `${param} is ${valFormatted} ${unit || ''} as of ${timeText} ${dateText}`;
+        } catch {
+          summaryText = `${param} is ${valFormatted} ${unit || ''} (time: ${whenRaw})`;
+        }
+      }
 
-  // parse time series (if present)
-  let times = [];
-  let values = [];
-  try {
-    if (props.times_json) times = JSON.parse(props.times_json);
-    if (props.values_json) values = JSON.parse(props.values_json);
-  } catch (err) {
-    console.error('Error parsing times_json / values_json', err);
-  }
+      // parse time series (if present)
+      let times = [];
+      let values = [];
+      try {
+        if (props.times_json) times = JSON.parse(props.times_json);
+        if (props.values_json) values = JSON.parse(props.values_json);
+      } catch (err) {
+        console.error('Error parsing times_json / values_json', err);
+      }
 
-  // normalise lengths
-  if (times.length !== values.length) {
-    const n = Math.min(times.length, values.length);
-    times = times.slice(0, n);
-    values = values.slice(0, n);
-  }
+      // normalise lengths
+      if (times.length !== values.length) {
+        const n = Math.min(times.length, values.length);
+        times = times.slice(0, n);
+        values = values.slice(0, n);
+      }
 
-  // IMPORTANT: treat empty strings as "no timeseries"
-  const hasTimeseries = Array.isArray(times) && Array.isArray(values) && times.length >= 2;
+      // IMPORTANT: treat empty strings as "no timeseries"
+      const hasTimeseries = Array.isArray(times) && Array.isArray(values) && times.length >= 2;
 
-  const lineColor = param === 'Flow' ? '#3498db' : '#e67e22';
+      const lineColor = param === 'Flow' ? '#3498db' : '#e67e22';
 
-  // chart area: canvas OR embedded graph image OR message
-  const chartBlock = hasTimeseries
-    ? `
+      // chart area: canvas OR embedded graph image OR message
+      const chartBlock = hasTimeseries
+        ? `
       <h4 style="margin-top:10px; margin-bottom:4px;">Recent time series</h4>
       <div style="width:100%; max-width:360px; height:210px;">
         <canvas id="flowDevChartCanvas" width="360" height="210"></canvas>
       </div>
     `
-    : graphURL
-  ? `
+        : graphURL
+          ? `
     <h4 style="margin-top:10px; margin-bottom:4px;">Recent time series</h4>
     <a
       href="${sourceURL}"
@@ -1371,14 +1371,14 @@ function showFlowCard(feature) {
     </a>
   
   `
-      : `
+          : `
         <h4 style="margin-top:10px; margin-bottom:4px;">Recent time series</h4>
         <div style="font-size:12px; color:#666;">
           No recent time-series data available for this site.
         </div>
       `;
 
-  const cardHtml = `
+      const cardHtml = `
     <div class="map-overlay-inner">
       <button class="close-button" onclick="closeCard()">&times;</button>
       <div class="panel-scroll">
@@ -1409,130 +1409,130 @@ function showFlowCard(feature) {
     </div>
   `;
 
-  card.innerHTML = cardHtml;
-  openPanel('card');
+      card.innerHTML = cardHtml;
+      openPanel('card');
 
-  // if no timeseries, we’re done (graph is embedded or message shown)
-  if (!hasTimeseries) return;
+      // if no timeseries, we’re done (graph is embedded or message shown)
+      if (!hasTimeseries) return;
 
-  const canvas = document.getElementById('flowDevChartCanvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
+      const canvas = document.getElementById('flowDevChartCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
 
-  if (canvas._chartInstance) canvas._chartInstance.destroy();
+      if (canvas._chartInstance) canvas._chartInstance.destroy();
 
-  const timeObjs = times.map(t => new Date(t));
+      const timeObjs = times.map(t => new Date(t));
 
-  // Temperature-only threshold plugin
-  const tempThresholdPlugin = {
-    id: 'tempThreshold',
-    afterDraw(chart) {
-      if (param !== 'Temperature') return;
+      // Temperature-only threshold plugin
+      const tempThresholdPlugin = {
+        id: 'tempThreshold',
+        afterDraw(chart) {
+          if (param !== 'Temperature') return;
 
-      const { ctx, chartArea, scales } = chart;
-      const yScale = scales.y;
-      if (!yScale) return;
+          const { ctx, chartArea, scales } = chart;
+          const yScale = scales.y;
+          if (!yScale) return;
 
-      const threshold = 20;
-      const yPixel = yScale.getPixelForValue(threshold);
-      if (yPixel < chartArea.top || yPixel > chartArea.bottom) return;
+          const threshold = 20;
+          const yPixel = yScale.getPixelForValue(threshold);
+          if (yPixel < chartArea.top || yPixel > chartArea.bottom) return;
 
-      ctx.save();
+          ctx.save();
 
-      const { left, right, top } = chartArea;
-      const width = right - left;
+          const { left, right, top } = chartArea;
+          const width = right - left;
 
-      ctx.fillStyle = 'rgba(220, 53, 69, 0.08)';
-      ctx.fillRect(left, top, width, yPixel - top);
+          ctx.fillStyle = 'rgba(220, 53, 69, 0.08)';
+          ctx.fillRect(left, top, width, yPixel - top);
 
-      ctx.strokeStyle = 'rgba(220, 53, 69, 0.9)';
-      ctx.lineWidth = 1;
-      ctx.setLineDash([4, 3]);
-      ctx.beginPath();
-      ctx.moveTo(left, yPixel);
-      ctx.lineTo(right, yPixel);
-      ctx.stroke();
-      ctx.setLineDash([]);
+          ctx.strokeStyle = 'rgba(220, 53, 69, 0.9)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([4, 3]);
+          ctx.beginPath();
+          ctx.moveTo(left, yPixel);
+          ctx.lineTo(right, yPixel);
+          ctx.stroke();
+          ctx.setLineDash([]);
 
-      const text =
-        'Trout released above 20°C have much lower survival – consider fishing another time';
-      ctx.fillStyle = 'rgba(139, 0, 0, 0.95)';
-      ctx.font = '10px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'top';
+          const text =
+            'Trout released above 20°C have much lower survival – consider fishing another time';
+          ctx.fillStyle = 'rgba(139, 0, 0, 0.95)';
+          ctx.font = '10px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'top';
 
-      ctx.fillText(text, (left + right) / 2, top + 4, width - 10);
+          ctx.fillText(text, (left + right) / 2, top + 4, width - 10);
 
-      ctx.restore();
-    }
-  };
-
-  const plugins = [];
-  if (param === 'Temperature') plugins.push(tempThresholdPlugin);
-
-  canvas._chartInstance = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: timeObjs,
-      datasets: [{
-        label: `${param} (${unit || ''})`,
-        data: values,
-        borderColor: lineColor,
-        backgroundColor: lineColor,
-        tension: 0.2,
-        pointRadius: 0,
-        borderWidth: 1.5
-      }]
-    },
-    options: {
-      responsive: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          mode: 'index',
-          intersect: false,
-          displayColors: false,
-          callbacks: {
-            label: (ctx) => {
-              const d = new Date(ctx.parsed.x);
-              const v = ctx.parsed.y;
-
-              const timeText = d.toLocaleString("en-NZ", {
-                timeZone: "Pacific/Auckland",
-                hour: "numeric",
-                hour12: true
-              }).replace(":00", "").toLowerCase();
-
-              const dateText = d.toLocaleDateString("en-NZ", {
-                timeZone: "Pacific/Auckland",
-                day: "numeric",
-                month: "short"
-              });
-
-              const valueText = Number.isFinite(v) ? v.toFixed(1) : 'NA';
-              return `${valueText} ${unit || ''} at ${timeText} ${dateText}`;
-            },
-            title: () => ''
-          }
+          ctx.restore();
         }
-      },
-      scales: {
-        x: {
-          type: 'time',
-          time: { unit: 'day', stepSize: 1, displayFormats: { day: 'd MMM' } },
-          ticks: { maxRotation: 45 }
+      };
+
+      const plugins = [];
+      if (param === 'Temperature') plugins.push(tempThresholdPlugin);
+
+      canvas._chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: timeObjs,
+          datasets: [{
+            label: `${param} (${unit || ''})`,
+            data: values,
+            borderColor: lineColor,
+            backgroundColor: lineColor,
+            tension: 0.2,
+            pointRadius: 0,
+            borderWidth: 1.5
+          }]
         },
-        y: {
-          title: { display: true, text: `${param} (${unit || ''})`, font: { size: 11 } },
-          ticks: { maxTicksLimit: 5 }
-        }
-      },
-      elements: { line: { stepped: false } }
-    },
-    plugins
-  });
-}
+        options: {
+          responsive: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              displayColors: false,
+              callbacks: {
+                label: (ctx) => {
+                  const d = new Date(ctx.parsed.x);
+                  const v = ctx.parsed.y;
+
+                  const timeText = d.toLocaleString("en-NZ", {
+                    timeZone: "Pacific/Auckland",
+                    hour: "numeric",
+                    hour12: true
+                  }).replace(":00", "").toLowerCase();
+
+                  const dateText = d.toLocaleDateString("en-NZ", {
+                    timeZone: "Pacific/Auckland",
+                    day: "numeric",
+                    month: "short"
+                  });
+
+                  const valueText = Number.isFinite(v) ? v.toFixed(1) : 'NA';
+                  return `${valueText} ${unit || ''} at ${timeText} ${dateText}`;
+                },
+                title: () => ''
+              }
+            }
+          },
+          scales: {
+            x: {
+              type: 'time',
+              time: { unit: 'day', stepSize: 1, displayFormats: { day: 'd MMM' } },
+              ticks: { maxRotation: 45 }
+            },
+            y: {
+              title: { display: true, text: `${param} (${unit || ''})`, font: { size: 11 } },
+              ticks: { maxTicksLimit: 5 }
+            }
+          },
+          elements: { line: { stepped: false } }
+        },
+        plugins
+      });
+    }
 
     // ===== Existing showCard for waterways/points (unchanged) =====
     const showCard = (feature) => {
@@ -2003,44 +2003,44 @@ function showFlowCard(feature) {
     const accessBannerEl = document.getElementById('public-access-banner');
 
     // Mobile UI = touch device 
-    let isMobileUI = isTouch ;
+    let isMobileUI = isTouch;
     console.log('isTouch:', isTouch, 'isMobileUI:', isMobileUI, 'width:', window.innerWidth);
 
     window.addEventListener('resize', () => {
-      isMobileUI = isTouch ;
+      isMobileUI = isTouch;
       updateCenterPublicAccess();
     });
 
 
     function updateCenterPublicAccess() {
-  if (!isMobileUI) {
-    crosshairEl.style.display = 'none';
-    accessBannerEl.style.display = 'none';
-    return;
-  }
+      if (!isMobileUI) {
+        crosshairEl.style.display = 'none';
+        accessBannerEl.style.display = 'none';
+        return;
+      }
 
-  if (map.getZoom() < 12) {
-    crosshairEl.style.display = 'none';
-    accessBannerEl.style.display = 'none';
-    return;
-  }
+      if (map.getZoom() < 12) {
+        crosshairEl.style.display = 'none';
+        accessBannerEl.style.display = 'none';
+        return;
+      }
 
-  crosshairEl.style.display = 'block';
+      crosshairEl.style.display = 'block';
 
-  const point = map.project(map.getCenter());
-  const features = map.queryRenderedFeatures(point, {
-    layers: ['PublicAccessAreas-fill']
-  });
+      const point = map.project(map.getCenter());
+      const features = map.queryRenderedFeatures(point, {
+        layers: ['PublicAccessAreas-fill']
+      });
 
-  if (!features.length) {
-    accessBannerEl.style.display = 'none';
-    return;
-  }
+      if (!features.length) {
+        accessBannerEl.style.display = 'none';
+        return;
+      }
 
-  const type = features[0]?.properties?.DataType || 'Public Access';
-  accessBannerEl.textContent = type;
-  accessBannerEl.style.display = 'block';
-}
+      const type = features[0]?.properties?.DataType || 'Public Access';
+      accessBannerEl.textContent = type;
+      accessBannerEl.style.display = 'block';
+    }
 
 
     map.on('move', updateCenterPublicAccess);
@@ -2048,125 +2048,123 @@ function showFlowCard(feature) {
     map.on('load', updateCenterPublicAccess);
 
     map.on('move', scheduleCrosshairHover);
-map.on('moveend', updateCrosshairHover);
-map.on('load', updateCrosshairHover);
+    map.on('moveend', updateCrosshairHover);
+    map.on('load', updateCrosshairHover);
 
 
     // ===============================
-// Crosshair hover (TOUCH ONLY)
-// ===============================
-let crosshairRAF = false;
+    // Crosshair hover (TOUCH ONLY)
+    // ===============================
+    let crosshairRAF = false;
 
-function scheduleCrosshairHover() {
-  if (!isTouch || crosshairRAF) return;
-  crosshairRAF = true;
-  requestAnimationFrame(() => {
-    crosshairRAF = false;
-    updateCrosshairHover();
-  });
-}
+    function scheduleCrosshairHover() {
+      if (!isTouch || crosshairRAF) return;
+      crosshairRAF = true;
+      requestAnimationFrame(() => {
+        crosshairRAF = false;
+        updateCrosshairHover();
+      });
+    }
 
-// Small wrappers so we reuse your existing hover systems
-function hoverFlowFeature(f) {
-  if (!f || typeof f.id === 'undefined') return;
-  setFlowHover(f.id);                 // uses your existing function
-}
+    // Small wrappers so we reuse your existing hover systems
+    function hoverFlowFeature(f) {
+      if (!f || typeof f.id === 'undefined') return;
+      setFlowHover(f.id);                 // uses your existing function
+    }
 
-function clearFlowHover() {
-  setFlowHover(null);
-}
+    function clearFlowHover() {
+      setFlowHover(null);
+    }
 
-function hoverPointFeature(f) {
-  if (!f || typeof f.id === 'undefined') return;
-  const id = f.id;
-  if (id !== hoverFeatureId && id !== selectedFeatureId) {
-    hoverFeatureId = id;
-    requestAnimationFrame(updateIconSize);
-  }
-}
+    function hoverPointFeature(f) {
+      if (!f || typeof f.id === 'undefined') return;
+      const id = f.id;
+      if (id !== hoverFeatureId && id !== selectedFeatureId) {
+        hoverFeatureId = id;
+        requestAnimationFrame(updateIconSize);
+      }
+    }
 
-function clearPointHover() {
-  if (hoverFeatureId !== null) {
-    hoverFeatureId = null;
-    requestAnimationFrame(updateIconSize);
-  }
-}
+    function clearPointHover() {
+      if (hoverFeatureId !== null) {
+        hoverFeatureId = null;
+        requestAnimationFrame(updateIconSize);
+      }
+    }
 
-// You already have setRiverHover(...) later in the file.
-// We'll call it if it exists.
-function hoverRiverFeature(f) {
-  if (!f || typeof f.id === 'undefined') return;
-  if (typeof setRiverHover === 'function') setRiverHover(f.id);
-}
-function clearRiverHover() {
-  if (typeof setRiverHover === 'function') setRiverHover(null);
-}
+    // You already have setRiverHover(...) later in the file.
+    // We'll call it if it exists.
+    function hoverRiverFeature(f) {
+      if (!f || typeof f.id === 'undefined') return;
+      if (typeof setRiverHover === 'function') setRiverHover(f.id);
+    }
+    function clearRiverHover() {
+      if (typeof setRiverHover === 'function') setRiverHover(null);
+    }
 
-function clearAllCrosshairHover() {
-  clearPointHover();
-  clearRiverHover();
-  clearFlowHover();
-}
+    function clearAllCrosshairHover() {
+      clearPointHover();
+      clearRiverHover();
+      clearFlowHover();
+    }
 
-function queryAtCrosshair(layers, radius = 1) {
-  const center = map.project(map.getCenter());
-  return map.queryRenderedFeatures(
-    [
-      { x: center.x - radius, y: center.y - radius },
-      { x: center.x + radius, y: center.y + radius }
-    ],
-    { layers }
-  );
-}
+    function queryAtCrosshair(layers, radius = 1) {
+      const center = map.project(map.getCenter());
+      return map.queryRenderedFeatures(
+        [
+          { x: center.x - radius, y: center.y - radius },
+          { x: center.x + radius, y: center.y + radius }
+        ],
+        { layers }
+      );
+    }
 
-function updateCrosshairHover() {
-  if (!isTouch) return;
+    function updateCrosshairHover() {
+      if (!isTouch) return;
 
-  // You asked: don't run unless zoomed in enough
-  if (map.getZoom() < 12) {
-    clearAllCrosshairHover();
-    return;
-  }
+      // You asked: don't run unless zoomed in enough
+      if (map.getZoom() < 12) {
+        clearAllCrosshairHover();
+        return;
+      }
 
-  // Avoid “hover jitter” when something is selected
-  if (selectedFeatureId || selectedRiverId || selectedFlowId) return;
+      // Avoid “hover jitter” when something is selected
+      if (selectedFeatureId || selectedRiverId || selectedFlowId) return;
 
-  const vis = (id) =>
-    map.getLayer(id) && map.getLayoutProperty(id, 'visibility') !== 'none';
+      const vis = (id) =>
+        map.getLayer(id) && map.getLayoutProperty(id, 'visibility') !== 'none';
 
-  const layers = [];
+      const layers = [];
 
-  // Prefer flow + points first
-  if (vis('flow-flow-icons')) layers.push('flow-flow-icons');
-  if (vis('flow-wt-icons')) layers.push('flow-wt-icons');
-  if (vis('data-points-all')) layers.push('data-points-all');
+      // Prefer flow + points first
+      if (vis('flow-flow-icons')) layers.push('flow-flow-icons');
+      if (vis('flow-wt-icons')) layers.push('flow-wt-icons');
+      if (vis('data-points-all')) layers.push('data-points-all');
 
-  // Prefer fat invisible touch layer when present
-  if (vis('Waterways-touch')) {
-    layers.push('Waterways-touch');
-  } else {
-    if (vis('Waterways-line')) layers.push('Waterways-line');
-    if (vis('Waterways-fill')) layers.push('Waterways-fill');
-  }
+      // Prefer fat invisible touch layer when present
+      if (vis('Waterways-fill')) layers.push('Waterways-fill');
+      if (vis('Waterways-line')) layers.push('Waterways-line');
 
-  if (!layers.length) {
-    clearAllCrosshairHover();
-    return;
-  }
+      if (!layers.length) {
+        clearAllCrosshairHover();
+        return;
+      }
 
-  const hits = queryAtCrosshair(layers);
+      const hits = queryAtCrosshair(layers);
 
-  // Priority order (feel free to swap):
-  const flow = hits.find(f => f.layer.id === 'flow-flow-icons' || f.layer.id === 'flow-wt-icons');
-  const point = hits.find(f => f.layer.id === 'data-points-all');
-  const river = hits.find(f => f.layer.id.startsWith('Waterways'));
+      // Priority order (feel free to swap):
+      const flow = hits.find(f => f.layer.id === 'flow-flow-icons' || f.layer.id === 'flow-wt-icons');
+      const point = hits.find(f => f.layer.id === 'data-points-all');
+      const river =
+        hits.find(f => f.layer.id === 'Waterways-fill') ||
+        hits.find(f => f.layer.id === 'Waterways-line');
 
-  if (flow)  { hoverFlowFeature(flow);  clearPointHover(); clearRiverHover(); return; }
-  if (point) { hoverPointFeature(point); clearFlowHover(); clearRiverHover(); return; }
-  if (river) { hoverRiverFeature(river); clearFlowHover(); clearPointHover(); return; }
+      if (flow) { hoverFlowFeature(flow); clearPointHover(); clearRiverHover(); return; }
+      if (point) { hoverPointFeature(point); clearFlowHover(); clearRiverHover(); return; }
+      if (river) { hoverRiverFeature(river); clearFlowHover(); clearPointHover(); return; }
 
-  clearAllCrosshairHover();
-}
+      clearAllCrosshairHover();
+    }
 
 
     function updateLayerFilter() {
@@ -2301,10 +2299,10 @@ function updateCrosshairHover() {
     const URL_POINTS_GEOJSON = `${GEOJSON_BASE}/${POINTS_FILE}`;
     const URL_SEARCH_INDEX = `${GEOJSON_BASE}/${SEARCH_FILE}`;
 
-          
-const FLOW_DEV_URL  = `${GEOJSON_BASE}/flow_combined_dev.geojson?token=fish-access-2025`;
-const FLOW_PROD_URL = `${GEOJSON_BASE}/flow_combined.geojson?token=fish-access-2025`;
-const FLOW_URL = isDev ? FLOW_DEV_URL : FLOW_PROD_URL;
+
+    const FLOW_DEV_URL = `${GEOJSON_BASE}/flow_combined_dev.geojson?token=fish-access-2025`;
+    const FLOW_PROD_URL = `${GEOJSON_BASE}/flow_combined.geojson?token=fish-access-2025`;
+    const FLOW_URL = isDev ? FLOW_DEV_URL : FLOW_PROD_URL;
 
     fetch(URL_SEARCH_INDEX)
       .then(res => res.json()).then(d => { allFeatures = d.features; })
@@ -2508,10 +2506,17 @@ const FLOW_URL = isDev ? FLOW_DEV_URL : FLOW_PROD_URL;
           type: 'line',
           source: 'Waterways',
           'source-layer': 'waterways',
-          minzoom: 7,
+          minzoom: 9,
           layout: { 'line-join': 'round', 'line-cap': 'round' },
           paint: {
-            'line-width': 10,
+            'line-width': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              7, 30,   // ≈ 10 * 3
+              14, 42,   // ≈ 14 * 3
+              18, 54    // ≈ 18 * 3
+            ],
             'line-opacity': 0,
             'line-color': '#000000'
           }
@@ -2587,60 +2592,60 @@ const FLOW_URL = isDev ? FLOW_DEV_URL : FLOW_PROD_URL;
 
       // ---- DEV: flow source + layers ----
 
-if (!map.getSource("flow")) {
-  map.addSource("flow", {
-    type: "geojson",
-    data: FLOW_URL,
-    generateId: true
-  });
-}
+      if (!map.getSource("flow")) {
+        map.addSource("flow", {
+          type: "geojson",
+          data: FLOW_URL,
+          generateId: true
+        });
+      }
 
-        // NEW: icon layers for flow + temperature
-        if (!map.getLayer('flow-flow-icons')) {
-          map.addLayer({
-            id: 'flow-flow-icons',
-            type: 'symbol',
-            source: 'flow',
-            minzoom: 7,
-            filter: ['==', ['get', 'parameter'], 'Flow'],
-            layout: {
-              'icon-image': 'Flow-icon',
-              'icon-size': getIconSizeExpr(selectedFlowId, flowHoverId),
-              'icon-anchor': 'center',
-              'icon-allow-overlap': true, 
-              'icon-anchor': 'bottom',
-              'icon-offset': [
-                'interpolate', ['linear'], ['zoom'],
-                6, ['literal', [-50, 0]],   // small left shift
-                11, ['literal', [-60, 0]]
-              ]
-            }
-          }, insertBeforeLayer);
-        }
+      // NEW: icon layers for flow + temperature
+      if (!map.getLayer('flow-flow-icons')) {
+        map.addLayer({
+          id: 'flow-flow-icons',
+          type: 'symbol',
+          source: 'flow',
+          minzoom: 7,
+          filter: ['==', ['get', 'parameter'], 'Flow'],
+          layout: {
+            'icon-image': 'Flow-icon',
+            'icon-size': getIconSizeExpr(selectedFlowId, flowHoverId),
+            'icon-anchor': 'center',
+            'icon-allow-overlap': true,
+            'icon-anchor': 'bottom',
+            'icon-offset': [
+              'interpolate', ['linear'], ['zoom'],
+              6, ['literal', [-50, 0]],   // small left shift
+              11, ['literal', [-60, 0]]
+            ]
+          }
+        }, insertBeforeLayer);
+      }
 
-        if (!map.getLayer('flow-wt-icons')) {
-          map.addLayer({
-            id: 'flow-wt-icons',
-            type: 'symbol',
-            source: 'flow',
-            minzoom: 7,
-            filter: ['==', ['get', 'parameter'], 'Temperature'],
-            layout: {
-              'icon-image': 'Temp-icon',
-              'icon-size': getIconSizeExpr(selectedFlowId, flowHoverId),
-              'icon-anchor': 'center',
-              'icon-allow-overlap': true,
-              'icon-anchor': 'bottom',
-              'icon-offset': [
-                'interpolate', ['linear'], ['zoom'],
-                6, ['literal', [50, 0]],    // small right shift
-                11, ['literal', [60, 0]]
-              ]
-            }
-          }, insertBeforeLayer);
-        }
+      if (!map.getLayer('flow-wt-icons')) {
+        map.addLayer({
+          id: 'flow-wt-icons',
+          type: 'symbol',
+          source: 'flow',
+          minzoom: 7,
+          filter: ['==', ['get', 'parameter'], 'Temperature'],
+          layout: {
+            'icon-image': 'Temp-icon',
+            'icon-size': getIconSizeExpr(selectedFlowId, flowHoverId),
+            'icon-anchor': 'center',
+            'icon-allow-overlap': true,
+            'icon-anchor': 'bottom',
+            'icon-offset': [
+              'interpolate', ['linear'], ['zoom'],
+              6, ['literal', [50, 0]],    // small right shift
+              11, ['literal', [60, 0]]
+            ]
+          }
+        }, insertBeforeLayer);
+      }
 
-      
+
 
       if (!sources['data-points']) {
         map.addSource('data-points', {
@@ -2707,8 +2712,8 @@ if (!map.getSource("flow")) {
         });
       }
     }
-      if (window.setupAWFilters) window.setupAWFilters(map);
-    
+    if (window.setupAWFilters) window.setupAWFilters(map);
+
 
     // ===== NEW: flow click → side panel (no popup) =====
 
@@ -2786,21 +2791,21 @@ if (!map.getSource("flow")) {
       updateIconSize();
     });
 
-   map.on('click', (e) => {
-  const riverTapLayers = isTouch
-    ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
-    : ['Waterways-line', 'Waterways-fill'];
+    map.on('click', (e) => {
+      const riverTapLayers = isTouch
+        ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
+        : ['Waterways-line', 'Waterways-fill'];
 
-  const layersToQuery = ['data-points-all', ...riverTapLayers];
+      const layersToQuery = ['data-points-all', ...riverTapLayers];
 
-  // Include flow/temp layers in BOTH dev + prod, but only if they exist
-  ['flow-flow-icons', 'flow-wt-icons'].forEach(id => {
-    if (map.getLayer(id)) layersToQuery.push(id);
-  });
+      // Include flow/temp layers in BOTH dev + prod, but only if they exist
+      ['flow-flow-icons', 'flow-wt-icons'].forEach(id => {
+        if (map.getLayer(id)) layersToQuery.push(id);
+      });
 
-  const features = map.queryRenderedFeatures(e.point, {
-    layers: layersToQuery
-  });
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: layersToQuery
+      });
 
       // Nothing under the cursor → clear everything
       if (!features.length) {
@@ -2819,9 +2824,15 @@ if (!map.getSource("flow")) {
       const pointFeature = features.find(f => f.layer.id === 'data-points-all');
 
       // Rivers
-      const riverFeature =
+      const riverHit =
         features.find(f => f.layer.id === 'Waterways-line') ||
-        features.find(f => f.layer.id === 'Waterways-fill');
+        features.find(f => f.layer.id === 'Waterways-fill') ||
+        (isTouch ? features.find(f => f.layer.id === 'Waterways-touch') : null);
+
+      // If we only hit the touch buffer, "pretend" it's a Waterways-line feature
+      const riverFeature = (riverHit && riverHit.layer.id === 'Waterways-touch')
+        ? { ...riverHit, layer: { ...riverHit.layer, id: 'Waterways-line' } }
+        : riverHit;
 
       if (flowFeature) {
         // Clear any previous selection (points, rivers, other flow)
