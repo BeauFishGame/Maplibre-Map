@@ -2096,7 +2096,8 @@ function clearAllHover() {
 
 function updateCrosshairHover() {
   if (!isTouch) return;
-  if (map.getZoom() < 7) {
+  if (map.getZoom() < 12) return; 
+  if (map.getZoom() < 12) {
     clearAllHover();
     return;
   }
