@@ -2019,7 +2019,7 @@
         return;
       }
 
-      if (map.getZoom() < 12) {
+      if (map.getZoom() < 7) {
         crosshairEl.style.display = 'none';
         accessBannerEl.style.display = 'none';
         return;
@@ -2123,7 +2123,7 @@
       if (!isTouch) return;
 
       // You asked: don't run unless zoomed in enough
-      if (map.getZoom() < 12) {
+      if (map.getZoom() < 7) {
         clearAllCrosshairHover();
         return;
       }
