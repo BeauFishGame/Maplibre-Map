@@ -827,12 +827,12 @@
 #center-crosshair::after {
   content: "";
   position: absolute;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgb(255, 255, 255);
 }
 
 /* Vertical line */
 #center-crosshair::before {
-  width: 2px;
+  width: 1px;
   height: 100%;
   left: 50%;
   transform: translateX(-50%);
@@ -840,17 +840,13 @@
 
 /* Horizontal line */
 #center-crosshair::after {
-  height: 2px;
+  height: 1px;
   width: 100%;
   top: 50%;
   transform: translateY(-50%);
 }
 
-/* Optional: subtle drop-shadow */
-#center-crosshair::before,
-#center-crosshair::after {
-  box-shadow: 0 0 4px rgba(0,0,0,0.5);
-}
+
 
 /* Hide crosshair by default on large screens */
 @media (point: fine) {
