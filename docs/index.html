@@ -2046,19 +2046,18 @@ map.on('mouseleave', 'FG Regions-fill', () => {
       updateCenterPublicAccess();
     });
 
-
-function updateCenterPublicAccess() {
+function updateCenterPublicAccess(allowHide = true) {
   if (!isMobileUI) {
     crosshairEl.style.display = 'none';
-    accessBannerEl.style.display = 'none';
-    hideDocBanner();
+    if (allowHide) accessBannerEl.style.display = 'none';
+    if (allowHide) hideDocBanner();
     return;
   }
 
   if (map.getZoom() < 7) {
     crosshairEl.style.display = 'none';
-    accessBannerEl.style.display = 'none';
-    hideDocBanner();
+    if (allowHide) accessBannerEl.style.display = 'none';
+    if (allowHide) hideDocBanner();
     return;
   }
 
@@ -2066,17 +2065,17 @@ function updateCenterPublicAccess() {
 
   const point = map.project(map.getCenter());
 
-  // --- existing Public Access banner logic ---
+  // --- Public Access banner logic ---
   const accessFeatures = map.queryRenderedFeatures(point, { layers: ['PublicAccessAreas-fill'] });
   if (!accessFeatures.length) {
-    accessBannerEl.style.display = 'none';
+    if (allowHide) accessBannerEl.style.display = 'none'; // ✅ only hide when allowed
   } else {
     const type = accessFeatures[0]?.properties?.DataType || 'Public Access';
     accessBannerEl.textContent = type;
     accessBannerEl.style.display = 'block';
   }
 
-  // --- NEW: DOC banner (Region 13) ---
+  // --- DOC banner (Region 13) ---
   const regionFeatures = map.queryRenderedFeatures(point, { layers: ['FG Regions-fill'] });
   const props = regionFeatures[0]?.properties || {};
   const rc = Number(props.RegionCode ?? props.region_code ?? props.regioncode);
@@ -2085,15 +2084,67 @@ function updateCenterPublicAccess() {
     docBannerEl.textContent = 'The Taupō Fishing District is managed by DOC and requires a separate licence.';
     docBannerEl.style.display = 'block';
   } else {
-    hideDocBanner();
+    if (allowHide) hideDocBanner(); // ✅ only hide when allowed
   }
 }
 
 
+let lastMousePoint = null;
+let rafPending = false;
+
+function updateDocBannerAtMouse(point, allowHide = true) {
+  const regionFeatures = map.queryRenderedFeatures(point, { layers: ['FG Regions-fill'] });
+  const props = regionFeatures[0]?.properties || {};
+  const rc = Number(props.RegionCode ?? props.region_code ?? props.regioncode);
+
+  if (rc === 13) {
+    docBannerEl.textContent = 'The Taupō Fishing District is managed by DOC and requires a separate licence.';
+    docBannerEl.style.display = 'block';
+  } else if (allowHide) {
+    hideDocBanner();
+  }
+}
+
+map.on('load', () => {
+  if (isMobileUI) {
+    // MOBILE: center/crosshair banners
     map.on('move', updateCenterPublicAccess);
     map.on('moveend', updateCenterPublicAccess);
-    map.on('load', updateCenterPublicAccess);
+    updateCenterPublicAccess();
+  } else {
+    // DESKTOP: DOC banner follows mouse
+    map.on('mousemove', (e) => {
+      lastMousePoint = e.point;
 
+      if (rafPending) return;
+      rafPending = true;
+
+      requestAnimationFrame(() => {
+        rafPending = false;
+        if (lastMousePoint) updateDocBannerAtMouse(lastMousePoint, true);
+      });
+    });
+
+    map.getCanvas().addEventListener('mouseleave', () => {
+      hideDocBanner();
+      lastMousePoint = null;
+    });
+
+    // Optional: keep banner stable while dragging
+    map.on('drag', () => {
+      if (lastMousePoint) updateDocBannerAtMouse(lastMousePoint, false);
+    });
+
+    map.on('dragend', () => {
+      if (lastMousePoint) {
+        updateDocBannerAtMouse(lastMousePoint, false);
+        map.once('idle', () => {
+          if (lastMousePoint) updateDocBannerAtMouse(lastMousePoint, true);
+        });
+      }
+    });
+  }
+});
     map.on('move', scheduleCrosshairHover);
     map.on('moveend', updateCrosshairHover);
     map.on('load', updateCrosshairHover);
@@ -2595,7 +2646,7 @@ if (!map.getLayer('FG Regions-fill')) {
       'fill-opacity': [
         'case',
         ['==', ['get', 'RegionCode'], 13],
-        .35,               // shallow fill
+        0.15,               // shallow fill
         0                   // fully transparent for other regions
       ]
     }
