@@ -2047,42 +2047,47 @@ map.on('mouseleave', 'FG Regions-fill', () => {
     });
 
 
-    function updateCenterPublicAccess() {
-      if (!isMobileUI) {
-        crosshairEl.style.display = 'none';
-        accessBannerEl.style.display = 'none';
-        return;
-      }
+function updateCenterPublicAccess() {
+  if (!isMobileUI) {
+    crosshairEl.style.display = 'none';
+    accessBannerEl.style.display = 'none';
+    hideDocBanner();
+    return;
+  }
 
-      if (map.getZoom() < 7) {
-        crosshairEl.style.display = 'none';
-        accessBannerEl.style.display = 'none';
-        return;
-      }
+  if (map.getZoom() < 7) {
+    crosshairEl.style.display = 'none';
+    accessBannerEl.style.display = 'none';
+    hideDocBanner();
+    return;
+  }
 
-      crosshairEl.style.display = 'block';
+  crosshairEl.style.display = 'block';
 
-      function getCrosshairPointOnMap() {
-  const canvasRect = map.getCanvas().getBoundingClientRect();
-  const crossRect  = crosshairEl.getBoundingClientRect();
+  const point = map.project(map.getCenter());
 
-  return {
-    x: (crossRect.left + crossRect.width  / 2) - canvasRect.left,
-    y: (crossRect.top  + crossRect.height / 2) - canvasRect.top
-  };
+  // --- existing Public Access banner logic ---
+  const accessFeatures = map.queryRenderedFeatures(point, { layers: ['PublicAccessAreas-fill'] });
+  if (!accessFeatures.length) {
+    accessBannerEl.style.display = 'none';
+  } else {
+    const type = accessFeatures[0]?.properties?.DataType || 'Public Access';
+    accessBannerEl.textContent = type;
+    accessBannerEl.style.display = 'block';
+  }
+
+  // --- NEW: DOC banner (Region 13) ---
+  const regionFeatures = map.queryRenderedFeatures(point, { layers: ['FG Regions-fill'] });
+  const props = regionFeatures[0]?.properties || {};
+  const rc = Number(props.RegionCode ?? props.region_code ?? props.regioncode);
+
+  if (rc === 13) {
+    docBannerEl.textContent = 'The Taupō Fishing District is managed by DOC and requires a separate licence.';
+    docBannerEl.style.display = 'block';
+  } else {
+    hideDocBanner();
+  }
 }
-
-      const point = getCrosshairPointOnMap();
-const features = map.queryRenderedFeatures(point, { layers: ['PublicAccessAreas-fill'] });
-      if (!features.length) {
-        accessBannerEl.style.display = 'none';
-        return;
-      }
-
-      const type = features[0]?.properties?.DataType || 'Public Access';
-      accessBannerEl.textContent = type;
-      accessBannerEl.style.display = 'block';
-    }
 
 
     map.on('move', updateCenterPublicAccess);
