@@ -872,3 +872,19 @@
   white-space: nowrap;
 }
 
+#doc-banner{
+  position: fixed;
+  top: 80px;                 /* match public-access banner */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font: 600 12px system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: rgba(25, 64, 54,1);
+  color: #fff;
+  pointer-events: none;
+  max-width: 92vw;
+  text-align: center;
+}

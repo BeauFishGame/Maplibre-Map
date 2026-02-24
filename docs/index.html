@@ -31,6 +31,7 @@
   <div id="map"></div>
   <div id="center-crosshair"></div>
   <div id="public-access-banner"></div>
+  <div id="doc-banner"></div>
   <div id="top-bar">
     <a href="https://www.fishandgame.org.nz/" target="_blank">
       <img class="logo" src="images/White%20LS.png" alt="Logo">
@@ -2002,6 +2003,40 @@
     const crosshairEl = document.getElementById('center-crosshair');
     const accessBannerEl = document.getElementById('public-access-banner');
 
+
+    const docBannerEl = document.getElementById('doc-banner');
+
+function hideDocBanner() {
+  if (docBannerEl) docBannerEl.style.display = 'none';
+}
+
+function maybeShowDocBannerFromFeature(f) {
+  if (!docBannerEl) return;
+
+  const props = f?.properties || {};
+  const rc = (typeof getRegionCode === 'function')
+    ? getRegionCode(props)
+    : Number.parseInt(props.RegionCode ?? props.region_code ?? '', 10);
+
+  if (rc === 13) {
+    docBannerEl.textContent =
+      'The Taupō Fishing District is managed by DOC and requires a separate licence.';
+    docBannerEl.style.display = 'block';
+  } else {
+    hideDocBanner();
+  }
+}
+
+map.on('mousemove', 'FG Regions-fill', (e) => {
+  if (isTouch) return;
+  const f = e.features && e.features[0];
+  maybeShowDocBannerFromFeature(f);
+});
+
+map.on('mouseleave', 'FG Regions-fill', () => {
+  if (isTouch) return;
+  hideDocBanner();
+});
     // Mobile UI = touch device 
     let isMobileUI = isTouch;
     console.log('isTouch:', isTouch, 'isMobileUI:', isMobileUI, 'width:', window.innerWidth);
