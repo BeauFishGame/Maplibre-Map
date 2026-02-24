@@ -2027,11 +2027,18 @@
 
       crosshairEl.style.display = 'block';
 
-      const point = map.project(map.getCenter());
-      const features = map.queryRenderedFeatures(point, {
-        layers: ['PublicAccessAreas-fill']
-      });
+      function getCrosshairPointOnMap() {
+  const canvasRect = map.getCanvas().getBoundingClientRect();
+  const crossRect  = crosshairEl.getBoundingClientRect();
 
+  return {
+    x: (crossRect.left + crossRect.width  / 2) - canvasRect.left,
+    y: (crossRect.top  + crossRect.height / 2) - canvasRect.top
+  };
+}
+
+      const point = getCrosshairPointOnMap();
+const features = map.queryRenderedFeatures(point, { layers: ['PublicAccessAreas-fill'] });
       if (!features.length) {
         accessBannerEl.style.display = 'none';
         return;
@@ -2530,6 +2537,31 @@
           minzoom: 0, maxzoom: 10
         });
       }
+      
+if (!map.getLayer('FG Regions-fill')) {
+  map.addLayer({
+    id: 'FG Regions-fill',
+    type: 'fill',
+    source: 'FG Regions',
+    'source-layer': 'fg_regions',
+    layout: {},
+    paint: {
+      'fill-color': [
+        'case',
+        ['==', ['get', 'RegionCode'], 13],
+        '#355E3B',          // green for region_code 13
+        '#000000'           // fallback colour for all others (can be transparent)
+      ],
+      'fill-opacity': [
+        'case',
+        ['==', ['get', 'RegionCode'], 13],
+        .35,               // shallow fill
+        0                   // fully transparent for other regions
+      ]
+    }
+  }, insertBeforeLayer);
+}
+
 
       if (!map.getLayer('FG Regions-linebackground')) {
         map.addLayer({
@@ -2775,7 +2807,7 @@
 
       const props = feature.properties || {};
 
-      // 📊 Analytics Event — Track region + point selection
+      
       if (window.umami) {
         umami.track('access-point-select', {
           region_code: props.region || '',
