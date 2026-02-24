@@ -2753,23 +2753,26 @@ if (!map.getLayer('FG Regions-fill')) {
     map.on('mouseenter', 'FG Region Labels', () => { map.getCanvas().style.cursor = 'pointer'; });
     map.on('mouseleave', 'FG Region Labels', () => { map.getCanvas().style.cursor = ''; });
 
-    map.on('click', 'FG Region Labels', (e) => {
-      const f = e.features && e.features[0];
-      if (!f || !f.geometry || f.geometry.type !== 'Point') return;
+   map.on('click', 'FG Region Labels', (e) => {
+  const f = e.features && e.features[0];
+  if (!f || !f.geometry || f.geometry.type !== 'Point') return;
 
-      const [lng, lat] = f.geometry.coordinates;
+  const [lng, lat] = f.geometry.coordinates;
 
-      const leftPad = (window.activePanel === 'card' || window.activePanel === 'filters' || window.activePanel === 'basemaps')
-        ? 420 : 10;
+  const leftPad = (window.activePanel === 'card' || window.activePanel === 'filters' || window.activePanel === 'basemaps')
+    ? 420 : 10;
 
-      map.easeTo({
-        center: [lng, lat],
-        zoom: Math.max(map.getZoom(), 8),
-        duration: 800,
-        padding: { top: 80, right: 10, bottom: 10, left: leftPad }
-      });
-    });
+  const padding = isTouch
+    ? { top: 0, right: 0, bottom: 0, left: 0 }   // 👈 key change
+    : { top: 80, right: 10, bottom: 10, left: leftPad };
 
+  map.easeTo({
+    center: [lng, lat],
+    zoom: Math.max(map.getZoom(), 8),
+    duration: 800,
+    padding
+  });
+});
     const hoverPopup = document.createElement('div');
     hoverPopup.style.position = 'absolute';
     hoverPopup.style.pointerEvents = 'none';
