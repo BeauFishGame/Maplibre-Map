@@ -894,3 +894,103 @@
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
 }
+/* Container row */
+.waterway-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:10px 0 6px 0;
+}
+
+/* Badge base */
+.waterway-tag{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 10px;
+  border-radius:14px;
+  font-size:13px;
+  font-weight:600;
+  line-height:1;
+  border:1px solid rgba(0,0,0,0.12);
+  box-shadow:0 1px 1px rgba(0,0,0,0.05);
+  text-decoration:none;
+}
+
+.waterway-tag{
+  background: var(--bg, #f1f1f1);
+  border-color: var(--border, rgba(0,0,0,0.12));
+  color: var(--text, #333);
+}
+
+/* Only clickable tags get hover colour changes */
+.waterway-tag.clickable-tag:hover{
+  background: var(--bg-hover, var(--bg, #e9e9e9));
+  border-color: var(--border-hover, var(--border, rgba(0,0,0,0.18)));
+}
+.clickable-tag{
+  cursor:pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.clickable-tag:hover{
+  transform:translateY(-1px);
+}
+
+.static-tag{
+  pointer-events:none;
+  user-select:none;
+}
+/* Small lift on hover */
+.waterway-tag:hover{
+  transform: translateY(-1px);
+}
+
+.tag-designated{
+  --bg:#013d8b;
+  --border:#013374;
+  --text:#ffffff;
+  --bg-hover:#013374;
+}
+
+.tag-controlled{
+  --bg:#ed6429;
+  --border:#ed6429;
+  --text:#ffffff;
+  --bg-hover:#d5531e;
+}
+
+.tag-backcountry{
+  --bg:#5d6533;
+  --border:#5d6533;
+  --text:#ffffff;
+  --bg-hover:#5d6533;
+}
+
+.tag-searun{
+  --bg:#ff8172;
+  --border:#ff8172;
+  --text:#ffffff;
+  --bg-hover:#e76c5e;
+}
+
+
+.tag-coarse{
+  --bg:#ff9913;
+  --border:#ff9913;
+  --text:#ffffff;
+  --bg-hover:#fd8f00;
+}
+
+.tag-junior{
+  --bg:#66b8ff;
+  --border:#66b8ff;
+  --text:#1d6fb5;
+  --bg-hover:#cfeaff;
+}
+
+.tag-stocked{
+  --bg:#8a8a8a;
+  --border:#8a8a8a;
+  --text:#ffffff;
+  --bg-hover:#8a8a8a;
+}

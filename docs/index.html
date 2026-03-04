@@ -1206,28 +1206,36 @@
     }
 
     const card = document.getElementById('properties');
+const DOC_REGION_CODE = 13;
 
-    const DOC_REGION_CODE = 13;
+const riverDefaultImage = {
+  FG: 'images/Slide12.PNG',
+  DOC: 'images/Slide13.PNG',
+  DESIGNATED: 'images/Slide20.png'
+};
 
-    const riverDefaultImage = {
-      FG: 'images/Slide12.PNG',
-      DOC: 'images/Slide13.PNG'
-    };
+const flowTypeDefaultImages = {
+  Flow: 'images/Slide18.png',
+  Temperature: 'images/Slide19.png',
+};
 
-    const flowTypeDefaultImages = {
-      Flow: 'images/Slide18.png',        // river flow
-      Temperature: 'images/Slide19.png', // river temp
-    };
+function getRiverDefaultImage(props) {
 
+  // --- Designated water override ---
+  if (Number(props.designated_water) === 1) {
+    return riverDefaultImage.DESIGNATED;
+  }
 
-    function getRiverDefaultImage(props) {
-      const raw =
-        props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
-      const rc = Number.parseInt(String(raw ?? '').trim(), 10);
-      return rc === DOC_REGION_CODE ? riverDefaultImage.DOC : riverDefaultImage.FG;
-    }
+  // --- Normal region logic ---
+  const raw =
+    props.RegionCode ?? props.region_code ?? props.regioncode ?? props.Regioncode;
 
-    ['images/Slide12.PNG', 'images/Slide13.PNG', 'images/Slide18.png', 'images/Slide19.png']
+  const rc = Number.parseInt(String(raw ?? '').trim(), 10);
+
+  return rc === DOC_REGION_CODE ? riverDefaultImage.DOC : riverDefaultImage.FG;
+}
+
+    ['images/Slide12.PNG', 'images/Slide13.PNG', 'images/Slide18.png', 'images/Slide19.png', 'images/Slide20.png']
       .forEach(src => {
         const im = new Image();
         im.src = src;
@@ -1251,10 +1259,68 @@
       'Lodge': 'images/Slide17.PNG',
     };
 
-    // ===== NEW: Flow (and WT) side-panel card =====
 
-    // helper (define once, globally)
+    // badges
+    // --- Binary "feature tags" shown as coloured cards/badges ---
 
+const WATERWAY_TAGS = [
+  { key: 'backcountry', label: 'Backcountry', className: 'tag-backcountry' },
+  { key: 'coarse_fishery', label: 'Coarse Fishery', className: 'tag-coarse', url: 'https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/getting-started/types-of-fishing/coarse-fishing/' },
+  { key: 'searun_salmon_fishery', label: 'Searun Salmon Fishery', className: 'tag-searun', url: 'https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/fishing-licences-and-regulations/sea-run-salmon/' },
+  { key: 'designated_water', label: 'Designated Water Licence Required', className: 'tag-designated', url: 'https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/fishing-licences-and-regulations/special-licence-options/designated-waters-licence/' },
+  { key: 'controlled_fishery', label: 'Controlled Fishery', className: 'tag-controlled', url: 'https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/fishing-licences-and-regulations/special-licence-options/controlled-fishery-licences/' },
+  { key: 'junior_fishery', label: 'Junior Fishery', className: 'tag-junior' },
+  { key: 'stocked_put_take_fishery', label: 'Stocked Fishery', className: 'tag-stocked'},
+];
+
+function isTruthyBinary(v) {
+  // handles 1, "1", true, "true", "yes", etc.
+  if (v === 1 || v === true) return true;
+  if (typeof v === 'string') {
+    const s = v.trim().toLowerCase();
+    return s === '1' || s === 'true' || s === 'yes' || s === 'y';
+  }
+  return false;
+}
+
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function renderWaterwayTags(props) {
+
+  const active = WATERWAY_TAGS.filter(t => Number(props?.[t.key]) === 1);
+  if (!active.length) return '';
+
+  const items = active.map(t => {
+
+    const label = escapeHtml(t.label);
+
+    if (t.url) {
+      return `
+        <a href="${t.url}"
+           class="waterway-tag ${t.className} clickable-tag"
+           target="_blank"
+           rel="noopener noreferrer">
+           ${label}
+        </a>`;
+    }
+
+    return `
+      <span class="waterway-tag ${t.className} static-tag">
+        ${label}
+      </span>`;
+
+  }).join('');
+
+  return `<div class="waterway-tags">${items}</div>`;
+}
+ 
 
 
     function showFlowCard(feature) {
@@ -1535,7 +1601,7 @@
       });
     }
 
-    // ===== Existing showCard for waterways/points (unchanged) =====
+    
     const showCard = (feature) => {
       const props = feature.properties;
       const displayFields = {
@@ -1623,6 +1689,7 @@
         content += `<div class="card-subtitle subtitle-region">${regionName} ${label}</div>`;
       }
 
+      content += renderWaterwayTags(props);
       content += `<hr><ul class="card-list">`;
 
       for (const [key, label] of Object.entries(displayFields)) {
