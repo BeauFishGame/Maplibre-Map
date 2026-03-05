@@ -960,10 +960,10 @@
 }
 
 .tag-backcountry{
-  --bg:#5d6533;
-  --border:#5d6533;
+  --bg: rgba(83, 112, 81, 1);
+  --border:rgba(83, 112, 81, 1);
   --text:#ffffff;
-  --bg-hover:#5d6533;
+  --bg-hover:#rgba(83, 112, 81, 1);
 }
 
 .tag-searun{
@@ -997,7 +997,7 @@
 
 .tag-doc-licence{
   --bg:rgba(25, 64, 54,0.85);
-  --border:rgba(25, 64, 54,0.75);
+  --border:rgba(25, 64, 54,0.85);
   --text:#ffc51d;
   --bg-hover:rgba(25, 64, 54,0.95);
 }
