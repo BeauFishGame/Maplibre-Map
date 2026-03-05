@@ -1270,18 +1270,15 @@ const WATERWAY_TAGS = [
   { key: 'designated_water', label: 'Designated Water Licence Required', className: 'tag-designated', url: 'https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/fishing-licences-and-regulations/special-licence-options/designated-waters-licence/' },
   { key: 'controlled_fishery', label: 'Controlled Fishery', className: 'tag-controlled', url: 'https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/fishing-licences-and-regulations/special-licence-options/controlled-fishery-licences/' },
   { key: 'junior_fishery', label: 'Junior Fishery', className: 'tag-junior' },
-  { key: 'stocked_put_take_fishery', label: 'Stocked Fishery', className: 'tag-stocked'},
+  { key: 'stocked_put_take_fishery', label: 'Stocked Fishery', className: 'tag-stocked' },
 ];
 
-function isTruthyBinary(v) {
-  // handles 1, "1", true, "true", "yes", etc.
-  if (v === 1 || v === true) return true;
-  if (typeof v === 'string') {
-    const s = v.trim().toLowerCase();
-    return s === '1' || s === 'true' || s === 'yes' || s === 'y';
-  }
-  return false;
-}
+// tag shown when RegionCode=13
+const DOC_REGION_TAG = {
+  label: 'Aditional DOC Licence Required',
+  className: 'tag-doc-licence',
+  url: 'https://www.doc.govt.nz/parks-and-recreation/places-to-go/central-north-island/places/taupo-trout-fishery/'
+};
 
 function escapeHtml(str) {
   return String(str ?? '')
@@ -1293,12 +1290,22 @@ function escapeHtml(str) {
 }
 
 function renderWaterwayTags(props) {
+  const active = [];
 
-  const active = WATERWAY_TAGS.filter(t => Number(props?.[t.key]) === 1);
+  // existing binary tags
+  for (const t of WATERWAY_TAGS) {
+    if (Number(props?.[t.key]) === 1) active.push(t);
+  }
+
+  // RegionCode=13 tag
+  const regionCode = Number(props?.RegionCode);
+  if (regionCode === 13) {
+    active.push(DOC_REGION_TAG);
+  }
+
   if (!active.length) return '';
 
   const items = active.map(t => {
-
     const label = escapeHtml(t.label);
 
     if (t.url) {
@@ -1315,12 +1322,10 @@ function renderWaterwayTags(props) {
       <span class="waterway-tag ${t.className} static-tag">
         ${label}
       </span>`;
-
   }).join('');
 
   return `<div class="waterway-tags">${items}</div>`;
 }
- 
 
 
     function showFlowCard(feature) {
@@ -2087,7 +2092,7 @@ function maybeShowDocBannerFromFeature(f) {
 
   if (rc === 13) {
     docBannerEl.textContent =
-      'The Taupō Fishing District is managed by DOC and requires a separate licence.';
+      'The Taupō Fishing District is managed by DOC and requires a separate licence to fish';
     docBannerEl.style.display = 'block';
   } else {
     hideDocBanner();
@@ -2148,7 +2153,7 @@ function updateCenterPublicAccess(allowHide = true) {
   const rc = Number(props.RegionCode ?? props.region_code ?? props.regioncode);
 
   if (rc === 13) {
-    docBannerEl.textContent = 'The Taupō Fishing District is managed by DOC and requires a separate licence.';
+    docBannerEl.textContent = 'The Taupō Fishing District is managed by DOC and requires a separate licence to fish';
     docBannerEl.style.display = 'block';
   } else {
     if (allowHide) hideDocBanner(); // ✅ only hide when allowed
@@ -2165,7 +2170,7 @@ function updateDocBannerAtMouse(point, allowHide = true) {
   const rc = Number(props.RegionCode ?? props.region_code ?? props.regioncode);
 
   if (rc === 13) {
-    docBannerEl.textContent = 'The Taupō Fishing District is managed by DOC and requires a separate licence.';
+    docBannerEl.textContent = 'The Taupō Fishing District is managed by DOC and requires a separate licence to fish';
     docBannerEl.style.display = 'block';
   } else if (allowHide) {
     hideDocBanner();
