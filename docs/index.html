@@ -42,16 +42,15 @@
       <div id="suggestions"></div>
     </div>
 
-    <!-- NEW: actions live inside the bar -->
-    <div id="actions">
-      <button onclick="toggleBasemaps()" id="basemap-toggle-btn" aria-label="Basemaps">
-        <img src="images/Layers.svg" alt="">
-      </button>
-      <button onclick="toggleFilters()" id="filter-toggle-btn" aria-label="Filters">
-        <img src="images/Filters.svg" alt="">
-      </button>
-    </div>
-  </div>
+ <div id="actions">
+  <button onclick="toggleBasemaps()" id="basemap-toggle-btn" aria-label="Basemaps">
+    <img src="images/Layers.svg" alt="">
+  </button>
+  <button onclick="toggleFilters()" id="filter-toggle-btn" aria-label="Filters">
+    <img src="images/Filters.svg" alt="">
+  </button>
+ 
+</div>
 
 
   <!-- ========================================================= -->
@@ -558,40 +557,72 @@
 
   <div class="map-overlay" id="properties"></div>
   <script>
-    // --- decide initial view from URL (run FIRST) ---
-    const url = new URL(window.location.href);
-    const regionParam = url.searchParams.get('region');
-    const latParam = parseFloat(url.searchParams.get('lat'));
-    const lngParam = parseFloat(url.searchParams.get('lng'));
-    const zParam = parseFloat(url.searchParams.get('z'));
-    const bboxParam = (url.searchParams.get('bbox') || '').trim();
+// --- decide initial view from URL (run FIRST) ---
+function getHashView() {
+  const hash = window.location.hash.replace(/^#\/?/, '');
+  const parts = hash.split('/');
 
-    const REGION_VIEWS = {
-      1: { center: [174.15, -35.70], zoom: 6.9 }, 2: { center: [175.182251, -37.998588], zoom: 6.9 },
-      3: { center: [177.127635, -38.307814], zoom: 6.9 }, 4: { center: [174.788398, -39.416080], zoom: 6.9 },
-      5: { center: [176.566401, -39.552397], zoom: 6.9 }, 6: { center: [175.718208, -40.534386], zoom: 6.9 },
-      7: { center: [173.069873, -41.681397], zoom: 6.9 }, 8: { center: [172.301859, -43.106414], zoom: 6.9 },
-      9: { center: [170.728991, -43.047237], zoom: 6.9 }, 10: { center: [170.745253, -44.232766], zoom: 6.9 },
-      11: { center: [169.422244, -45.454679], zoom: 6.9 }, 12: { center: [167.969988, -45.709747], zoom: 6.9 },
-      13: { center: [175.80, -38.80], zoom: 6.9 }
-    };
+  if (parts.length >= 3) {
+    const zoom = parseFloat(parts[0]);
+    const lat = parseFloat(parts[1]);
+    const lng = parseFloat(parts[2]);
 
-    let initialCamera = { center: [173.792725, -40.784701], zoom: 5.3 }; // default
-
-    if (bboxParam) {
-      const parts = bboxParam.split(',').map(Number);
-      if (parts.length === 4 && parts.every(Number.isFinite)) {
-        initialCamera = {
-          bounds: [[parts[0], parts[1]], [parts[2], parts[3]]],
-          fitBoundsOptions: { padding: { top: 80, right: 10, bottom: 10, left: 10 } }
-        };
-      }
-    } else if (Number.isFinite(latParam) && Number.isFinite(lngParam)) {
-      initialCamera = { center: [lngParam, latParam], zoom: Number.isFinite(zParam) ? zParam : 10 };
-    } else if (regionParam && REGION_VIEWS[+regionParam]) {
-      initialCamera = REGION_VIEWS[+regionParam];
+    if (Number.isFinite(zoom) && Number.isFinite(lat) && Number.isFinite(lng)) {
+      return { zoom, lat, lng };
     }
+  }
 
+  return null;
+}
+
+const hashView = getHashView();
+
+const url = new URL(window.location.href);
+const regionParam = url.searchParams.get('region');
+const latParam = parseFloat(url.searchParams.get('lat'));
+const lngParam = parseFloat(url.searchParams.get('lng'));
+const zParam = parseFloat(url.searchParams.get('z'));
+const bboxParam = (url.searchParams.get('bbox') || '').trim();
+
+const REGION_VIEWS = {
+  1: { center: [174.15, -35.70], zoom: 6.9 },
+  2: { center: [175.182251, -37.998588], zoom: 6.9 },
+  3: { center: [177.127635, -38.307814], zoom: 6.9 },
+  4: { center: [174.788398, -39.416080], zoom: 6.9 },
+  5: { center: [176.566401, -39.552397], zoom: 6.9 },
+  6: { center: [175.718208, -40.534386], zoom: 6.9 },
+  7: { center: [173.069873, -41.681397], zoom: 6.9 },
+  8: { center: [172.301859, -43.106414], zoom: 6.9 },
+  9: { center: [170.728991, -43.047237], zoom: 6.9 },
+  10: { center: [170.745253, -44.232766], zoom: 6.9 },
+  11: { center: [169.422244, -45.454679], zoom: 6.9 },
+  12: { center: [167.969988, -45.709747], zoom: 6.9 },
+  13: { center: [175.80, -38.80], zoom: 6.9 }
+};
+
+let initialCamera = { center: [173.792725, -40.784701], zoom: 5.3 };
+
+if (bboxParam) {
+  const parts = bboxParam.split(',').map(Number);
+  if (parts.length === 4 && parts.every(Number.isFinite)) {
+    initialCamera = {
+      bounds: [[parts[0], parts[1]], [parts[2], parts[3]]],
+      fitBoundsOptions: { padding: { top: 80, right: 10, bottom: 10, left: 10 } }
+    };
+  }
+} else if (hashView) {
+  initialCamera = {
+    center: [hashView.lng, hashView.lat],
+    zoom: hashView.zoom
+  };
+} else if (Number.isFinite(latParam) && Number.isFinite(lngParam)) {
+  initialCamera = {
+    center: [lngParam, latParam],
+    zoom: Number.isFinite(zParam) ? zParam : 10
+  };
+} else if (regionParam && REGION_VIEWS[+regionParam]) {
+  initialCamera = REGION_VIEWS[+regionParam];
+}
     const styleURL = 'https://basemaps.linz.govt.nz/v1/styles/topo-raster.json?api=d01hep5551e30kxb7w85hck49tp';
     //const TODAY_UNIX = Math.floor(Date.now() / 1000);
 
@@ -613,8 +644,105 @@
       trackUserLocation: true,
       showUserHeading: true
     }));
+
+map.on('load', () => {
+
+  map.addSource('terrainSource', {
+    type: 'raster-dem',
+    tiles: [
+      'https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?pipeline=terrain-rgb&api=YOUR_API_KEY'
+    ],
+    tileSize: 256,
+    maxzoom: 18
+  });
+
+});
+    
+map.addControl(
+  new maplibregl.TerrainControl({
+    source: 'terrainSource',
+    exaggeration: 1
+  }),
+  'top-right'
+);
+
+// Start flat, with rotation disabled
+map.dragRotate.disable();
+map.touchZoomRotate.disableRotation();
+map.setPitch(0);
+map.setBearing(0);
+
+// React whenever terrain is toggled
+map.on('terrain', () => {
+  const terrainOn = !!map.getTerrain();
+
+  if (terrainOn) {
+    map.dragRotate.enable();
+    map.touchZoomRotate.enableRotation();
+
+    // Optional: ease into 3D view when turned on
+    map.easeTo({
+      pitch: 40,
+      duration: 700
+    });
+  } else {
     map.dragRotate.disable();
     map.touchZoomRotate.disableRotation();
+
+    map.easeTo({
+      pitch: 0,
+      bearing: 0,
+      duration: 700
+    });
+  }
+});
+     
+
+     
+async function copyShareLink() {
+  const center = map.getCenter();
+  const zoom = map.getZoom();
+
+  const lat = center.lat.toFixed(5);
+  const lng = center.lng.toFixed(5);
+  const z = zoom.toFixed(2);
+
+  const shareUrl = `${window.location.origin}${window.location.pathname}#${z}/${lat}/${lng}`;
+
+  try {
+    await navigator.clipboard.writeText(shareUrl);
+
+    const btn = document.getElementById('share-link-btn');
+    if (btn) {
+      const old = btn.innerHTML;
+      btn.innerHTML = 'Copied';
+      setTimeout(() => {
+        btn.innerHTML = old;
+      }, 1200);
+    }
+
+    if (window.umami) {
+      umami.track('copy-share-link');
+    }
+  } catch (err) {
+    prompt('Copy this link:', shareUrl);
+  }
+}
+
+ // --- Update URL hash with map position ---
+function updateHash() {
+  const center = map.getCenter();
+  const zoom = map.getZoom();
+
+  const lat = center.lat.toFixed(5);
+  const lng = center.lng.toFixed(5);
+  const z = zoom.toFixed(2);
+
+  const hash = `#${z}/${lat}/${lng}`;
+
+  window.history.replaceState(null, null, hash);
+}
+
 
     // ---- Image modal swipe (unchanged) ----
     (function addModalSwipe() {
@@ -734,15 +862,25 @@
 
     // ---- Panel logic / openPanel / toggle filters ----
     let activePanel = null;
-    document.addEventListener('click', function (event) {
-      const filtersEl = document.getElementById('combined-filters');
-      const filtersBtn = document.getElementById('filter-toggle-btn');
-      if (filtersEl.style.display === 'block') {
-        if (!filtersEl.contains(event.target) && !filtersBtn.contains(event.target)) {
-          openPanel(null);
-        }
-      }
-    });
+   
+  document.addEventListener('click', function (event) {
+  const filtersEl = document.getElementById('combined-filters');
+  const filtersBtn = document.getElementById('filter-toggle-btn');
+  const basemapsEl = document.getElementById('combined-basemaps');
+  const basemapsBtn = document.getElementById('basemap-toggle-btn');
+
+  const clickedInsideOpenPanel =
+    (activePanel === 'filters' && (
+      filtersEl?.contains(event.target) || filtersBtn?.contains(event.target)
+    )) ||
+    (activePanel === 'basemaps' && (
+      basemapsEl?.contains(event.target) || basemapsBtn?.contains(event.target)
+    ));
+
+  if ((activePanel === 'filters' || activePanel === 'basemaps') && !clickedInsideOpenPanel) {
+    openPanel(null);
+  }
+});
 
     let selectedPoint = null;
     let selectedRiver = null;
@@ -3278,30 +3416,37 @@ if (!map.getLayer('FG Regions-fill')) {
       const { lat, lng } = e.lngLat.wrap();
 
       const html = `
-      <div style="
-        font: 13px 'Segoe UI', Arial, sans-serif;
-        min-width: 160px;
-        background: #fff;
-        border: 1px solid #d0d7de;
-        border-radius: 6px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-        overflow: hidden;
-      ">
-        <div id="copyCoords" style="
-          padding: 8px 10px;
-          cursor: pointer;
-          border-bottom: 1px solid #eee;
-        ">
-          📋 Copy coordinates
-        </div>
-        <div id="openWAMS" style="
-          padding: 8px 10px;
-          cursor: pointer;
-        ">
-          🌏 Open in WAMS
-        </div>
-      </div>
-    `;
+  <div style="
+    font: 13px 'Segoe UI', Arial, sans-serif;
+    min-width: 180px;
+    background: #fff;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    overflow: hidden;
+  ">
+    <div id="copyCoords" style="
+      padding: 8px 10px;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+    ">
+      📋 Copy coordinates
+    </div>
+    <div id="copyShareLink" style="
+      padding: 8px 10px;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+    ">
+      🔗 Copy link to this location
+    </div>
+    <div id="openWAMS" style="
+      padding: 8px 10px;
+      cursor: pointer;
+    ">
+      🌏 Open in WAMS
+    </div>
+  </div>
+`;
 
       document.querySelectorAll(".maplibregl-popup").forEach(p => p.remove());
 
@@ -3327,10 +3472,13 @@ if (!map.getLayer('FG Regions-fill')) {
         btn.addEventListener("blur", () => styleHover(btn, false));
       };
 
-      const btnCopy = el.querySelector("#copyCoords");
-      const btnWams = el.querySelector("#openWAMS");
-      hookHover(btnCopy);
-      hookHover(btnWams);
+    const btnCopy = el.querySelector("#copyCoords");
+const btnShare = el.querySelector("#copyShareLink");
+const btnWams = el.querySelector("#openWAMS");
+
+hookHover(btnCopy);
+hookHover(btnShare);
+hookHover(btnWams);
 
       btnCopy.addEventListener("click", async (ev) => {
         ev.preventDefault();
@@ -3347,6 +3495,29 @@ if (!map.getLayer('FG Regions-fill')) {
         menu.remove();
       });
 
+      btnShare.addEventListener("click", async (ev) => {
+  ev.preventDefault();
+
+  const level = map.getZoom().toFixed(2);
+  const shareUrl = `${window.location.origin}${window.location.pathname}#${level}/${lat.toFixed(5)}/${lng.toFixed(5)}`;
+
+  try {
+    await navigator.clipboard.writeText(shareUrl);
+  } catch (err) {
+    const ta = document.createElement("textarea");
+    ta.value = shareUrl;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+  }
+
+  if (window.umami) {
+    umami.track("copy-share-link");
+  }
+
+  menu.remove();
+});
       btnWams.addEventListener("click", (ev) => {
         ev.preventDefault();
 
