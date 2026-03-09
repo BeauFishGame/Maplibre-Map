@@ -661,7 +661,7 @@ map.on('load', () => {
 map.addControl(
   new maplibregl.TerrainControl({
     source: 'terrainSource',
-    exaggeration: 1
+    exaggeration: 1.1
   }),
   'top-right'
 );
@@ -681,10 +681,7 @@ map.on('terrain', () => {
     map.touchZoomRotate.enableRotation();
 
     // Optional: ease into 3D view when turned on
-    map.easeTo({
-      pitch: 40,
-      duration: 700
-    });
+    
   } else {
     map.dragRotate.disable();
     map.touchZoomRotate.disableRotation();
@@ -851,6 +848,8 @@ function updateHash() {
       const modalImg = document.getElementById("modalImage");
       if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
     }
+
+
     function modalPrev(ev) {
       if (ev) ev.stopPropagation();
       const photos = window.__cardPhotos || [];
