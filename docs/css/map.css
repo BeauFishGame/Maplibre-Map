@@ -1001,3 +1001,46 @@
   --text:#ffc51d;
   --bg-hover:rgba(25, 64, 54,0.95);
 }
+
+
+#properties .panel-scroll{
+  position: relative;
+  padding-bottom: 3px;
+}
+.aw-access-footer{
+  margin-top: 14px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  font-size: 11px;
+  text-align: center;
+}
+
+.aw-access-footer a{
+  color: #2c6db3;
+  text-decoration: none;
+}
+
+.aw-access-footer a:hover{
+  text-decoration: underline;
+}
+/* Desktop/tablet: keep card within viewport and push footer down */
+@media (min-width: 769px){
+  #properties .map-overlay-inner{
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 30px);
+  }
+
+  #properties .panel-scroll{
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .aw-access-footer{
+    margin-top: auto;
+    padding-top: 8px;
+  }
+}
