@@ -1770,19 +1770,21 @@ const awAccessFooter =
     props.point_type === 'TrampingAccess' ||
     props.point_type === '4x4Access'
   )
-    ? `
-      <div class="aw-access-footer">
-        <a href="https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/where-to-fish/regional-info/aucklandwaikato/aucklandwaikato-angler-access-fund/"
-           target="_blank" rel="noopener noreferrer">
-          Angler Access Fund
-        </a>
-        &nbsp;|&nbsp;
-        <a href="mailto:bjarvis-child@fishandgame.org.nz?subject=Fishing%20Access%20Map%20Feedback">
-          Provide feedback 
-        </a>
-      </div>
-    `
-    : '';
+? `
+  <div class="aw-access-footer">
+    <a class="aw-access-primary"
+       href="https://www.fishandgame.org.nz/freshwater-fishing-in-new-zealand/where-to-fish/regional-info/aucklandwaikato/aucklandwaikato-angler-access-fund/"
+       target="_blank" rel="noopener noreferrer">
+      Auckland/Waikato Angler Access Fund details
+    </a>
+
+    <a class="aw-access-secondary"
+       href="mailto:bjarvis-child@fishandgame.org.nz?subject=Fishing%20Access%20Map%20Feedback">
+      Contact us with feedback
+    </a>
+  </div>
+`
+: '';
         const displayFields = {
           methods: 'Method',
           open_season: 'Open',
