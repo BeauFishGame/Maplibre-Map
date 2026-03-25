@@ -204,7 +204,7 @@
               </div>
               <div class="source-body">
                 <div class="hint">
-                  Last updated: 18/09/2025
+                  Last updated: 25/03/2026
                   <br><br>
                   <a href="https://www.herengaanuku.govt.nz/types-of-access" target="_blank">
                     Learn more about legal public access in NZ here
@@ -2685,18 +2685,30 @@ content += awAccessFooter;
             source: 'PublicAccessAreas',
             'source-layer': 'mylayer',
             minzoom: 12,
-            paint: {
+            // paint: {
+            //   'fill-color': [
+            //     'match', ['get', 'DataType'],
+            //     'DOC Conservation Area', '#2d6c3e',
+            //     'Esplanade Reserve', '#66f0cb',
+            //     'Esplanade Strip', '#ff66dc',
+            //     'Hydro Parcel', '#abecff',
+            //     'Non-Primary Parcel', '#ffcc66',
+            //     'Public Access Easement', '#ffd8f1',
+            //     'Reserve Land', '#a9cb66',
+            //     'Road Parcel', '#cca3e1',
+            //     'Walkway Easement', '#ffb2b2',
+            //     '#cccccc'
+            //   ],
+              paint: {
               'fill-color': [
                 'match', ['get', 'DataType'],
-                'DOC Conservation Area', '#2d6c3e',
-                'Esplanade Reserve', '#66f0cb',
-                'Esplanade Strip', '#ff66dc',
+                'Public Conservation Land', '#2d6c3e',
+                'Easements', '#ff9999',
                 'Hydro Parcel', '#abecff',
-                'Non-Primary Parcel', '#ffcc66',
-                'Public Access Easement', '#ffd8f1',
-                'Reserve Land', '#a9cb66',
-                'Road Parcel', '#cca3e1',
-                'Walkway Easement', '#ffb2b2',
+                'Other Parks & Reserves', '#ffff66',
+                'Other Public Access Areas', '#66f0cb',
+                'Reserve Land', '#c1f066',
+                'Road Parcels', '#cb66f0',
                 '#cccccc'
               ],
               'fill-opacity': [
