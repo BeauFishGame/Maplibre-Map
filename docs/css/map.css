@@ -1038,7 +1038,6 @@
 }
 
 
-/* Desktop/tablet: keep card within viewport and push footer down */
 @media (min-width: 769px){
   #properties .map-overlay-inner{
     display: flex;
@@ -1047,15 +1046,14 @@
   }
 
   #properties .panel-scroll{
-    display: flex;
-    flex-direction: column;
     overflow-y: auto;
     flex: 1 1 auto;
     min-height: 0;
+    display: block;
   }
 
   .aw-access-footer{
-    margin-top: auto;
+    margin-top: 12px;
     padding-top: 8px;
   }
 }
