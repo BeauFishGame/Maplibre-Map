@@ -190,6 +190,20 @@
                   </label>
 
                 </div>
+<div class="group dev-only" data-group="p-sign-required" data-type="radioOne" style="display:none;">
+  <div class="group-title">Sign required</div>
+
+  <label class="option">
+    <input type="radio" name="p-sign-required" value="__ALL__" checked>
+    Show all
+  </label>
+
+  <label class="option">
+    <input type="radio" name="p-sign-required" value="1">
+    Sign required only
+  </label>
+</div>
+
               </div>
             </div>
 
@@ -581,11 +595,14 @@
       const hashView = getHashView();
 
       const url = new URL(window.location.href);
+      
       const regionParam = url.searchParams.get('region');
       const latParam = parseFloat(url.searchParams.get('lat'));
       const lngParam = parseFloat(url.searchParams.get('lng'));
       const zParam = parseFloat(url.searchParams.get('z'));
       const bboxParam = (url.searchParams.get('bbox') || '').trim();
+
+      
 
       const REGION_VIEWS = {
         1: { center: [174.15, -35.70], zoom: 6.9 },
@@ -630,6 +647,7 @@
       //const TODAY_UNIX = Math.floor(Date.now() / 1000);
 
       const TODAY_UNIX = Math.floor((Date.now() + (13 * 60 * 60 * 1000)) / 1000);
+      //const TODAY_UNIX = 1787413278;
 
 
       console.log("TODAY_UNIX:", TODAY_UNIX);
@@ -1118,6 +1136,8 @@
           const FLOW_KEY = 'Flow';
           const TEMP_KEY = 'Temp';
 
+          const signRequired = getRadio('p-sign-required');
+
           let flowOn = true;
           let tempOn = true;
           let pointTypesForData = null;  // what we send to data-points-all
@@ -1145,14 +1165,21 @@
           }
 
           // --- 2) Apply filter to normal point layer (data-points-all) ---
-          let expr = true;
-          if (pointTypesForData === null) {
-            expr = true; // all
-          } else if (pointTypesForData.length === 0) {
-            expr = ['==', ['get', PROPS.points.type], '__NONE__']; // hide all
-          } else {
-            expr = ['in', ['get', PROPS.points.type], ['literal', pointTypesForData]];
-          }
+     const clauses = [];
+
+if (pointTypesForData === null) {
+  // no point type filter
+} else if (pointTypesForData.length === 0) {
+  clauses.push(['==', ['get', PROPS.points.type], '__NONE__']);
+} else {
+  clauses.push(['in', ['get', PROPS.points.type], ['literal', pointTypesForData]]);
+}
+
+if (isDev && signRequired === '1') {
+  clauses.push(['==', ['to-number', ['get', 'sign_required']], 1]);
+}
+
+const expr = clauses.length ? ['all', ...clauses] : true;
 
           if (map.getLayer('data-points-all')) {
             safeSetFilter('data-points-all', expr);
@@ -2633,6 +2660,11 @@ content += awAccessFooter;
       const dataQ = (url.searchParams.get('data') || '').trim().toLowerCase();
       const isDev = dataQ === 'dev';
 
+      if (isDev) {
+  document.querySelectorAll('.dev-only').forEach(el => {
+    el.style.display = '';
+  });
+}
       const TILES_BASE = 'https://data.fishandgameaccessmap.org';
       const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson';
 
