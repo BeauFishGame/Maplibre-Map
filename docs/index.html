@@ -1780,6 +1780,26 @@ const expr = clauses.length ? ['all', ...clauses] : true;
 
    const props = feature.properties || {};
 
+   const isAccessPointForDev =
+  props.point_type === 'AccessPoint' ||
+  props.point_type === 'Parking' ||
+  props.point_type === 'Warning' ||
+  props.point_type === 'LandmarkPole';
+
+const yesNo = (v) => Number(v) === 1 ? 'Yes' : 'No';
+
+const devSignInfo = (isDev && isAccessPointForDev)
+  ? `
+    <div class="dev-sign-info" style="margin-top:10px;">
+      <hr>
+      <ul class="card-list">
+        <li><b>Sign required:</b> ${yesNo(props.sign_required)}</li>
+        <li><b>Has sign:</b> ${yesNo(props.had_sign)}</li>
+      </ul>
+    </div>
+  `
+  : '';
+
 // --- Auckland/Waikato Angler Access footer ---
 // Match the same RegionCode fallback logic used elsewhere in this file
 const regionCode = (typeof getRegionCode === 'function')
@@ -1966,6 +1986,7 @@ const awAccessFooter =
           }
         }
 content += awAccessFooter;
+content += devSignInfo;
 
 
 
