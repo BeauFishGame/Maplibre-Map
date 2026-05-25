@@ -2967,48 +2967,59 @@ content += devSignInfo;
           }, insertBeforeLayer);
         }
 
+if (!map.getLayer('FG Regions-linebackground')) {
+  map.addLayer({
+    id: 'FG Regions-linebackground',
+    type: 'line',
+    source: 'FG Regions',
+    'source-layer': 'fg_regions',
+    layout: { 'line-join': 'round', 'line-cap': 'round' },
+    paint: {
+      'line-color': '#fff',
+      'line-width': [
+        'interpolate', ['linear'], ['zoom'],
+        5, 3,
+        10, 4,
+        14, 8,
+        18, 12
+      ],
+      'line-opacity': [
+        'interpolate', ['linear'], ['zoom'],
+        7, 1,
+        10, 0.5,
+        14, 0.15,
+        18, 0
+      ]
+    }
+  }, insertBeforeLayer);
+}
 
-        if (!map.getLayer('FG Regions-linebackground')) {
-          map.addLayer({
-            id: 'FG Regions-linebackground',
-            type: 'line',
-            source: 'FG Regions',
-            'source-layer': 'fg_regions',
-            layout: { 'line-join': 'round', 'line-cap': 'round' },
-            paint: {
-              'line-color': '#fff',
-              'line-width': [
-                'interpolate', ['linear'], ['zoom'],
-                5, 3,
-                10, 4,
-                14, 8,
-                18, 12
-              ],
-              'line-opacity': 1
-            }
-          }, insertBeforeLayer);
-        }
-
-        if (!map.getLayer('FG Regions-line')) {
-          map.addLayer({
-            id: 'FG Regions-line',
-            type: 'line',
-            source: 'FG Regions',
-            'source-layer': 'fg_regions',
-            layout: { 'line-join': 'round', 'line-cap': 'round' },
-            paint: {
-              'line-color': '#008678',
-              'line-width': [
-                'interpolate', ['linear'], ['zoom'],
-                5, 1.5,
-                10, 2,
-                14, 4,
-                18, 8
-              ],
-              'line-opacity': 1
-            }
-          }, insertBeforeLayer);
-        }
+if (!map.getLayer('FG Regions-line')) {
+  map.addLayer({
+    id: 'FG Regions-line',
+    type: 'line',
+    source: 'FG Regions',
+    'source-layer': 'fg_regions',
+    layout: { 'line-join': 'round', 'line-cap': 'round' },
+    paint: {
+      'line-color': '#008678',
+      'line-width': [
+        'interpolate', ['linear'], ['zoom'],
+        5, 1.5,
+        10, 2,
+        14, 4,
+        18, 8
+      ],
+      'line-opacity': [
+        'interpolate', ['linear'], ['zoom'],
+        7, 1,
+        10, 0.5,
+        14, 0.1,
+        18, 0
+      ]
+    }
+  }, insertBeforeLayer);
+}
 
         if (!sources['Routes']) {
           map.addSource('Routes', {
