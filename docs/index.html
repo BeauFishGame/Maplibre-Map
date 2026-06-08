@@ -861,6 +861,8 @@
         else if (e.key === 'ArrowLeft') { modalPrev(e); }
       }
 
+      
+
       function modalNext(ev) {
         if (ev) ev.stopPropagation();
         const photos = window.__cardPhotos || [];
@@ -945,6 +947,8 @@
           openPanel('filters');
         }
       }
+
+      
 
       function toggleBasemaps() {
         if (activePanel === 'basemaps') {
@@ -1498,6 +1502,8 @@ const expr = clauses.length ? ['all', ...clauses] : true;
       function showFlowCard(feature) {
         const props = feature.properties || {};
 
+     
+
         const site = props.site_name;
         const station_name = props.station_name;
         const param = props.parameter || 'Value';   // "Flow" or "Temperature"
@@ -1531,7 +1537,7 @@ const expr = clauses.length ? ['all', ...clauses] : true;
         const isNumeric = Number.isFinite(numVal);
         const valFormatted = isNumeric ? numVal.toFixed(1) : (rawVal ?? 'NA');
 
-        let summaryText = 'Latest value not available';
+        let summaryText = 'Latest value not available.<br> Check the source link above for live data';
         if (whenRaw) {
           try {
             const d = new Date(whenRaw);
@@ -1613,7 +1619,7 @@ const expr = clauses.length ? ['all', ...clauses] : true;
             : `
         <h4 style="margin-top:10px; margin-bottom:4px;">Recent time series</h4>
         <div style="font-size:12px; color:#666;">
-          No recent time-series data available for this site.
+          No figure available for this site.<br> Check the Source link above for live data.
         </div>
       `;
 
@@ -1780,6 +1786,10 @@ const expr = clauses.length ? ['all', ...clauses] : true;
 
    const props = feature.properties || {};
 
+   if (!isBlankish(props.nav_number)) {
+  currentNavNumber = Number(props.nav_number);
+}
+
    const isAccessPointForDev =
   props.point_type === 'AccessPoint' ||
   props.point_type === 'Parking' ||
@@ -1875,22 +1885,37 @@ const awAccessFooter =
         <div class="panel-scroll">
     `;
 
-        if (photoList.length > 0) {
-          content += `
-        <div class="card-image-wrap">
-          <img id="cardMainImage" src="${photoList[0]}" alt="Location Photo" onclick="openImageModal()" />
-          ${photoList.length > 1 ? `
-            <button class="carousel-button prev" onclick="prevImage()" aria-label="Previous image">❮</button>
-            <button class="carousel-button next" onclick="nextImage()" aria-label="Next image">❯</button>
-          ` : ``}
-        </div>
-        ${photoList.length > 1 ? `<div class="carousel-meta">${1} / ${photoList.length}</div>` : ``}
-      `;
-        }
+      if (photoList.length > 0) {
+  content += `
+    <div class="card-image-wrap">
+      <img id="cardMainImage" src="${photoList[0]}" alt="Location Photo" onclick="openImageModal()" />
 
+      ${photoList.length > 1 ? `
+        <button class="carousel-button prev" onclick="prevImage()" aria-label="Previous image">❮</button>
+        <button class="carousel-button next" onclick="nextImage()" aria-label="Next image">❯</button>
+
+        <div class="carousel-meta">
+          1 / ${photoList.length}
+        </div>
+      ` : ``}
+    </div>
+  `;
+}
+
+        if (!isBlankish(props.nav_number)) {
+  content += `
+    <div class="access-nav">
+      <button onclick="goToAccessNav(-1)">← PREV</button>
+      <span> NEARBY ACCESS </span>
+      <button onclick="goToAccessNav(1)">NEXT →</button>
+    </div>
+  `;
+}
         content += `
       <code class="card-title">${props.Water || props.name || props.title || 'No Title'}</code>
     `;
+
+    
 
         if (props.subtitle || (typeof props.Section === 'string' && props.Section.trim() !== '')) {
           const subtitleText = props.subtitle || props.Section;
@@ -2670,6 +2695,9 @@ content += devSignInfo;
       let allFeatures = [];
       let allPointsFeatures = [];
 
+      let accessNavFeatures = [];
+let currentNavNumber = null;
+
       const zoomLevel = document.getElementById('zoom-level');
       zoomLevel.textContent = `Zoom: ${map.getZoom().toFixed(2)}`;
       map.on('zoom', () => { zoomLevel.textContent = `Zoom: ${map.getZoom().toFixed(2)}`; });
@@ -3162,7 +3190,18 @@ if (!map.getLayer('FG Regions-line')) {
       }
       if (window.setupAWFilters) window.setupAWFilters(map);
 
+fetch(URL_POINTS_GEOJSON)
+  .then(res => res.json())
+  .then(d => {
+    allPointsFeatures = d.features;
 
+    accessNavFeatures = d.features
+      .filter(f => !isBlankish(f.properties?.nav_number))
+      .sort((a, b) =>
+        Number(a.properties.nav_number) - Number(b.properties.nav_number)
+      );
+  })
+  .catch(err => console.error('Failed to load points data:', err));
       // ===== NEW: flow click → side panel (no popup) =====
 
       // == Region label click, hover popups etc (unchanged) ==
@@ -3446,6 +3485,63 @@ if (!map.getLayer('FG Regions-line')) {
 
         suggestions.style.display = (riverMatches.length || pointMatches.length) ? 'block' : 'none';
       });
+
+    function selectAccessFeature(feature, fly = true) {
+  if (!feature) return;
+
+  const pointFeature = {
+    type: 'Feature',
+    geometry: feature.geometry,
+    properties: feature.properties,
+    layer: { id: 'data-points-all' },
+    id: feature.id
+  };
+
+  selectedPoint = pointFeature;
+  selectedFeatureId = pointFeature.id ?? pointFeature.properties?.id ?? null;
+  hoverFeatureId = null;
+
+  currentNavNumber = Number(pointFeature.properties?.nav_number);
+
+  showCard(pointFeature);
+  updateIconSize();
+
+  if (fly && pointFeature.geometry?.coordinates) {
+    map.flyTo({
+      center: pointFeature.geometry.coordinates,
+      zoom: Math.max(map.getZoom(), 13),
+      essential: true
+    });
+  }
+
+  if (window.umami) {
+          umami.track('access-point-select', {
+            region_code: props.region || '',
+            point_type: props.point_type || '',
+            point_title: props.title || '',
+            point_subtitle: props.subtitle || ''
+
+          });
+        }
+}
+
+window.goToAccessNav = function(direction) {
+  if (!accessNavFeatures.length) return;
+
+  const current = Number(currentNavNumber);
+
+  let idx = accessNavFeatures.findIndex(f =>
+    Number(f.properties?.nav_number) === current
+  );
+
+  if (idx === -1) {
+    idx = 0;
+  } else {
+    idx = (idx + direction + accessNavFeatures.length) % accessNavFeatures.length;
+  }
+
+  selectAccessFeature(accessNavFeatures[idx], true);
+};
 
       function selectFeatureFromSearch(f) {
         const isRiver = typeof f.properties.Water !== 'undefined';
