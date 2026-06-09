@@ -1591,31 +1591,29 @@ const expr = clauses.length ? ['all', ...clauses] : true;
         <canvas id="flowDevChartCanvas" width="360" height="210"></canvas>
       </div>
     `
-          : graphURL
-            ? `
-    <h4 style="margin-top:10px; margin-bottom:4px;">Recent time series</h4>
-    <a
-      href="${sourceURL}"
-      target="_blank"
-      rel="noopener"
-      style="display:block; width:100%; max-width:360px;"
-    >
-      <img
+         : graphURL
+  ? graphURL.includes('flowrate.co.nz')
+    ? `
+      <h4 style="margin-top:10px; margin-bottom:4px;">Recent flow</h4>
+      <iframe
         src="${graphURL}"
-        alt="Recent ${param.toLowerCase()} graph"
-        style="
-          display:block;
-          width:100%;
-          height:auto;
-          border-radius:6px;
-          border:1px solid rgba(0,0,0,0.1);
-          cursor:pointer;
-        "
-        loading="lazy"
-      />
-    </a>
-  
-  `
+        width="100%"
+        height="520"
+        style="border:none; border-radius:6px; max-width:360px;"
+        loading="lazy">
+      </iframe>
+    `
+    : `
+      <h4 style="margin-top:10px; margin-bottom:4px;">Recent time series</h4>
+      <a href="${sourceURL}" target="_blank" rel="noopener" style="display:block; width:100%; max-width:360px;">
+        <img
+          src="${graphURL}"
+          alt="Recent ${param.toLowerCase()} graph"
+          style="display:block; width:100%; height:auto; border-radius:6px; border:1px solid rgba(0,0,0,0.1); cursor:pointer;"
+          loading="lazy"
+        />
+      </a>
+    `
             : `
         <h4 style="margin-top:10px; margin-bottom:4px;">Recent time series</h4>
         <div style="font-size:12px; color:#666;">
@@ -1902,15 +1900,16 @@ const awAccessFooter =
   `;
 }
 
-        if (!isBlankish(props.nav_number)) {
-  content += `
-    <div class="access-nav">
-      <button onclick="goToAccessNav(-1)">← PREV</button>
-      <span> NEARBY ACCESS </span>
-      <button onclick="goToAccessNav(1)">NEXT →</button>
-    </div>
-  `;
-}
+// NAVIGATION BUTTONS
+//         if (!isBlankish(props.nav_number)) {
+//   content += `
+//     <div class="access-nav">
+//       <button onclick="goToAccessNav(-1)">← PREV</button>
+//       <span> NEARBY ACCESS </span>
+//       <button onclick="goToAccessNav(1)">NEXT →</button>
+//     </div>
+//   `;
+// }
         content += `
       <code class="card-title">${props.Water || props.name || props.title || 'No Title'}</code>
     `;
