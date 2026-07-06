@@ -1511,6 +1511,9 @@ const expr = clauses.length ? ['all', ...clauses] : true;
         const whenRaw = props.latest_datetime;
         const unitProp = props.unit;
 
+        const description = !isBlankish(props.description) ? String(props.description) : "";
+const disclaimer = !isBlankish(props.disclaimer) ? String(props.disclaimer) : "";
+
         // optional links
         const sourceURL = props.source_url || null;
 
@@ -1537,6 +1540,10 @@ const expr = clauses.length ? ['all', ...clauses] : true;
         const isNumeric = Number.isFinite(numVal);
         const valFormatted = isNumeric ? numVal.toFixed(1) : (rawVal ?? 'NA');
 
+        const figureTextBlock = `
+  ${description ? `<div style="font-size:13px; color:#555; margin-top:8px;">${description}</div>` : ``}
+  ${disclaimer ? `<div style="font-size:10px; color:#777; margin-top:1px; font-style:italic;line-height:1.1;">${disclaimer}</div>` : ``}
+`;
         let summaryText = 'Latest value not available.<br> Check the source link above for live data';
         if (whenRaw) {
           try {
@@ -1648,6 +1655,9 @@ const expr = clauses.length ? ['all', ...clauses] : true;
         </ul>
 
         ${chartBlock}
+
+        ${figureTextBlock}
+
       </div>
     </div>
   `;
