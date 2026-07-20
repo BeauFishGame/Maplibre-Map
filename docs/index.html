@@ -1406,7 +1406,7 @@ const expr = clauses.length ? ['all', ...clauses] : true;
         return rc === DOC_REGION_CODE ? riverDefaultImage.DOC : riverDefaultImage.FG;
       }
 
-      ['images/Slide12.PNG', 'images/Slide13.PNG', 'images/Slide18.png', 'images/Slide19.png', 'images/Slide20.PNG']
+      ['images/Slide12.PNG', 'images/Slide13.PNG', 'images/Slide18.png', 'images/Slide19.png', 'images/Slide20.png']
         .forEach(src => {
           const im = new Image();
           im.src = src;
@@ -2911,43 +2911,6 @@ let currentNavNumber = null;
           }, insertBeforeLayer);
         }
 
-        if (!map.getLayer('Waterways-selected-halo')) {
-          map.addLayer({
-            id: 'Waterways-selected-halo',
-            type: 'line',
-            source: 'Waterways',
-            'source-layer': 'waterways',
-            minzoom: 7,
-            layout: { 'line-join': 'round', 'line-cap': 'round' },
-            paint: {
-              'line-color': [
-                'case',
-                ['any',
-                  ['<', TODAY_UNIX, ['get', 'open_date_unix']],
-                  ['>', TODAY_UNIX, ['get', 'close_date_unix']]
-                ],
-                ['case',
-                  ['boolean', ['feature-state', 'selected'], false], '#9B0019',
-                  ['boolean', ['feature-state', 'highlight'], false], '#f42f58',
-                  '#f42f58'
-                ],
-                ['case',
-                  ['boolean', ['feature-state', 'selected'], false], '#002366',
-                  ['boolean', ['feature-state', 'highlight'], false], '#4ca6e6',
-                  '#4ca6e6'
-                ]
-              ],
-              'line-width': [
-                'case',
-                ['boolean', ['feature-state', 'selected'], false], 5,
-                ['boolean', ['feature-state', 'highlight'], false], 5,
-                3
-              ],
-              'line-opacity': 1
-            },
-            filter: ['==', ['id'], -1]
-          });
-        }
 
         if (isTouch && !map.getLayer('Waterways-touch')) {
           map.addLayer({
@@ -2972,6 +2935,15 @@ let currentNavNumber = null;
           });
         }
 
+        if (!sources['FG Regions Borders Only']) {
+          map.addSource('FG Regions Borders Only', {
+            type: 'vector',
+            tiles: ['https://data.fishandgameaccessmap.org/fg_regions_borders_only/{z}/{x}/{y}'],
+            minzoom: 0, maxzoom: 10
+          });
+        }
+
+        
         if (!sources['FG Regions']) {
           map.addSource('FG Regions', {
             type: 'vector',
@@ -3008,8 +2980,8 @@ if (!map.getLayer('FG Regions-linebackground')) {
   map.addLayer({
     id: 'FG Regions-linebackground',
     type: 'line',
-    source: 'FG Regions',
-    'source-layer': 'fg_regions',
+    source: 'FG Regions Borders Only',
+    'source-layer': 'fg_regions_borders_only',
     layout: { 'line-join': 'round', 'line-cap': 'round' },
     paint: {
       'line-color': '#fff',
@@ -3035,8 +3007,8 @@ if (!map.getLayer('FG Regions-line')) {
   map.addLayer({
     id: 'FG Regions-line',
     type: 'line',
-    source: 'FG Regions',
-    'source-layer': 'fg_regions',
+    source: 'FG Regions Borders Only',
+    'source-layer': 'fg_regions_borders_only',
     layout: { 'line-join': 'round', 'line-cap': 'round' },
     paint: {
       'line-color': '#008678',
@@ -3057,6 +3029,8 @@ if (!map.getLayer('FG Regions-line')) {
     }
   }, insertBeforeLayer);
 }
+
+
 
         if (!sources['Routes']) {
           map.addSource('Routes', {
