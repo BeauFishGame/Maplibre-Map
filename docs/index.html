@@ -69,7 +69,7 @@
             <!-- ================= WATERWAY DATA ================= -->
             <div class="source-card" data-source="waterways">
               <div class="source-head">
-                <div class="source-name">Waterway Layers (Zoom >7)</div>
+                <div class="source-name">Waterway/Regulations Layer (Zoom >7)</div>
                 <div class="source-controls">
                   <button class="btn toggle-visible" aria-pressed="true" data-source="waterways">Shown</button>
                   <button class="btn small toggle-expand" aria-expanded="false">Options ▾</button>
@@ -132,6 +132,48 @@
                   <label class="option"><input type="radio" name="w-fishery" value="coarse"> Coarse fishery</label>
                 </div>
 
+                <div
+  class="group dev-only"
+  data-group="w-dev-date"
+  style="display:none;"
+>
+  <div class="group-title">Development date override</div>
+
+  <label class="option" for="dev-today-unix">
+    UNIX timestamp
+  </label>
+
+  <input
+    type="number"
+    id="dev-today-unix"
+    step="1"
+    inputmode="numeric"
+    placeholder="Enter UNIX timestamp"
+    style="
+      box-sizing:border-box;
+      width:100%;
+      margin-top:6px;
+      padding:8px;
+      border:1px solid #bbb;
+      border-radius:4px;
+    "
+  >
+
+  <div style="display:flex; gap:6px; margin-top:7px;">
+    <button type="button" class="btn small" id="apply-dev-unix">
+      Apply
+    </button>
+
+    <button type="button" class="btn small" id="reset-dev-unix">
+      Reset to today
+    </button>
+  </div>
+
+  <div
+    id="dev-unix-status"
+    style="font-size:12px; margin-top:7px;"
+  ></div>
+</div>
                 <!-- 
               <div class="group" data-group="w-species" data-type="checkboxAny">
                 <div class="group-title">Known Species</div>
@@ -151,7 +193,7 @@
             <!-- ================= POINT DATA ================= -->
             <div class="source-card" data-source="points">
               <div class="source-head">
-                <div class="source-name">Point Layers (Zoom >7)</div>
+                <div class="source-name">Point/Access Information Layer (Zoom >7)</div>
                 <div class="source-controls">
                   <button class="btn toggle-visible" aria-pressed="true" data-source="points">Shown</button>
                   <button class="btn small toggle-expand" aria-expanded="false">Options ▾</button>
@@ -210,7 +252,7 @@
             <!-- ========== PUBLIC ACCESS & PROPERTY LAYERS ========== -->
             <div class="source-card" data-source="publicAccess">
               <div class="source-head">
-                <div class="source-name">Public Access &amp; Property Layers (Zoom > 12)</div>
+                <div class="source-name">Public Access &amp; Property Layers (Zoom > 13)</div>
                 <div class="source-controls">
                   <button class="btn toggle-visible" aria-pressed="true" data-source="publicAccess">Shown</button>
                   <button class="btn small toggle-expand" aria-expanded="false">Options ▾</button>
@@ -506,12 +548,11 @@
                 }
 
                 if (openMode === 'filter_today') {
-                  const today = window.__TODAY_UNIX__;
-                  clauses.push(['all',
-                    ['<=', ['get', p.open_start], today],
-                    ['>=', ['get', p.open_end], today]
-                  ]);
-                }
+  clauses.push([
+    '!',
+    getWaterwayClosedExpression(window.__TODAY_UNIX__)
+  ]);
+}
 
                 const finalExpr = clauses.length ? ['all', ...clauses] : true;
                 (LAYERS.waterways || []).forEach(id => safeSetFilter(id, finalExpr));
@@ -646,11 +687,18 @@
       const styleURL = 'https://basemaps.linz.govt.nz/v1/styles/topo-raster.json?api=d01hep5551e30kxb7w85hck49tp';
       //const TODAY_UNIX = Math.floor(Date.now() / 1000);
 
-      const TODAY_UNIX = Math.floor((Date.now() + (13 * 60 * 60 * 1000)) / 1000);
-      //const TODAY_UNIX = 1787413278;
 
+function getCurrentNZUnix() {
 
-      console.log("TODAY_UNIX:", TODAY_UNIX);
+  return Math.floor(Date.now()  / 1000);
+}
+
+window.__DEFAULT_TODAY_UNIX__ = getCurrentNZUnix();
+window.__TODAY_UNIX__ = window.__DEFAULT_TODAY_UNIX__;
+
+console.log("TODAY_UNIX:", window.__TODAY_UNIX__);
+      
+
       const map = new maplibregl.Map({
         container: 'map',
         style: styleURL,
@@ -1133,6 +1181,8 @@
           (LAYERS.waterways || []).forEach(id => safeSetFilter(id, finalExpr));
         }
 
+window.__applyWaterwayFilters = applyWaterwayFilters;
+
         function applyPointFilters() {
           const selected = getChecks('p-type'); // null=all; []=none; otherwise list
 
@@ -1278,6 +1328,71 @@ const expr = clauses.length ? ['all', ...clauses] : true;
           }
         }
       }
+
+      function formatUnixForDev(timestamp) {
+  const value = Number(timestamp);
+
+  if (!Number.isFinite(value)) {
+    return 'Invalid UNIX timestamp';
+  }
+
+  return new Date(value * 1000).toLocaleString('en-NZ', {
+    timeZone: 'Pacific/Auckland',
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  });
+}
+
+function setupDevUnixControl() {
+  const input = document.getElementById('dev-today-unix');
+  const applyButton = document.getElementById('apply-dev-unix');
+  const resetButton = document.getElementById('reset-dev-unix');
+  const status = document.getElementById('dev-unix-status');
+
+  if (!input || !applyButton || !resetButton || !status) return;
+
+  function showCurrentValue() {
+    input.value = String(window.__TODAY_UNIX__);
+    status.textContent =
+      `Active date: ${formatUnixForDev(window.__TODAY_UNIX__)}`;
+  }
+
+  function applyInputValue() {
+    const value = Number(input.value.trim());
+
+    if (!Number.isInteger(value) || value <= 0) {
+      status.textContent = 'Enter a valid UNIX timestamp in seconds.';
+      return;
+    }
+
+    window.__TODAY_UNIX__ = value;
+    updateWaterwayDateStyling();
+
+    status.textContent =
+      `Active date: ${formatUnixForDev(value)}`;
+
+    console.log('TODAY_UNIX changed to:', value);
+  }
+
+  applyButton.addEventListener('click', applyInputValue);
+
+  input.addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+      applyInputValue();
+    }
+  });
+
+  resetButton.addEventListener('click', () => {
+    window.__DEFAULT_TODAY_UNIX__ = getCurrentNZUnix();
+    window.__TODAY_UNIX__ = window.__DEFAULT_TODAY_UNIX__;
+
+    updateWaterwayDateStyling();
+    showCurrentValue();
+  });
+
+  showCurrentValue();
+}
+
 
       function parseMultiLinks(props) {
         const urlsRaw = safeGet(props, 'more_info_url') ?? safeGet(props, 'moreinfo_url') ?? safeGet(props, 'MoreInfoURL');
@@ -2721,6 +2836,8 @@ let currentNavNumber = null;
       if (isDev) {
   document.querySelectorAll('.dev-only').forEach(el => {
     el.style.display = '';
+
+    setupDevUnixControl();
   });
 }
       const TILES_BASE = 'https://data.fishandgameaccessmap.org';
@@ -2748,6 +2865,131 @@ let currentNavNumber = null;
       fetch(URL_POINTS_GEOJSON)
         .then(res => res.json()).then(d => { allPointsFeatures = d.features; })
         .catch(err => console.error('Failed to load points data:', err));
+function getWaterwayClosedExpression(todayUnix = window.__TODAY_UNIX__) {
+  return [
+    'any',
+
+    // Outside the normal open season
+    [
+      'any',
+      ['<', todayUnix, ['to-number', ['get', 'open_date_unix']]],
+      ['>', todayUnix, ['to-number', ['get', 'close_date_unix']]]
+    ],
+
+    // Inside a temporary exclusion period
+    [
+      'all',
+
+      // Missing/null dates become -1
+      [
+        '>=',
+        ['to-number', ['get', 'exclusion_start_unix'], -1],
+        0
+      ],
+      [
+        '>=',
+        ['to-number', ['get', 'exclusion_end_unix'], -1],
+        0
+      ],
+
+      [
+        '>=',
+        todayUnix,
+        ['to-number', ['get', 'exclusion_start_unix'], -1]
+      ],
+      [
+        '<=',
+        todayUnix,
+        ['to-number', ['get', 'exclusion_end_unix'], -1]
+      ]
+    ]
+  ];
+}
+
+function getWaterwayLineColorExpression(
+  todayUnix = window.__TODAY_UNIX__
+) {
+  return [
+    'case',
+
+    getWaterwayClosedExpression(todayUnix),
+
+    // Closed
+    [
+      'case',
+      ['boolean', ['feature-state', 'selected'], false], '#ac261f',
+      ['boolean', ['feature-state', 'highlight'], false], '#DE0125',
+      '#DE0125'
+    ],
+
+    // Open
+    [
+      'case',
+      ['boolean', ['feature-state', 'selected'], false], '#153483',
+      ['boolean', ['feature-state', 'highlight'], false], '#093476',
+      '#0c4194'
+    ]
+  ];
+}
+function getWaterwayFillColorExpression(
+  todayUnix = window.__TODAY_UNIX__
+) {
+  return [
+    'case',
+
+    getWaterwayClosedExpression(todayUnix),
+
+    // Closed
+    [
+      'case',
+      ['boolean', ['feature-state', 'selected'], false], '#DE0125',
+      ['boolean', ['feature-state', 'highlight'], false], '#DE0125',
+      '#f7022a'
+    ],
+
+    // Open
+    [
+      'case',
+      ['boolean', ['feature-state', 'selected'], false], '#0b46a1',
+      ['boolean', ['feature-state', 'highlight'], false], '#0b46a1',
+      '#0F52BA'
+    ]
+  ];
+}
+
+function updateWaterwayDateStyling() {
+  const todayUnix = window.__TODAY_UNIX__;
+
+  if (map.getLayer('Waterways-line')) {
+    map.setPaintProperty(
+      'Waterways-line',
+      'line-color',
+      getWaterwayLineColorExpression(todayUnix)
+    );
+  }
+
+  if (map.getLayer('Waterways-fill')) {
+    map.setPaintProperty(
+      'Waterways-fill',
+      'fill-color',
+      getWaterwayFillColorExpression(todayUnix)
+    );
+  }
+
+  if (map.getLayer('Waterways-selected-halo')) {
+    map.setPaintProperty(
+      'Waterways-selected-halo',
+      'line-color',
+      getWaterwayLineColorExpression(todayUnix)
+    );
+  }
+
+  if (typeof window.__applyWaterwayFilters === 'function') {
+    window.__applyWaterwayFilters();
+  }
+
+  map.triggerRepaint();
+}
 
       function addCustomDataAndLayers() {
         const sources = map.getStyle().sources;
@@ -2848,23 +3090,7 @@ let currentNavNumber = null;
             'source-layer': 'waterways',
             layout: { 'line-join': 'round', 'line-cap': 'round' },
             paint: {
-              'line-color': [
-                'case',
-                ['any',
-                  ['<', TODAY_UNIX, ['get', 'open_date_unix']],
-                  ['>', TODAY_UNIX, ['get', 'close_date_unix']]
-                ],
-                ['case',
-                  ['boolean', ['feature-state', 'selected'], false], '#ac261f',
-                  ['boolean', ['feature-state', 'highlight'], false], '#DE0125',
-                  '#DE0125'
-                ],
-                ['case',
-                  ['boolean', ['feature-state', 'selected'], false], '#3949ab',
-                  ['boolean', ['feature-state', 'highlight'], false], '#093476',
-                  '#0c4194'
-                ]
-              ],
+              'line-color': getWaterwayLineColorExpression(),
               'line-width': [
                 'case',
                 ['boolean', ['feature-state', 'selected'], false], 5,
@@ -2884,23 +3110,7 @@ let currentNavNumber = null;
             source: 'Waterways',
             'source-layer': 'waterways',
             paint: {
-              'fill-color': [
-                'case',
-                ['any',
-                  ['<', TODAY_UNIX, ['get', 'open_date_unix']],
-                  ['>', TODAY_UNIX, ['get', 'close_date_unix']]
-                ],
-                ['case',
-                  ['boolean', ['feature-state', 'selected'], false], '#DE0125',
-                  ['boolean', ['feature-state', 'highlight'], false], '#DE0125',
-                  '#f7022a'
-                ],
-                ['case',
-                  ['boolean', ['feature-state', 'selected'], false], '#0b46a1',
-                  ['boolean', ['feature-state', 'highlight'], false], '#0b46a1',
-                  '#0F52BA'
-                ]
-              ],
+              'fill-color':getWaterwayFillColorExpression(),
               'fill-opacity': [
                 'interpolate', ['linear'], ['zoom'],
                 12, .5,
@@ -2911,6 +3121,27 @@ let currentNavNumber = null;
           }, insertBeforeLayer);
         }
 
+            if (!map.getLayer('Waterways-selected-halo')) {
+      map.addLayer({
+        id: 'Waterways-selected-halo',
+        type: 'line',
+        source: 'Waterways',
+        'source-layer': 'waterways',
+        minzoom: 7,
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: {
+          'line-color':getWaterwayLineColorExpression(),
+          'line-width': [
+            'case',
+            ['boolean', ['feature-state', 'selected'], false], 5,
+            ['boolean', ['feature-state', 'highlight'], false], 5,
+            3
+          ],
+          'line-opacity': 1
+        },
+        filter: ['==', ['id'], -1]
+      });
+    }
 
         if (isTouch && !map.getLayer('Waterways-touch')) {
           map.addLayer({
@@ -3596,8 +3827,9 @@ window.goToAccessNav = function(direction) {
         suggestions.style.display = 'none';
       }
 
-      if (window.setupAWFilters) window.setupAWFilters(map);
-      window.__TODAY_UNIX__ = TODAY_UNIX;
+     if (window.setupAWFilters) {
+  window.setupAWFilters(map);
+}
 
       proj4.defs("EPSG:2193",
         "+proj=tmerc +lat_0=0 +lon_0=173 +k=0.9996 " +
