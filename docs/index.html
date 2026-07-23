@@ -324,6 +324,9 @@
               }
             });
 
+
+            let selectedWaterwayId = null;
+
             // Debounce helper to avoid spamming setFilter
             let filterTimer = null;
             function scheduleApply(fn) {
@@ -1543,6 +1546,7 @@ function setupDevUnixControl() {
         'Parking': 'images/Slide15.PNG',
         'Shop': 'images/Slide16.PNG',
         'Lodge': 'images/Slide17.PNG',
+        'Reception': 'images/Slide21.PNG',
       };
 
 
@@ -2174,6 +2178,7 @@ content += devSignInfo;
         { name: 'BeatY-icon', url: 'images/BeatY.png' },
         { name: 'Flow-icon', url: 'images/Flow.png' },
         { name: 'Temp-icon', url: 'images/Temp.png' },
+        { name: 'Reception-icon', url: 'images/Reception.png' },
       ];
 
       function loadCustomImages(map, callback) {

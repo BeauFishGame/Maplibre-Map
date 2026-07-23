@@ -998,12 +998,12 @@
 .tag-junior{
   --bg:#66b8ff;
   --border:#66b8ff;
-  --text:#1d6fb5;
+  --text:#113a5e;
   --bg-hover:#cfeaff;
 }
 
 .tag-stocked{
-  --bg:#8a8a8a;
+  --bg:#707070;
   --border:#8a8a8a;
   --text:#ffffff;
   --bg-hover:#8a8a8a;
