@@ -3786,7 +3786,7 @@ window.goToAccessNav = function(direction) {
         const coords = f.geometry.coordinates;
 
         clearSelection();
-        map.flyTo({ center: coords, zoom: Math.max(map.getZoom(), 12) });
+        map.flyTo({ center: coords, zoom: Math.max(map.getZoom(), 12.9) });
 
         map.once('moveend', () => {
           const pt = map.project(coords);
