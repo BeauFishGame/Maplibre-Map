@@ -310,7 +310,7 @@
     }
 
     /* Mobile */
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       #search-container {
         position: static;
         /* kill absolute centering */
@@ -326,7 +326,7 @@
     }
 
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       #top-bar {
         height: 56px;
         padding: 0 10px;
@@ -366,7 +366,7 @@
       }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
 
       /* Move map controls to bottom left on mobile */
       .maplibregl-ctrl-top-right {
@@ -384,7 +384,7 @@
     }
 
     /* Bottom sheet behavior on small screens */
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .map-overlay-inner {
         position: fixed;
         top: auto;
@@ -410,7 +410,7 @@
     }
 
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
 
       #filter-toggle-btn,
       #basemap-toggle-btn {
@@ -427,13 +427,13 @@
     }
 
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .maplibregl-ctrl-bottom-right {
         margin: 0 10px calc(10px + env(safe-area-inset-bottom)) 0;
       }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .map-overlay-inner {
         box-shadow: 0 6px 16px rgba(0, 0, 0, .25);
       }
@@ -482,7 +482,7 @@
     }
 
     /* Mobile scaling */
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
 
       #actions #filter-toggle-btn,
       #actions #basemap-toggle-btn {
@@ -500,7 +500,7 @@
 
 
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       #top-bar {
         display: flex;
         align-items: center;
@@ -588,7 +588,7 @@
         cursor: pointer;
       }
 
-      @media (max-width: 768px) {
+      @media (max-width: 1024px) {
         .modal-content {
           max-width: 92%;
           max-height: 82%;
@@ -757,7 +757,7 @@
             display: block;
           }
 
-          @media (max-width: 768px) {
+          @media (max-width: 1024px) {
             .card-image-wrap {
               aspect-ratio: 16/4.5;
               /* new mobile ratio: 10 long × 4 high */
@@ -1052,7 +1052,7 @@
 }
 
 
-@media (min-width: 769px){
+@media (min-width: 1025px){
   #properties .map-overlay-inner{
     display: flex;
     flex-direction: column;
