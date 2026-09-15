@@ -2084,11 +2084,23 @@ const awAccessFooter =
           content += `</div>`;
         }
 
-        if (props.region || props.Region) {
-          const regionName = props.Region || props.region;
-          const label = (props.RegionCode == 13) ? "Fishing District" : "Fish & Game Region 2025/2026";
-          content += `<div class="card-subtitle subtitle-region">${regionName} ${label}</div>`;
-        }
+      if (props.region || props.Region) {
+  const regionName = props.Region || props.region;
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); // Jan = 0, Oct = 9
+
+  // Fishing season changes on 1 October
+  const seasonStart = month >= 9 ? year : year - 1;
+  const seasonYear = `${seasonStart}/${seasonStart + 1}`;
+
+  const label = (props.RegionCode == 13)
+    ? "Fishing District"
+    : `Fish & Game Region ${seasonYear}`;
+
+  content += `<div class="card-subtitle subtitle-region">${regionName} ${label}</div>`;
+}
 
         content += renderWaterwayTags(props);
         content += `<hr><ul class="card-list">`;
