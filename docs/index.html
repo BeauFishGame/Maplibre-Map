@@ -121,6 +121,7 @@
                   <label class="option"><input type="radio" name="w-type" value="__ALL__" checked> ALL</label>
                   <label class="option"><input type="radio" name="w-type" value="Rivers/streams"> Rivers/streams</label>
                   <label class="option"><input type="radio" name="w-type" value="Lakes"> Lakes</label>
+                  <label class="option"><input type="radio" name="w-type" value="Estuary"> Estuaries</label>
                   <label class="option"><input type="radio" name="w-type" value="Canals"> Canals</label>
                   <label class="option"><input type="radio" name="w-type" value="Ponds"> Ponds</label>
                 </div>
@@ -373,7 +374,6 @@
             const DOC_TAUPO_LICENCE_URL = "https://www.doc.govt.nz/parks-and-recreation/buy-a-taupo-fishing-licence-online/";
 
 
-
             const REGION_REG_URLS = {
               1: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.03-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Northland-V2-WEB.pdf",
               2: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Auckland-Waikato-V4-WEB.pdf",  // Auckland/Waikato
@@ -389,6 +389,39 @@
               12: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Southland-V5-WEB.pdf",
               13: "https://www.doc.govt.nz/parks-and-recreation/places-to-go/central-north-island/places/taupo-trout-fishery/other-pages/rules-and-regulation---what-you-need-to-know/"
             };
+
+              const UPCOMING_REGION_REG_URLS = {
+              1: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/2026/2027/Fish-and-Game-Sportsfishing-Regs-Brochure-2026-27-Northland.pdf",
+              2: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/2026/2027/Fish-and-Game-Sportsfishing-Regs-Brochure-2026-27-Auckland-Waikato.pdf",  // Auckland/Waikato
+              3: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/2026/2027/Fish-and-Game-Sportsfishing-Regs-Brochure-2026-27-Eastern.pdf",  // Eastern
+              4: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/2026/2027/Fish-and-Game-Sportsfishing-Regs-Brochure-2026-27-Taranaki.pdf",
+              5: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/2026/2027/Fish-and-Game-Sportsfishing-Regs-Brochure-2026-27-Hawkes-Bay.pdf",
+              6: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/2026/2027/Fish-and-Game-Sportsfishing-Regs-Brochure-2026-27-Wellington.pdf",
+              7: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/2026/2027/Fish-and-Game-Sportsfishing-Regs-Brochure-2026-27-Nelson-Marlborough.pdf",
+              8: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/2026/2027/Fish-and-Game-Sportsfishing-Regs-Brochure-2026-27-North-Canterbury.pdf",
+              9: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/2026/2027/Fish-and-Game-Sportsfishing-Regs-Brochure-2026-27-West-Coast.pdf",
+              10: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/2026/2027/Fish-and-Game-Sportsfishing-Regs-Brochure-2026-27-Central-South-Island.pdf",
+              11: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/2026/2027/Fish-and-Game-Sportsfishing-Regs-Brochure-2026-27-Otago.pdf",
+              12: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/2026/2027/Fish-and-Game-Sportsfishing-Regs-Brochure-2026-27-Southland.pdf",
+              13: "https://www.doc.govt.nz/parks-and-recreation/places-to-go/central-north-island/places/taupo-trout-fishery/other-pages/rules-and-regulation---what-you-need-to-know/"
+            };
+
+            const REGULATION_SWITCH_DATE = "2026-10-01";
+
+function hasSeasonChanged() {
+  const todayNZ = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Pacific/Auckland",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(new Date());
+
+  return todayNZ >= REGULATION_SWITCH_DATE;
+}
+
+const ACTIVE_REGION_REG_URLS = hasSeasonChanged()
+  ? UPCOMING_REGION_REG_URLS
+  : REGION_REG_URLS;
 
             function getRegionCode(props) {
               const raw =
@@ -408,7 +441,7 @@
               if (!Number.isInteger(rc) || rc < 1 || rc > 13) return null;
 
               // only return if we actually have a URL for this code
-              return REGION_REG_URLS[rc] || null;
+              return ACTIVE_REGION_REG_URLS[rc] || null;
             }
 
 
@@ -2068,7 +2101,11 @@ const awAccessFooter =
           const subtitleText = props.subtitle || props.Section;
           content += `<div class="card-subtitle subtitle-main">${subtitleText}`;
 
-          if (feature.geometry?.type === 'Point' && Array.isArray(feature.geometry.coordinates)) {
+          if (
+  feature.geometry?.type === 'Point' &&
+  Array.isArray(feature.geometry.coordinates) &&
+  !isBlankish(props.point_type)
+) {
             const [lng, lat] = feature.geometry.coordinates;
             const googleMapsLink = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
             content += `<br>  
@@ -2086,18 +2123,11 @@ const awAccessFooter =
 
       if (props.region || props.Region) {
   const regionName = props.Region || props.region;
-
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth(); // Jan = 0, Oct = 9
-
-  // Fishing season changes on 1 October
-  const seasonStart = month >= 9 ? year : year - 1;
-  const seasonYear = `${seasonStart}/${seasonStart + 1}`;
+  const SeasonYear = props.season_year;
 
   const label = (props.RegionCode == 13)
     ? "Fishing District"
-    : `Fish & Game Region ${seasonYear}`;
+    : `Fish & Game Region ${SeasonYear}`;
 
   content += `<div class="card-subtitle subtitle-region">${regionName} ${label}</div>`;
 }
@@ -3792,79 +3822,102 @@ window.goToAccessNav = function(direction) {
 
   selectAccessFeature(accessNavFeatures[idx], true);
 };
+function selectFeatureFromSearch(f) {
+  const isRiver = typeof f.properties.Water !== 'undefined';
+  const coords = f.geometry.coordinates;
 
-      function selectFeatureFromSearch(f) {
-        const isRiver = typeof f.properties.Water !== 'undefined';
-        const coords = f.geometry.coordinates;
+  clearSelection();
 
-        clearSelection();
-        map.flyTo({ center: coords, zoom: Math.max(map.getZoom(), 12.9) });
+  map.flyTo({
+    center: coords,
+    zoom: Math.max(map.getZoom(), 11)
+  });
 
-        map.once('moveend', () => {
-          const pt = map.project(coords);
-          const bbox = [
-            { x: pt.x - 10, y: pt.y - 10 },
-            { x: pt.x + 10, y: pt.y + 10 }
-          ];
+  map.once('moveend', () => {
 
-          let found = null;
-          if (isRiver) {
-            const rivers = map.queryRenderedFeatures([bbox[0], bbox[1]], {
-              layers: (isTouch
-                ? ['Waterways-touch', 'Waterways-line', 'Waterways-fill']
-                : ['Waterways-line', 'Waterways-fill'])
-            });
-            found = rivers.find(r =>
-              (r.properties?.Water === f.properties.Water) &&
-              (isBlankish(f.properties.Section) || r.properties?.Section === f.properties.Section)
-            ) || rivers[0];
+    // ==========================================
+    // WATERWAYS
+    // Search point -> match MBTiles feature by ID
+    // ==========================================
+    if (isRiver) {
 
-            if (found) {
-              selectFeature(found);
-              return;
-            }
+      const targetId = String(f.id ?? f.properties.id);
 
-            found = {
-              type: 'Feature',
-              geometry: f.geometry,
-              properties: f.properties,
-              layer: { id: 'Waterways-line' },
-              id: f.id
-            };
-            showCard(found);
-            return;
-          } else {
-            const points = map.queryRenderedFeatures([bbox[0], bbox[1]], {
-              layers: ['data-points-all']
-            });
-            found = points.find(p =>
-              (p.properties?.title && f.properties?.title && p.properties.title === f.properties.title) ||
-              (p.properties?.Region && f.properties?.Region && p.properties.Region === f.properties.Region)
-            ) || points[0];
+      const layers = [
+        'Waterways-line',
+        'Waterways-fill'
+      ].filter(id => map.getLayer(id));
 
-            if (found) {
-              selectFeature(found);
-              return;
-            }
+      const rendered = map.queryRenderedFeatures({
+        layers: layers
+      });
 
-            found = {
-              type: 'Feature',
-              geometry: f.geometry,
-              properties: f.properties,
-              layer: { id: 'data-points-all' },
-              id: f.id
-            };
-            showCard(found);
-            return;
-          }
-        });
+      const found = rendered.find(feature =>
+        String(feature.id) === targetId
+      );
 
-        inputEl.value = isRiver ? (f.properties.Water || '') : (f.properties.title || '');
-        suggestions.style.display = 'none';
+      if (found) {
+        selectFeature(found);
+      } else {
+        console.warn(
+          'Could not find waterway:',
+          f.properties.Water,
+          'ID:',
+          targetId
+        );
       }
 
-     if (window.setupAWFilters) {
-  window.setupAWFilters(map);
+    } else {
+
+      // ==========================================
+      // POINTS
+      // Find actual rendered point at search location
+      // ==========================================
+
+      const pixel = map.project(coords);
+
+      const bbox = [
+        [pixel.x - 10, pixel.y - 10],
+        [pixel.x + 10, pixel.y + 10]
+      ];
+
+      const points = map.queryRenderedFeatures(bbox, {
+        layers: ['data-points-all']
+      });
+
+      // Match the actual point
+      const found = points.find(p =>
+        p.properties?.title === f.properties?.title &&
+        p.properties?.Region === f.properties?.Region
+      );
+
+      if (found) {
+        selectFeature(found);
+      } else {
+        console.warn(
+          'Could not find rendered point:',
+          f.properties.title
+        );
+
+        // Fallback so the card still opens
+        showCard({
+          type: 'Feature',
+          geometry: f.geometry,
+          properties: f.properties,
+          layer: {
+            id: 'data-points-all'
+          },
+          id: f.id
+        });
+      }
+    }
+  });
+
+  inputEl.value = isRiver
+    ? (f.properties.Water || '')
+    : (f.properties.title || '');
+
+  suggestions.style.display = 'none';
 }
 
       proj4.defs("EPSG:2193",
