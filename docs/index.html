@@ -165,7 +165,7 @@
   <input
     type="number"
     id="dev-today-unix"
-    step="1"
+    step="86400"
     inputmode="numeric"
     placeholder="Enter UNIX timestamp"
     style="
@@ -178,6 +178,7 @@
     "
   >
 
+  
   <div style="display:flex; gap:6px; margin-top:7px;">
     <button type="button" class="btn small" id="apply-dev-unix">
       Apply
@@ -1428,15 +1429,19 @@ function setupDevUnixControl() {
     console.log('TODAY_UNIX changed to:', value);
   }
 
-  applyButton.addEventListener('click', applyInputValue);
+applyButton.addEventListener('click', applyInputValue);
 
-  input.addEventListener('keydown', event => {
-    if (event.key === 'Enter') {
-      applyInputValue();
-    }
-  });
+input.addEventListener('keydown', event => {
+  if (event.key === 'Enter') {
+    applyInputValue();
+  }
+});
 
-  resetButton.addEventListener('click', () => {
+input.addEventListener('input', () => {
+  applyInputValue();
+});
+
+resetButton.addEventListener('click', () => {
     window.__DEFAULT_TODAY_UNIX__ = getCurrentNZUnix();
     window.__TODAY_UNIX__ = window.__DEFAULT_TODAY_UNIX__;
 
