@@ -1052,7 +1052,7 @@
 }
 
 
-@media (min-width: 1025px){
+@media (min-width: 700px){
   #properties .map-overlay-inner{
     display: flex;
     flex-direction: column;
