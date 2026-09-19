@@ -86,6 +86,7 @@
 
     <div id="combined-filters" style="display:none;">
       <div class="map-overlay-inner">
+        <div class="sheet-drag-handle"></div>
         <button class="close-button" onclick="closeCard()">&times;</button>
 
         <div class="panel-scroll">
@@ -326,6 +327,8 @@
 
           </div><!-- /filters-body -->
 
+
+          
           <script>
             // Expand/collapse UI (no map dependency)
             document.querySelectorAll('#filters-body .toggle-expand').forEach(btn => {
@@ -656,6 +659,7 @@ const ACTIVE_REGION_REG_URLS = hasSeasonChanged()
 
     <div id="combined-basemaps" style="display:none;">
       <div class="map-overlay-inner">
+         <div class="sheet-drag-handle"></div>
         <button class="close-button" onclick="closeCard()">&times;</button>
 
         <div class="panel-scroll">
@@ -1816,6 +1820,7 @@ const disclaimer = !isBlankish(props.disclaimer) ? String(props.disclaimer) : ""
 
         const cardHtml = `
     <div class="map-overlay-inner">
+       <div class="sheet-drag-handle"></div>
       <button class="close-button" onclick="closeCard()">&times;</button>
       <div class="panel-scroll">
         ${defaultImage ? `
@@ -1848,8 +1853,13 @@ const disclaimer = !isBlankish(props.disclaimer) ? String(props.disclaimer) : ""
     </div>
   `;
 
-        card.innerHTML = cardHtml;
-        openPanel('card');
+      card.innerHTML = cardHtml;
+
+makeSheetDraggable(
+  card.querySelector('.map-overlay-inner')
+);
+
+openPanel('card');
 
         // if no timeseries, we’re done (graph is embedded or message shown)
         if (!hasTimeseries) return;
@@ -2074,7 +2084,7 @@ const awAccessFooter =
 
         let content = `
       <div class="map-overlay-inner">
-        <div class="map-overlay-drag-handle"></div>
+         <div class="sheet-drag-handle"></div>
         <button class="close-button" onclick="closeCard()">&times;</button>
         <div class="panel-scroll">
     `;
@@ -2221,10 +2231,15 @@ content += devSignInfo;
 
         content += `</div></div>`;
 
-        card.innerHTML = content;
-        if (photoList.length) setCardImage(0);
+     card.innerHTML = content;
 
-        openPanel('card');
+makeSheetDraggable(
+  card.querySelector('.map-overlay-inner')
+);
+
+if (photoList.length) setCardImage(0);
+
+openPanel('card');
       };
 
       // ===== Custom icons, icon sizing, etc. (unchanged) =====
@@ -4065,7 +4080,90 @@ function selectFeatureFromSearch(f) {
         });
       });
     </script>
+<script>
+  function makeSheetDraggable(sheet) {
 
+    if (!sheet) return;
+
+    const handle = sheet.querySelector('.sheet-drag-handle');
+    if (!handle) return;
+
+    // Prevent accidentally wiring the same sheet twice
+    if (sheet.dataset.dragBound === 'true') return;
+    sheet.dataset.dragBound = 'true';
+
+    let startY = 0;
+    let startHeight = 0;
+    let dragging = false;
+
+    handle.addEventListener('pointerdown', (e) => {
+      dragging = true;
+
+      startY = e.clientY;
+      startHeight = sheet.getBoundingClientRect().height;
+
+      sheet.style.transition = 'none';
+
+      handle.setPointerCapture(e.pointerId);
+    });
+
+    handle.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+
+      const deltaY = startY - e.clientY;
+      const newHeight = startHeight + deltaY;
+
+      const minHeight = window.innerHeight * 0.18;
+      const maxHeight = window.innerHeight * 0.90;
+
+      const clampedHeight = Math.max(
+        minHeight,
+        Math.min(maxHeight, newHeight)
+      );
+
+      sheet.style.height = `${clampedHeight}px`;
+    });
+
+    function finishDrag(e) {
+      if (!dragging) return;
+
+      dragging = false;
+
+      sheet.style.transition = 'height 0.2s ease';
+
+      const height = sheet.getBoundingClientRect().height;
+      const vh = window.innerHeight;
+
+      let targetHeight;
+if (height < vh * 0.29) {
+  targetHeight = vh * 0.18;
+
+} else if (height < vh * 0.525) {
+  targetHeight = vh * 0.40;
+
+} else if (height < vh * 0.775) {
+  targetHeight = vh * 0.65;
+
+} else {
+  targetHeight = vh * 0.90;
+}
+
+      sheet.style.height = `${targetHeight}px`;
+
+      if (handle.hasPointerCapture(e.pointerId)) {
+        handle.releasePointerCapture(e.pointerId);
+      }
+    }
+
+    handle.addEventListener('pointerup', finishDrag);
+    handle.addEventListener('pointercancel', finishDrag);
+  }
+
+
+  // Wire panels that already exist when the page loads
+  document.querySelectorAll('.map-overlay-inner')
+    .forEach(makeSheetDraggable);
+</script>
 </body>
 
 </html>
