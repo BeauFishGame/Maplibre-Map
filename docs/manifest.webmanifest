@@ -1,6 +1,6 @@
 {
   "name": "Fish & Game Fishing Access Map",
-  "short_name": "F&G Map",
+  "short_name": "Fishing Map",
   "description": "Fishing access, regulations and public access information for New Zealand.",
   "start_url": "/",
   "scope": "/",
