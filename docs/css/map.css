@@ -531,6 +531,35 @@
       }
     }
 
+    @media (display-mode: standalone) and (orientation: portrait) {
+
+  .is-ios #top-bar {
+    margin-top: 16px;
+  }
+
+}
+#status-bar-tint {
+  display: none;
+}
+
+/* iPhone/iPad standalone PWA only */
+@media (display-mode: standalone) and (orientation: portrait) {
+  .is-ios #status-bar-tint {
+    display: block;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 16px;
+
+    background: #000;
+
+    z-index: 99999;
+    pointer-events: none;
+  }
+}
 
 @media (max-width: 768px) {
 
