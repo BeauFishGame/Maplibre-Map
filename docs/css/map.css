@@ -327,11 +327,6 @@
 
 
     @media (max-width: 768px) {
-      #top-bar {
-        height: 56px;
-        padding: 0 10px;
-      }
-
       #top-bar .logo {
         display: none;
       }
@@ -360,17 +355,13 @@
         max-height: 45vh;
       }
 
-      /* MapLibre controls away from the bar */
-      .maplibregl-ctrl-top-right {
-        top: 8px;
-      }
     }
 
 @media (max-width: 768px) {
 
   /* Move MapLibre controls to top-left on mobile */
   .maplibregl-ctrl-top-right {
-    top: calc(72px + env(safe-area-inset-top)) !important;
+    top: 66px !important;
     right: auto !important;
     bottom: auto !important;
     left: 10px !important;
@@ -529,44 +520,45 @@
       }
     }
 
-    @media (display-mode: standalone) and (orientation: portrait) {
-
-  .is-ios #top-bar {
-    margin-top: 16px;
-  }
-
+/* iOS standalone-PWA status-bar workaround */
+:root {
+  --ios-status-fix: 8px;
 }
+
 #status-bar-tint {
   display: none;
 }
 
-/* iPhone/iPad standalone PWA only */
 @media (display-mode: standalone) and (orientation: portrait) {
   .is-ios #status-bar-tint {
     display: block;
-
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-
-    height: 16px;
-
+    height: var(--ios-status-fix);
     background: #000;
-
     z-index: 99999;
     pointer-events: none;
+  }
+
+  .is-ios #top-bar {
+    margin-top: var(--ios-status-fix);
+  }
+
+  .is-ios .maplibregl-ctrl-top-right {
+    top: calc(66px + var(--ios-status-fix)) !important;
   }
 }
 
 @media (max-width: 768px) {
 
   #top-bar {
+    height: 56px;
     display: flex;
     align-items: center;
     gap: 8px;
-
-   padding-top: 2px;
+    padding: 2px 10px 0;
     background: #000;
   }
 
@@ -658,20 +650,23 @@
 
 html,
 body {
-  overscroll-behavior: none;
-  overflow: hidden;
+  margin: 0;
+  padding: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
-@supports (-webkit-touch-callout: none) {
-  html,
-  body {
-    overscroll-behavior: none;
-    overflow: hidden;
+/* Stronger page lock only for installed iOS PWA */
+@media (display-mode: standalone) {
+  .is-ios body {
     position: fixed;
+    inset: 0;
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
   }
 }
 
