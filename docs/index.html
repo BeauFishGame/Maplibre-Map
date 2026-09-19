@@ -42,7 +42,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
-  <link rel="stylesheet" href="css/map.css?v=1.1">
+  <link rel="stylesheet" href="css/map.css?v=1.2">
 
   <link rel="manifest" href="/manifest.webmanifest">
 
@@ -1052,27 +1052,42 @@ console.log("TODAY_UNIX:", window.__TODAY_UNIX__);
         }
       }
 
-      function openPanel(which) {
-        const cardEl = document.getElementById('properties');
-        const filtersEl = document.getElementById('combined-filters');
-        const basemapsEl = document.getElementById('combined-basemaps');
+    function openPanel(which) {
+  const cardEl = document.getElementById('properties');
+  const filtersEl = document.getElementById('combined-filters');
+  const basemapsEl = document.getElementById('combined-basemaps');
+  const crosshair = document.getElementById('center-crosshair');
 
-        cardEl.style.display = 'none';
-        filtersEl.style.display = 'none';
-        basemapsEl.style.display = 'none';
-        activePanel = null;
+  cardEl.style.display = 'none';
+  filtersEl.style.display = 'none';
+  basemapsEl.style.display = 'none';
+  activePanel = null;
 
-        if (which === 'card') {
-          cardEl.style.display = 'block';
-          activePanel = 'card';
-        } else if (which === 'filters') {
-          filtersEl.style.display = 'block';
-          activePanel = 'filters';
-        } else if (which === 'basemaps') {
-          basemapsEl.style.display = 'block';
-          activePanel = 'basemaps';
-        }
-      }
+  if (which === 'card') {
+    cardEl.style.display = 'block';
+    activePanel = 'card';
+
+    // Hide centre crosshair while a showcard is open
+    if (crosshair) {
+      crosshair.style.display = 'none';
+    }
+
+  } else if (which === 'filters') {
+    filtersEl.style.display = 'block';
+    activePanel = 'filters';
+
+  } else if (which === 'basemaps') {
+    basemapsEl.style.display = 'block';
+    activePanel = 'basemaps';
+  }
+
+  // When the showcard closes, let the normal
+  // mobile/zoom logic decide whether to show it again
+  if (which !== 'card' &&
+      typeof updateCenterPublicAccess === 'function') {
+    updateCenterPublicAccess();
+  }
+}
 
       function toggleFilters() {
         if (activePanel === 'filters') {
