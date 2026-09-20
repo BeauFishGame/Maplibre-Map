@@ -394,8 +394,30 @@
     transition: height 0.2s ease;
   }
 
-  /* drag handle */
+  @media (max-width: 768px) {
+
   .sheet-drag-handle {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 36px;
+
+    transform: none;
+
+    background: transparent;
+
+    cursor: grab;
+    touch-action: none;
+
+    z-index: 20;
+  }
+
+  .sheet-drag-handle::before {
+    content: "";
+
     position: absolute;
     top: 8px;
     left: 50%;
@@ -406,11 +428,6 @@
 
     border-radius: 999px;
     background: rgba(0, 0, 0, 0.25);
-
-    cursor: grab;
-    touch-action: none;
-
-    z-index: 20;
   }
 
   .sheet-drag-handle:active {
@@ -418,8 +435,9 @@
   }
 
   .panel-scroll {
-    padding-top: 36px;
+    padding-top: 15px;
   }
+}
 
   .close-button {
     top: 8px;
