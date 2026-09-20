@@ -3,12 +3,13 @@
       padding: 0;
     }
 
-    #map {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 100%;
-    }
+   #map {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+}
+    
 
     .map-overlay {
       display: none;
@@ -640,10 +641,13 @@
 
 html,
 body {
-  overscroll-behavior: none;
-  overflow: hidden;
+  margin: 0;
+  padding: 0;
   width: 100%;
   height: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 @media (display-mode: standalone) {
