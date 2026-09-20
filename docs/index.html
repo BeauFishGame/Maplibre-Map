@@ -840,17 +840,18 @@ map.on('terrain', () => {
     map.touchZoomRotate.enableRotation();
 
   } else {
-    // 2D: return flat and prevent tilt
-    map.easeTo({
-      pitch: 0,
-      bearing: 0,
-      duration: 700
-    });
+  map.easeTo({
+    pitch: 0,
+    bearing: 0,
+    duration: 500
+  });
 
+  map.once('moveend', () => {
     map.setMaxPitch(0);
     map.dragRotate.disable();
     map.touchZoomRotate.disableRotation();
-  }
+  });
+}
 });
 
 
