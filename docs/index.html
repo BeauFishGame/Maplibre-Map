@@ -825,6 +825,8 @@ console.log("TODAY_UNIX:", window.__TODAY_UNIX__);
       map.dragRotate.disable();
       map.touchZoomRotate.disableRotation();
       map.setPitch(0);
+      map.setMinPitch(0);
+      map.setMaxPitch(0);
       map.setBearing(0);
 
       // React whenever terrain is toggled
@@ -842,7 +844,7 @@ console.log("TODAY_UNIX:", window.__TODAY_UNIX__);
           map.touchZoomRotate.disableRotation();
 
           map.easeTo({
-            pitch: 0,
+            pitch: 10,
             bearing: 0,
             duration: 700
           });
