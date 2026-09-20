@@ -842,7 +842,7 @@ console.log("TODAY_UNIX:", window.__TODAY_UNIX__);
         } else {
           map.dragRotate.disable();
           map.touchZoomRotate.disableRotation();
-
+          map.setMaxPitch(85);
           map.easeTo({
             pitch: 10,
             bearing: 0,
