@@ -949,27 +949,89 @@ console.log("TODAY_UNIX:", window.__TODAY_UNIX__);
         }
       }
 
-      function openImageModal(arg) {
-        const modal = document.getElementById("imageModal");
-        const modalImg = document.getElementById("modalImage");
+      function enableCardImageSwipe() {
+  const img = document.getElementById('cardMainImage');
+  if (!img) return;
 
-        let idx = window.__cardPhotoIndex || 0;
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
 
-        if (typeof arg === 'number' && Number.isFinite(arg)) {
-          idx = arg;
-        } else if (typeof arg === 'string' && window.__cardPhotos?.length) {
-          const found = window.__cardPhotos.indexOf(arg);
-          if (found >= 0) idx = found;
-        }
+  img.addEventListener('touchstart', (e) => {
+    const t = e.touches?.[0];
+    if (!t) return;
 
-        setCardImage(idx);
-        modalImg.src = window.__cardPhotos[idx];
+    startX = t.clientX;
+    startY = t.clientY;
+    tracking = true;
+  }, { passive: true });
 
-        modal.classList.add("show");
-        updateModalNavVisibility();
-        modal.onclick = (ev) => { if (ev.target === modal) closeModal(); };
-        window.addEventListener('keydown', handleModalKeys);
+  img.addEventListener('touchend', (e) => {
+    if (!tracking) return;
+
+    const t = e.changedTouches?.[0];
+    if (!t) return;
+
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+
+    tracking = false;
+
+    // Horizontal swipe only
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+
+      if (dx < 0) {
+        nextImage();
+      } else {
+        prevImage();
       }
+    }
+  }, { passive: true });
+}
+
+      function openImageModal(arg) {
+  const modal = document.getElementById("imageModal");
+  const modalImg = document.getElementById("modalImage");
+  const crosshair = document.getElementById("center-crosshair");
+
+  let idx = window.__cardPhotoIndex || 0;
+
+  if (typeof arg === 'number' && Number.isFinite(arg)) {
+    idx = arg;
+  } else if (typeof arg === 'string' && window.__cardPhotos?.length) {
+    const found = window.__cardPhotos.indexOf(arg);
+    if (found >= 0) idx = found;
+  }
+
+  setCardImage(idx);
+  modalImg.src = window.__cardPhotos[idx];
+
+  // Never show crosshair while viewing photos
+  if (crosshair) {
+    crosshair.style.display = 'none';
+  }
+
+  modal.classList.add("show");
+  updateModalNavVisibility();
+  modal.onclick = (ev) => {
+    if (ev.target === modal) closeModal();
+  };
+
+  window.addEventListener('keydown', handleModalKeys);
+}
+
+function closeModal() {
+  const modal = document.getElementById("imageModal");
+
+  modal.classList.remove("show");
+  modal.onclick = null;
+  window.removeEventListener('keydown', handleModalKeys);
+
+  // Restore normal crosshair logic after leaving photos
+  if (typeof updateCenterPublicAccess === 'function') {
+    updateCenterPublicAccess();
+  }
+}
 
       function updateModalNavVisibility() {
         const count = (window.__cardPhotos || []).length;
@@ -2180,13 +2242,25 @@ const awAccessFooter =
 
       if (props.region || props.Region) {
   const regionName = props.Region || props.region;
-  const SeasonYear = props.season_year;
 
-  const label = (props.RegionCode == 13)
-    ? "Fishing District"
-    : `Fish & Game Region ${SeasonYear}`;
+  const isPoint = !isBlankish(props.point_type);
+  const seasonYear = props.season_year;
 
-  content += `<div class="card-subtitle subtitle-region">${regionName} ${label}</div>`;
+  let label;
+
+  if (props.RegionCode == 13) {
+    label = "Fishing District";
+  } else if (isPoint || isBlankish(seasonYear)) {
+    label = "Fish & Game Region";
+  } else {
+    label = `Fish & Game Region ${seasonYear}`;
+  }
+
+  content += `
+    <div class="card-subtitle subtitle-region">
+      ${regionName} ${label}
+    </div>
+  `;
 }
 
         content += renderWaterwayTags(props);
@@ -2268,6 +2342,8 @@ content += devSignInfo;
 makeSheetDraggable(
   card.querySelector('.map-overlay-inner')
 );
+
+enableCardImageSwipe();
 
 if (photoList.length) setCardImage(0);
 
