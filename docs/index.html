@@ -4271,6 +4271,31 @@ if (height < vh * 0.29) {
   // Wire panels that already exist when the page loads
   document.querySelectorAll('.map-overlay-inner')
     .forEach(makeSheetDraggable);
+
+    function getDisplayMode() {
+  if (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true
+  ) {
+    return 'pwa';
+  }
+
+  return 'browser';
+}
+
+window.addEventListener('load', () => {
+  if (window.umami) {
+    const mode = getDisplayMode();
+
+    umami.identify({
+      display_mode: mode
+    });
+
+    umami.track('app_open', {
+      display_mode: mode
+    });
+  }
+});
 </script>
 </body>
 
