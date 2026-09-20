@@ -813,44 +813,45 @@ console.log("TODAY_UNIX:", window.__TODAY_UNIX__);
 
       });
 
-      map.addControl(
-        new maplibregl.TerrainControl({
-          source: 'terrainSource',
-          exaggeration: 1.1
-        }),
-        'top-right'
-      );
+     map.addControl(
+  new maplibregl.TerrainControl({
+    source: 'terrainSource',
+    exaggeration: 1.1
+  }),
+  'top-right'
+);
 
-      // Start flat, with rotation disabled
-      map.dragRotate.disable();
-      map.touchZoomRotate.disableRotation();
-      map.setPitch(0);
-      map.setMinPitch(0);
-      map.setMaxPitch(0);
-      map.setBearing(0);
+// Start flat, with tilt/rotation disabled
+map.dragRotate.disable();
+map.touchZoomRotate.disableRotation();
+map.setPitch(0);
+map.setMinPitch(0);
+map.setMaxPitch(0);
+map.setBearing(0);
 
-      // React whenever terrain is toggled
-      map.on('terrain', () => {
-        const terrainOn = !!map.getTerrain();
+// React whenever terrain is toggled
+map.on('terrain', () => {
+  const terrainOn = !!map.getTerrain();
 
-        if (terrainOn) {
-          map.dragRotate.enable();
-          map.touchZoomRotate.enableRotation();
+  if (terrainOn) {
+    // 3D: allow tilt/rotation
+    map.setMaxPitch(60);
+    map.dragRotate.enable();
+    map.touchZoomRotate.enableRotation();
 
-          // Optional: ease into 3D view when turned on
+  } else {
+    // 2D: return flat and prevent tilt
+    map.easeTo({
+      pitch: 0,
+      bearing: 0,
+      duration: 700
+    });
 
-        } else {
-          map.dragRotate.disable();
-          map.touchZoomRotate.disableRotation();
-          map.setMaxPitch(60);
-          map.easeTo({
-            pitch: 10,
-            bearing: 0,
-            duration: 700
-          });
-        }
-      });
-
+    map.setMaxPitch(0);
+    map.dragRotate.disable();
+    map.touchZoomRotate.disableRotation();
+  }
+});
 
 
       async function copyShareLink() {
