@@ -809,6 +809,28 @@ const isStandalone =
   window.matchMedia('(display-mode: standalone)').matches ||
   window.navigator.standalone === true; // iOS
 
+
+      map.on('load', () => {
+
+        map.addSource('terrainSource', {
+          type: 'raster-dem',
+          tiles: [
+            'https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?pipeline=terrain-rgb&api=YOUR_API_KEY'
+          ],
+          tileSize: 256,
+          maxzoom: 18
+        });
+
+      });
+
+     map.addControl(
+  new maplibregl.TerrainControl({
+    source: 'terrainSource',
+    exaggeration: 1.1
+  }),
+  'top-right'
+);
+
 if (isStandalone) {
 
   class RefreshControl {
@@ -847,28 +869,6 @@ if (isStandalone) {
 
   map.addControl(new RefreshControl(), 'top-right');
 }
-
-      map.on('load', () => {
-
-        map.addSource('terrainSource', {
-          type: 'raster-dem',
-          tiles: [
-            'https://basemaps.linz.govt.nz/v1/tiles/elevation/WebMercatorQuad/{z}/{x}/{y}.png?pipeline=terrain-rgb&api=YOUR_API_KEY'
-          ],
-          tileSize: 256,
-          maxzoom: 18
-        });
-
-      });
-
-     map.addControl(
-  new maplibregl.TerrainControl({
-    source: 'terrainSource',
-    exaggeration: 1.1
-  }),
-  'top-right'
-);
-
 // Start flat, with tilt/rotation disabled
 map.dragRotate.disable();
 map.touchZoomRotate.disableRotation();
