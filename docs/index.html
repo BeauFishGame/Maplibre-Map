@@ -800,6 +800,63 @@ console.log("TODAY_UNIX:", window.__TODAY_UNIX__);
         showUserHeading: true
       }));
 
+
+      // =====================================================
+// PWA REFRESH BUTTON
+// =====================================================
+
+const isStandalone =
+  window.matchMedia('(display-mode: standalone)').matches ||
+  window.navigator.standalone === true; // iOS
+
+if (isStandalone) {
+
+  class RefreshControl {
+    onAdd(map) {
+      this.map = map;
+
+      this.container = document.createElement('div');
+      this.container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'map-refresh-btn';
+      button.title = 'Refresh map';
+      button.setAttribute('aria-label', 'Refresh map');
+
+      button.innerHTML = `
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path
+            d="M20 11a8.1 8.1 0 0 0-15.5-3L2 10.5V4h6.5L6 6.5A6 6 0 1 1 6 17"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      `;
+
+      button.addEventListener('click', () => {
+        button.classList.add('refreshing');
+
+        window.location.reload();
+      });
+
+      this.container.appendChild(button);
+
+      return this.container;
+    }
+
+    onRemove() {
+      this.container.remove();
+      this.map = undefined;
+    }
+  }
+
+  map.addControl(new RefreshControl(), 'top-right');
+}
+
       map.on('load', () => {
 
         map.addSource('terrainSource', {
