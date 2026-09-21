@@ -1202,20 +1202,19 @@ body {
   color: #888;
 }
 
-.map-refresh-btn svg {
+.refresh-icon {
+  font-size: 25px;
+  line-height: 1;
+  font-family: Arial, sans-serif;
   display: block;
+  transform: translateY(-1px);
 }
 
-.map-refresh-btn.refreshing svg {
+.map-refresh-btn.refreshing .refresh-icon {
   animation: refresh-spin 0.7s linear infinite;
 }
 
 @keyframes refresh-spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
