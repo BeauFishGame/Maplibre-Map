@@ -42,7 +42,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
-  <link rel="stylesheet" href="css/map.css?v=1.4">
+  <link rel="stylesheet" href="css/map.css?v=1.5">
 
   <link rel="manifest" href="/manifest.webmanifest">
 
@@ -825,17 +825,8 @@ if (isStandalone) {
       button.setAttribute('aria-label', 'Refresh map');
 
       button.innerHTML = `
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-          <path
-            d="M20 11a8.1 8.1 0 0 0-15.5-3L2 10.5V4h6.5L6 6.5A6 6 0 1 1 6 17"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-      `;
+  <span class="refresh-icon">↻</span>
+`;
 
       button.addEventListener('click', () => {
         button.classList.add('refreshing');
