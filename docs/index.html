@@ -42,7 +42,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
-  <link rel="stylesheet" href="css/map.css?v=1.1">
+  <link rel="stylesheet" href="css/map.css?v=1.2">
 
   <link rel="manifest" href="/manifest.webmanifest">
 
@@ -3246,6 +3246,29 @@ function updateWaterwayDateStyling() {
 
   map.triggerRepaint();
 }
+
+let currentDate = new Date().toDateString();
+
+function checkForNewDay() {
+  const newDate = new Date().toDateString();
+
+  if (newDate !== currentDate) {
+    currentDate = newDate;
+    updateWaterwayDateStyling();
+  }
+}
+
+// Check once per minute while the app is open
+setInterval(checkForNewDay, 60 * 60 * 1000);
+
+// Check immediately whenever the PWA/browser tab becomes active again
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    checkForNewDay();
+  }
+});
+
+
 
       function addCustomDataAndLayers() {
         const sources = map.getStyle().sources;
