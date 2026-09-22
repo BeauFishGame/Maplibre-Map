@@ -1669,39 +1669,33 @@ resetButton.addEventListener('click', () => {
       window.__cardPhotos = [];
       window.__cardPhotoIndex = 0;
 
-      function collectPhotoUrls(props) {
-        const candidates = [
-          props.image, props.images, props.photo, props.photos,
-          props.image1, props.image2, props.image3, props.image4,
-          props.Image1, props.Image2, props.Image3, props.Image4,
-          props.img1, props.img2, props.img3, props.img4
-        ];
+function collectPhotoUrls(props) {
+  const value = props.images;
 
-        const out = [];
-        for (const c of candidates) {
-          if (!c) continue;
-          if (Array.isArray(c)) {
-            out.push(...c);
-          } else {
-            const s = String(c).trim();
-            if (!s) continue;
-            if (s.includes(',')) {
-              out.push(...s.split(',').map(x => x.trim()).filter(Boolean));
-            } else {
-              out.push(s);
-            }
-          }
-        }
+  if (!value) return [];
 
-        const cleaned = [];
-        const seen = new Set();
-        for (const v of out) {
-          const n = normalizeUrl(v);
-          if (!n) continue;
-          if (!seen.has(n)) { seen.add(n); cleaned.push(n); }
-        }
-        return cleaned;
-      } 
+  const urls = Array.isArray(value)
+    ? value
+    : String(value)
+        .split(';')
+        .map(x => x.trim())
+        .filter(Boolean);
+
+  const cleaned = [];
+  const seen = new Set();
+
+  for (const url of urls) {
+    const normalized = normalizeUrl(url);
+    if (!normalized) continue;
+
+    if (!seen.has(normalized)) {
+      seen.add(normalized);
+      cleaned.push(normalized);
+    }
+  }
+
+  return cleaned;
+}
 
       function nextImage() {
         setCardImage(window.__cardPhotoIndex + 1);
