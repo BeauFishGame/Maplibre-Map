@@ -3112,6 +3112,10 @@ let currentNavNumber = null;
       const dataQ = (url.searchParams.get('data') || '').trim().toLowerCase();
       const isDev = dataQ === 'dev';
 
+      const useUpcomingRegs =
+  isDev ||
+  hasSeasonChanged();
+
       if (isDev) {
   document.querySelectorAll('.dev-only').forEach(el => {
     el.style.display = '';
@@ -3122,11 +3126,13 @@ let currentNavNumber = null;
       const TILES_BASE = 'https://data.fishandgameaccessmap.org';
       const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson';
 
-      const WATERWAYS_NAME = isDev ? 'all_waters_dev' : 'all_waters';
+     const WATERWAYS_NAME = useUpcomingRegs ? 'all_waters_dev' : 'all_waters';
       const POINTS_FILE = isDev ? 'AccessPoints.geojson?token=fish-access-2025'
         : 'AccessPoints.geojson?token=fish-access-2025';
-      const SEARCH_FILE = isDev ? 'waterway_search_index_dev.geojson?token=fish-access-2025'
-        : 'waterway_search_index.geojson?token=fish-access-2025';
+      
+        const SEARCH_FILE = useUpcomingRegs
+  ? 'waterway_search_index_dev.geojson?token=fish-access-2025'
+  : 'waterway_search_index.geojson?token=fish-access-2025';
 
       const URL_WATERWAYS_TILES = `${TILES_BASE}/${WATERWAYS_NAME}/{z}/{x}/{y}`;
       const URL_POINTS_GEOJSON = `${GEOJSON_BASE}/${POINTS_FILE}`;
