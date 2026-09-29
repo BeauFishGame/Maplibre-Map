@@ -785,15 +785,44 @@ window.__TODAY_UNIX__ = window.__DEFAULT_TODAY_UNIX__;
 console.log("TODAY_UNIX:", window.__TODAY_UNIX__);
       
 
-      const map = new maplibregl.Map({
-        container: 'map',
-        style: styleURL,
-        center: [173.792725, -40.784701],
-        minZoom: 5,
-        ...initialCamera
-      });
+     const map = new maplibregl.Map({
+  container: 'map',
+  style: styleURL,
+  center: [173.792725, -40.784701],
+  minZoom: 5,
+  ...initialCamera
+});
 
-      map.addControl(new maplibregl.NavigationControl({ showCompass: true }));
+// =====================================================
+// KEEP MAP SIZED CORRECTLY WHEN EMBEDDED IN AN IFRAME
+// =====================================================
+const mapContainer = document.getElementById('map');
+
+function resizeMap() {
+  if (map) {
+    map.resize();
+  }
+}
+
+// Watch for the map/container changing size
+if (mapContainer && 'ResizeObserver' in window) {
+  const mapResizeObserver = new ResizeObserver(() => {
+    resizeMap();
+  });
+
+  mapResizeObserver.observe(mapContainer);
+}
+
+// Extra checks while the parent/CMS page finishes laying out
+window.addEventListener('load', () => {
+  resizeMap();
+  setTimeout(resizeMap, 100);
+  setTimeout(resizeMap, 500);
+  setTimeout(resizeMap, 1000);
+});
+
+map.addControl(new maplibregl.NavigationControl({ showCompass: true }));
+
       map.addControl(new maplibregl.GeolocateControl({
         positionOptions: { enableHighAccuracy: true },
         trackUserLocation: true,
