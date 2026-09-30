@@ -436,7 +436,7 @@
               13: "https://www.doc.govt.nz/parks-and-recreation/places-to-go/central-north-island/places/taupo-trout-fishery/other-pages/rules-and-regulation---what-you-need-to-know/"
             };
 
-            const REGULATION_SWITCH_DATE = "2026-10-01";
+            const REGULATION_SWITCH_DATE = "2026-9-30";
 
 function hasSeasonChanged() {
   const todayNZ = new Intl.DateTimeFormat("en-CA", {
@@ -3126,7 +3126,7 @@ let currentNavNumber = null;
       const TILES_BASE = 'https://data.fishandgameaccessmap.org';
       const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson';
 
-     const WATERWAYS_NAME = useUpcomingRegs ? 'all_waters_dev' : 'all_waters';
+     const WATERWAYS_NAME = useUpcomingRegs ? 'all_waters_dev' : 'all_watersXXX';
       const POINTS_FILE = isDev ? 'AccessPoints.geojson?token=fish-access-2025'
         : 'AccessPoints.geojson?token=fish-access-2025';
       
