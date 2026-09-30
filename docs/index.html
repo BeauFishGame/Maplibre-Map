@@ -404,23 +404,8 @@
             const DOC_TAUPO_LICENCE_URL = "https://www.doc.govt.nz/parks-and-recreation/buy-a-taupo-fishing-licence-online/";
 
 
-            const REGION_REG_URLS = {
-              1: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.03-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Northland-V2-WEB.pdf",
-              2: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Auckland-Waikato-V4-WEB.pdf",  // Auckland/Waikato
-              3: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Eastern-V3-WEB.pdf",  // Eastern
-              4: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Taranaki-V2-WEB.pdf",
-              5: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.03-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Hawkes-Bay-V3-WEB.pdf",
-              6: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-NI-Wellington-V3-WEB.pdf",
-              7: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Nelson-Marlborough-V2-WEB.pdf",
-              8: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.01-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-North-Canterbury-V3-WEB.pdf",
-              9: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-25-SI-West-Coast-V3-WEB.pdf",
-              10: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.01-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Central-South-Island-V5-WEB.pdf",
-              11: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.01-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Otago-V3-WEB.pdf",
-              12: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/104426-97495.02-Fish-and-Game-Sportsfishing-Regs-Brochure-2025-26-SI-Southland-V5-WEB.pdf",
-              13: "https://www.doc.govt.nz/parks-and-recreation/places-to-go/central-north-island/places/taupo-trout-fishery/other-pages/rules-and-regulation---what-you-need-to-know/"
-            };
-
-              const UPCOMING_REGION_REG_URLS = {
+        
+              const REGION_REG_URLS = {
               1: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/2026/2027/Fish-and-Game-Sportsfishing-Regs-Brochure-2026-27-Northland.pdf",
               2: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/2026/2027/Fish-and-Game-Sportsfishing-Regs-Brochure-2026-27-Auckland-Waikato.pdf",  // Auckland/Waikato
               3: "https://www.fishandgame.org.nz/assets/Fishing/Fishing-Licences-Regulations/Fishing-Regulations/2026/2027/Fish-and-Game-Sportsfishing-Regs-Brochure-2026-27-Eastern.pdf",  // Eastern
@@ -436,22 +421,9 @@
               13: "https://www.doc.govt.nz/parks-and-recreation/places-to-go/central-north-island/places/taupo-trout-fishery/other-pages/rules-and-regulation---what-you-need-to-know/"
             };
 
-            const REGULATION_SWITCH_DATE = "2026-9-30";
 
-function hasSeasonChanged() {
-  const todayNZ = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Pacific/Auckland",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).format(new Date());
 
-  return todayNZ >= REGULATION_SWITCH_DATE;
-}
-
-const ACTIVE_REGION_REG_URLS = hasSeasonChanged()
-  ? UPCOMING_REGION_REG_URLS
-  : REGION_REG_URLS;
+const ACTIVE_REGION_REG_URLS = REGION_REG_URLS;
 
             function getRegionCode(props) {
               const raw =
@@ -775,9 +747,27 @@ const ACTIVE_REGION_REG_URLS = hasSeasonChanged()
 
 
 function getCurrentNZUnix() {
+  // The regulation fields are date-only Unix timestamps at 00:00 UTC.
+  // Get the CURRENT CALENDAR DATE in Pacific/Auckland, then encode that
+  // same YYYY-MM-DD as 00:00 UTC. This makes the map roll over at NZ
+  // midnight instead of at 12/1pm when UTC reaches the next date.
+  const parts = new Intl.DateTimeFormat('en-NZ', {
+    timeZone: 'Pacific/Auckland',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(new Date());
 
-  return Math.floor(Date.now()  / 1000);
+  const getPart = type =>
+    Number(parts.find(part => part.type === type)?.value);
+
+  const year = getPart('year');
+  const month = getPart('month');
+  const day = getPart('day');
+
+  return Math.floor(Date.UTC(year, month - 1, day) / 1000);
 }
+
 
 window.__DEFAULT_TODAY_UNIX__ = getCurrentNZUnix();
 window.__TODAY_UNIX__ = window.__DEFAULT_TODAY_UNIX__;
@@ -3112,9 +3102,7 @@ let currentNavNumber = null;
       const dataQ = (url.searchParams.get('data') || '').trim().toLowerCase();
       const isDev = dataQ === 'dev';
 
-      const useUpcomingRegs =
-  isDev ||
-  hasSeasonChanged();
+      const useUpcomingRegs = isDev
 
       if (isDev) {
   document.querySelectorAll('.dev-only').forEach(el => {
@@ -3126,7 +3114,7 @@ let currentNavNumber = null;
       const TILES_BASE = 'https://data.fishandgameaccessmap.org';
       const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson';
 
-     const WATERWAYS_NAME = useUpcomingRegs ? 'all_waters_dev' : 'all_watersXXX';
+     const WATERWAYS_NAME = useUpcomingRegs ? 'all_waters_dev' : 'all_waters_dev';
       const POINTS_FILE = isDev ? 'AccessPoints.geojson?token=fish-access-2025'
         : 'AccessPoints.geojson?token=fish-access-2025';
       
