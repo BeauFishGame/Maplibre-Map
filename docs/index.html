@@ -3102,7 +3102,7 @@ let currentNavNumber = null;
       const dataQ = (url.searchParams.get('data') || '').trim().toLowerCase();
       const isDev = dataQ === 'dev';
 
-      const useUpcomingRegs = isDev
+
 
       if (isDev) {
   document.querySelectorAll('.dev-only').forEach(el => {
@@ -3114,11 +3114,11 @@ let currentNavNumber = null;
       const TILES_BASE = 'https://data.fishandgameaccessmap.org';
       const GEOJSON_BASE = 'https://data.fishandgameaccessmap.org/secure-geojson';
 
-     const WATERWAYS_NAME = useUpcomingRegs ? 'all_waters_dev' : 'all_waters_dev';
+     const WATERWAYS_NAME = isDev ? 'all_waters_dev' : 'all_waters_dev';
       const POINTS_FILE = isDev ? 'AccessPoints.geojson?token=fish-access-2025'
         : 'AccessPoints.geojson?token=fish-access-2025';
       
-        const SEARCH_FILE = useUpcomingRegs
+        const SEARCH_FILE = isDev
   ? 'waterway_search_index_dev.geojson?token=fish-access-2025'
   : 'waterway_search_index.geojson?token=fish-access-2025';
 
