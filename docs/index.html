@@ -65,6 +65,7 @@
 
   <div id="status-bar-tint" aria-hidden="true"></div>
 
+
   <div id="imageModal" class="modal" role="dialog" aria-modal="true">
     <button class="modal-nav prev" onclick="modalPrev(event)" aria-label="Previous image">❮</button>
     <img class="modal-content" id="modalImage" alt="Location Photo (fullscreen)">
@@ -967,186 +968,140 @@ map.on('terrain', () => {
       }
 
 
-      // ---- Image modal swipe (unchanged) ----
-      (function addModalSwipe() {
-        let startX = 0, startY = 0, tracking = false;
+      // ---- Shared photo/video carousel and fullscreen media viewer ----
+      window.__cardMedia = [];
+      window.__cardMediaIndex = 0;
 
-        const modal = document.getElementById('imageModal');
-        const img = document.getElementById('modalImage');
-
-        function onStart(e) {
-          const t = e.touches?.[0];
-          if (!t) return;
-          startX = t.clientX; startY = t.clientY; tracking = true;
+      function makeMediaElement(item, id, isModal = false) {
+        const el = document.createElement(item.type === 'video' ? 'video' : 'img');
+        el.id = id;
+        el.className = isModal ? 'modal-content' : 'card-media-content';
+        if (item.type === 'video') {
+          el.controls = true;
+          el.preload = 'metadata';
+          el.playsInline = true;
+          el.setAttribute('playsinline', '');
+          el.src = item.url;
+          el.setAttribute('aria-label', 'Location video');
+        } else {
+          el.src = item.url;
+          el.alt = isModal ? 'Location photo (fullscreen)' : 'Location photo';
+          if (!isModal) el.addEventListener('click', () => openImageModal());
         }
-        function onEnd(e) {
-          if (!tracking) return;
-          const t = e.changedTouches?.[0];
-          if (!t) return;
-          const dx = t.clientX - startX;
-          const dy = t.clientY - startY;
-          tracking = false;
-          if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
-            if (dx < 0) modalNext(); else modalPrev();
+        return el;
+      }
+
+      function stopVideoWithin(root) {
+        if (!root) return;
+        root.querySelectorAll('video').forEach(video => {
+          video.pause();
+          video.removeAttribute('src');
+          video.load();
+        });
+      }
+
+      function displayMediaAt(index, modal = false) {
+        const items = window.__cardMedia || [];
+        if (!items.length) return;
+        const n = ((index % items.length) + items.length) % items.length;
+        window.__cardMediaIndex = n;
+        const item = items[n];
+
+        const wrap = document.querySelector('.card-image-wrap');
+        if (wrap) {
+          const old = wrap.querySelector('#cardMainImage, #cardMainVideo');
+          if (old) {
+            if (old.tagName === 'VIDEO') old.pause();
+            old.replaceWith(makeMediaElement(item, item.type === 'video' ? 'cardMainVideo' : 'cardMainImage'));
+          }
+          const meta = wrap.querySelector('.carousel-meta');
+          if (meta) meta.textContent = `${n + 1} / ${items.length}`;
+        }
+
+        const modalEl = document.getElementById('imageModal');
+        if (modalEl?.classList.contains('show') || modal) {
+          const old = modalEl.querySelector('#modalImage, #modalVideo');
+          if (old) {
+            if (old.tagName === 'VIDEO') old.pause();
+            old.replaceWith(makeMediaElement(item, item.type === 'video' ? 'modalVideo' : 'modalImage', true));
           }
         }
-
-        img.addEventListener('touchstart', onStart, { passive: true });
-        img.addEventListener('touchend', onEnd, { passive: true });
-      })();
-
-      // ---- Image card helpers (unchanged) ----
-      function setCardImage(index) {
-        const photos = window.__cardPhotos || [];
-        if (!photos.length) return;
-        const n = ((index % photos.length) + photos.length) % photos.length;
-        window.__cardPhotoIndex = n;
-
-        const main = document.getElementById('cardMainImage');
-        if (main) {
-          main.src = photos[n];
-          main.onclick = () => openImageModal(n);
-        }
-
-        const modal = document.getElementById('imageModal');
-        const modalImg = document.getElementById('modalImage');
-        if (modal?.classList.contains('show') && modalImg) {
-          modalImg.src = photos[n];
-        }
-
-        const meta = document.querySelector('.carousel-meta');
-        if (meta) {
-          meta.textContent = `${n + 1} / ${photos.length}`;
-        }
       }
+
+      function setCardImage(index) { displayMediaAt(index); } // legacy alias
+      function nextImage() { displayMediaAt(window.__cardMediaIndex + 1); }
+      function prevImage() { displayMediaAt(window.__cardMediaIndex - 1); }
 
       function enableCardImageSwipe() {
-  const img = document.getElementById('cardMainImage');
-  if (!img) return;
-
-  let startX = 0;
-  let startY = 0;
-  let tracking = false;
-
-  img.addEventListener('touchstart', (e) => {
-    const t = e.touches?.[0];
-    if (!t) return;
-
-    startX = t.clientX;
-    startY = t.clientY;
-    tracking = true;
-  }, { passive: true });
-
-  img.addEventListener('touchend', (e) => {
-    if (!tracking) return;
-
-    const t = e.changedTouches?.[0];
-    if (!t) return;
-
-    const dx = t.clientX - startX;
-    const dy = t.clientY - startY;
-
-    tracking = false;
-
-    // Horizontal swipe only
-    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
-
-      if (dx < 0) {
-        nextImage();
-      } else {
-        prevImage();
+        const wrap = document.querySelector('#properties .card-image-wrap');
+        if (!wrap) return;
+        let x = 0, y = 0;
+        wrap.addEventListener('touchstart', e => {
+          if (e.target.closest('video')) return; // preserve native video controls
+          const t = e.touches[0]; x = t.clientX; y = t.clientY;
+        }, { passive: true });
+        wrap.addEventListener('touchend', e => {
+          if (e.target.closest('video')) return;
+          const t = e.changedTouches[0];
+          const dx = t.clientX - x, dy = t.clientY - y;
+          if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+            dx < 0 ? nextImage() : prevImage();
+          }
+        }, { passive: true });
       }
-    }
-  }, { passive: true });
-}
 
       function openImageModal(arg) {
-  const modal = document.getElementById("imageModal");
-  const modalImg = document.getElementById("modalImage");
-  const crosshair = document.getElementById("center-crosshair");
-
-  let idx = window.__cardPhotoIndex || 0;
-
-  if (typeof arg === 'number' && Number.isFinite(arg)) {
-    idx = arg;
-  } else if (typeof arg === 'string' && window.__cardPhotos?.length) {
-    const found = window.__cardPhotos.indexOf(arg);
-    if (found >= 0) idx = found;
-  }
-
-  setCardImage(idx);
-  modalImg.src = window.__cardPhotos[idx];
-
-  // Never show crosshair while viewing photos
-  if (crosshair) {
-    crosshair.style.display = 'none';
-  }
-
-  modal.classList.add("show");
-  updateModalNavVisibility();
-  modal.onclick = (ev) => {
-    if (ev.target === modal) closeModal();
-  };
-
-  window.addEventListener('keydown', handleModalKeys);
-}
-
-function closeModal() {
-  const modal = document.getElementById("imageModal");
-
-  modal.classList.remove("show");
-  modal.onclick = null;
-  window.removeEventListener('keydown', handleModalKeys);
-
-  // Restore normal crosshair logic after leaving photos
-  if (typeof updateCenterPublicAccess === 'function') {
-    updateCenterPublicAccess();
-  }
-}
-
-      function updateModalNavVisibility() {
-        const count = (window.__cardPhotos || []).length;
-        const prevBtn = document.querySelector('#imageModal .modal-nav.prev');
-        const nextBtn = document.querySelector('#imageModal .modal-nav.next');
-        const show = count > 1;
-        if (prevBtn) prevBtn.style.display = show ? '' : 'none';
-        if (nextBtn) nextBtn.style.display = show ? '' : 'none';
+        const items = window.__cardMedia || [];
+        if (!items.length) return;
+        let idx = window.__cardMediaIndex || 0;
+        if (typeof arg === 'number' && Number.isFinite(arg)) idx = arg;
+        else if (typeof arg === 'string') {
+          const found = items.findIndex(item => item.url === arg);
+          if (found >= 0) idx = found;
+        }
+        const modal = document.getElementById('imageModal');
+        document.getElementById('center-crosshair')?.style.setProperty('display', 'none');
+        modal.classList.add('show');
+        displayMediaAt(idx, true);
+        updateModalNavVisibility();
+        modal.onclick = ev => { if (ev.target === modal) closeModal(); };
+        window.addEventListener('keydown', handleModalKeys);
       }
 
       function closeModal() {
-        const modal = document.getElementById("imageModal");
-        modal.classList.remove("show");
+        const modal = document.getElementById('imageModal');
+        stopVideoWithin(modal);
+        modal.classList.remove('show');
         modal.onclick = null;
         window.removeEventListener('keydown', handleModalKeys);
+        if (typeof updateCenterPublicAccess === 'function') updateCenterPublicAccess();
+      }
+
+      function updateModalNavVisibility() {
+        const visible = (window.__cardMedia || []).length > 1;
+        const prev = document.querySelector('#imageModal .modal-nav.prev');
+        const next = document.querySelector('#imageModal .modal-nav.next');
+        if (prev) prev.style.display = visible ? '' : 'none';
+        if (next) next.style.display = visible ? '' : 'none';
       }
 
       function handleModalKeys(e) {
-        const count = (window.__cardPhotos || []).length;
         if (e.key === 'Escape') { closeModal(); return; }
-        if (count < 2) return;
-        if (e.key === 'ArrowRight') { modalNext(e); }
-        else if (e.key === 'ArrowLeft') { modalPrev(e); }
+        if (e.target?.tagName === 'VIDEO') return;
+        if ((window.__cardMedia || []).length < 2) return;
+        if (e.key === 'ArrowRight') modalNext(e);
+        if (e.key === 'ArrowLeft') modalPrev(e);
       }
 
-      
-
-      function modalNext(ev) {
-        if (ev) ev.stopPropagation();
-        const photos = window.__cardPhotos || [];
-        if (photos.length < 2) return;
-        setCardImage((window.__cardPhotoIndex || 0) + 1);
-        const modalImg = document.getElementById("modalImage");
-        if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
+      function modalNext(e) {
+        if (e) e.stopPropagation();
+        if ((window.__cardMedia || []).length < 2) return;
+        displayMediaAt(window.__cardMediaIndex + 1, true);
       }
-
-
-      function modalPrev(ev) {
-        if (ev) ev.stopPropagation();
-        const photos = window.__cardPhotos || [];
-        if (photos.length < 2) return;
-        setCardImage((window.__cardPhotoIndex || 0) - 1);
-        const modalImg = document.getElementById("modalImage");
-        if (photos.length) modalImg.src = photos[window.__cardPhotoIndex];
+      function modalPrev(e) {
+        if (e) e.stopPropagation();
+        if ((window.__cardMedia || []).length < 2) return;
+        displayMediaAt(window.__cardMediaIndex - 1, true);
       }
 
       // ---- Panel logic / openPanel / toggle filters ----
@@ -1685,44 +1640,57 @@ resetButton.addEventListener('click', () => {
           </li>`;
       }
 
-      window.__cardPhotos = [];
-      window.__cardPhotoIndex = 0;
+     // Read photo and video URLs from the single "images" property.
+// Supports arrays, semicolon-separated strings and JSON-encoded arrays.
+function collectMediaUrls(value) {
+  if (isBlankish(value)) return [];
 
-function collectPhotoUrls(props) {
-  const value = props.images;
+  let parts;
 
-  if (!value) return [];
+  if (Array.isArray(value)) {
+    parts = value;
+  } else {
+    const raw = String(value).trim();
 
-  const urls = Array.isArray(value)
-    ? value
-    : String(value)
-        .split(';')
-        .map(x => x.trim())
-        .filter(Boolean);
-
-  const cleaned = [];
-  const seen = new Set();
-
-  for (const url of urls) {
-    const normalized = normalizeUrl(url);
-    if (!normalized) continue;
-
-    if (!seen.has(normalized)) {
-      seen.add(normalized);
-      cleaned.push(normalized);
+    try {
+      const parsed = JSON.parse(raw);
+      parts = Array.isArray(parsed) ? parsed : [raw];
+    } catch {
+      parts = raw.split(';');
     }
   }
 
-  return cleaned;
+  const urls = [];
+  const seen = new Set();
+
+  for (const part of parts) {
+    if (isBlankish(part)) continue;
+
+    const url = normalizeUrl(String(part).trim());
+
+    if (!url || seen.has(url)) continue;
+
+    seen.add(url);
+    urls.push(url);
+  }
+
+  return urls;
 }
 
-      function nextImage() {
-        setCardImage(window.__cardPhotoIndex + 1);
-      }
-      function prevImage() {
-        setCardImage(window.__cardPhotoIndex - 1);
-      }
+// Automatically determine whether a URL is a video or photo.
+function getMediaType(url) {
+  return /\.(mp4|mov|webm|m4v)(?:[?#]|$)/i.test(url)
+    ? 'video'
+    : 'photo';
+}
 
+// All media comes from props.images.
+function collectPointMedia(props) {
+  return collectMediaUrls(props.images).map(url => ({
+    type: getMediaType(url),
+    url
+  }));
+}
       const card = document.getElementById('properties');
       const DOC_REGION_CODE = 13;
 
@@ -1873,8 +1841,8 @@ const disclaimer = !isBlankish(props.disclaimer) ? String(props.disclaimer) : ""
 
         // default hero image (Flow vs Temperature)
         const defaultImage = flowTypeDefaultImages[param] || null;
-        window.__cardPhotos = defaultImage ? [defaultImage] : [];
-        window.__cardPhotoIndex = 0;
+        window.__cardMedia = defaultImage ? [{ type: 'photo', url: defaultImage }] : [];
+        window.__cardMediaIndex = 0;
 
         const unit = unitProp ||
           (param === 'Flow' ? 'm³/s' :
@@ -2234,12 +2202,14 @@ const awAccessFooter =
         ) {
           typeImage = getRiverDefaultImage(props);
         }
+        
+const mediaList = [
+  ...(typeImage ? [{ type: 'photo', url: typeImage }] : []),
+  ...collectPointMedia(props)
+];
 
-        const extraPhotos = collectPhotoUrls(props);
-        const photoList = (typeImage ? [typeImage] : []).concat(extraPhotos);
-
-        window.__cardPhotos = photoList;
-        window.__cardPhotoIndex = 0;
+        window.__cardMedia = mediaList;
+        window.__cardMediaIndex = 0;
 
         let content = `
       <div class="map-overlay-inner">
@@ -2248,18 +2218,15 @@ const awAccessFooter =
         <div class="panel-scroll">
     `;
 
-      if (photoList.length > 0) {
+      if (mediaList.length > 0) {
   content += `
     <div class="card-image-wrap">
-      <img id="cardMainImage" src="${photoList[0]}" alt="Location Photo" onclick="openImageModal()" />
+      <img id="cardMainImage" alt="Location photo" />
 
-      ${photoList.length > 1 ? `
-        <button class="carousel-button prev" onclick="prevImage()" aria-label="Previous image">❮</button>
-        <button class="carousel-button next" onclick="nextImage()" aria-label="Next image">❯</button>
-
-        <div class="carousel-meta">
-          1 / ${photoList.length}
-        </div>
+      ${mediaList.length > 1 ? `
+        <button class="carousel-button prev" onclick="prevImage()" aria-label="Previous media">❮</button>
+        <button class="carousel-button next" onclick="nextImage()" aria-label="Next media">❯</button>
+        <div class="carousel-meta">1 / ${mediaList.length}</div>
       ` : ``}
     </div>
   `;
@@ -2410,7 +2377,7 @@ makeSheetDraggable(
 
 enableCardImageSwipe();
 
-if (photoList.length) setCardImage(0);
+if (mediaList.length) setCardImage(0);
 
 openPanel('card');
       };

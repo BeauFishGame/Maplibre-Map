@@ -247,6 +247,13 @@
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     }
 
+    #imageModal video.modal-content {
+  max-width: 95vw;
+  max-height: 85vh;
+  width: auto;
+  height: auto;
+}
+
     .close-modal {
       position: absolute;
       top: 30px;
@@ -838,14 +845,38 @@ body {
             margin-bottom: 10px;
           }
 
-          .card-image-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* no distortion */
-            object-position: center;
-            display: block;
-          }
+       /* ==========================================
+   SHOWCARD PHOTO AND VIDEO STYLING
+   ========================================== */
+
+/* Shared styling */
+.card-image-wrap img.card-media-content,
+.card-image-wrap video.card-media-content {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Photos fill the showcard */
+.card-image-wrap img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Videos retain their entire frame */
+.card-image-wrap video.card-media-content {
+  object-fit: contain;
+  background: #000;
+}
 
           @media (max-width: 768px) {
             .card-image-wrap {
